@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Opening Backstage</title>
+
+    <script>
+      (function () {
+        const parts = window.location.pathname.split("/");
+        const partyId = parts.length > 2 ? parts[2] : null;
+
+        if (partyId) {
+          window.location.href = `backstage://party/${partyId}`;
+        } else {
+          window.location.href = "backstage://";
+        }
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Opening Backstage…</p>
+  </body>
+</html>
