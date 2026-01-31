@@ -1,27 +1,54 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Opening Backstage</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Backstage Party</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script>
-      (function () {
-        const parts = window.location.pathname.split("/");
-        const partyId = parts.length > 2 ? parts[2] : null;
+  <!-- Try to open the app (custom scheme) -->
+  <script>
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const partyId = parts.length >= 2 ? parts[1] : "";
 
-        if (partyId) {
-          window.location.href = `backstage://party/${partyId}`;
-        } else {
-          window.location.href = "backstage://";
-        }
+    if (partyId) {
+      try {
+        localStorage.setItem("pendingPartyId", partyId);
+      } catch {}
+      window.location.href = `backstage://party/${partyId}`;
+    }
 
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1500);
-      })();
-    </script>
-  </head>
-  <body>
-    <p>Opening Backstage…</p>
-  </body>
+    // Fallback to App Store after delay
+    setTimeout(() => {
+      window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
+    }, 1300);
+  </script>
+
+  <style>
+    body {
+      background: #0b0614;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Opening Backstage…</h1>
+    <p>If the app doesn't open, install it from the App Store.</p>
+  </div>
+</body>
 </html>
