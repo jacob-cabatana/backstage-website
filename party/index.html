@@ -2,53 +2,165 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Backstage Party</title>
+  <title>Backstage</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Try to open the app (custom scheme) -->
-  <script>
-    const parts = window.location.pathname.split("/").filter(Boolean);
-    const partyId = parts.length >= 2 ? parts[1] : "";
-
-    if (partyId) {
-      try {
-        localStorage.setItem("pendingPartyId", partyId);
-      } catch {}
-      window.location.href = `backstage://party/${partyId}`;
-    }
-
-    // Fallback to App Store after delay
-    setTimeout(() => {
-      window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
-    }, 1300);
-  </script>
-
   <style>
-    body {
-      background: #0b0614;
-      color: white;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-      padding: 16px;
+    :root{
+      --bg:#0b0614;
+      --card:#140b24;
+      --border: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --accent:#6F1EFF;
+      --accent2:#5D03FF;
     }
-    h1 {
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(900px 500px at 50% 0%, rgba(111,30,255,.25), transparent 60%), var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .wrap{
+      width:min(520px, 100%);
+    }
+    .card{
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+    }
+    .logo{
+      width:72px;
+      height:72px;
+      border-radius:18px;
+      margin:0 auto 14px;
+      overflow:hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      background:#000;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    h1{
+      margin: 0 0 8px;
       font-size: 24px;
-      margin-bottom: 12px;
+      text-align:center;
     }
-    p {
-      font-size: 16px;
-      opacity: 0.8;
+    p{
+      margin: 0 0 16px;
+      font-size: 15px;
+      color: var(--muted);
+      text-align:center;
+      line-height:1.4;
+    }
+    .pill{
+      margin: 12px auto 0;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,.78);
+      font-size: 13px;
+    }
+.app-icon {
+  width: 96px;
+  height: 96px;
+  transform: scale(0.65);
+  transform-origin: center;
+  margin-bottom: 6px;
+}
+
+
+    .btns{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:16px;
+    }
+    a.btn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      border-radius: 16px;
+      padding: 14px 14px;
+      font-weight: 700;
+      font-size: 15px;
+      border: 1px solid rgba(255,255,255,.14);
+      transition: transform .08s ease, opacity .08s ease;
+      user-select:none;
+    }
+    a.btn:active{transform: scale(.99); opacity:.9}
+    .primary{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:white;
+      box-shadow: 0 18px 45px rgba(111,30,255,.25);
+    }
+    .secondary{
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.90);
+    }
+    .tiny{
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,.55);
+      text-align:center;
     }
   </style>
 </head>
+
 <body>
-  <div>
-    <h1>Opening Backstage…</h1>
-    <p>If the app doesn't open, install it from the App Store.</p>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- App Icon -->
+      <div class="logo">
+        <img src="/assets/app-icon.png" alt="Backstage app icon" class="app-icon">
+
+
+      </div>
+
+      <h1>Get Backstage</h1>
+      <p>To view this party, you’ll need the Backstage app.</p>
+
+      <div id="partyPill" class="pill" style="display:none;"></div>
+
+      <div class="btns">
+        <a class="btn primary"
+           href="https://apps.apple.com/us/app/backstage-events/id6751863780">
+          Download on the App Store
+        </a>
+
+     
+      </div>
+
+    </div>
   </div>
+
+  <script>
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const partyId = (parts.length >= 2 && parts[0] === "party") ? parts[1] : "";
+
+    const pill = document.getElementById("partyPill");
+
+
+    document.getElementById("openAppBtn").addEventListener("click", e => {
+      e.preventDefault();
+      const target = partyId ? `backstage://party/${partyId}` : "backstage://";
+      window.location.href = target;
+    });
+  </script>
 </body>
 </html>
