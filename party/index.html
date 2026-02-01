@@ -149,18 +149,34 @@
     </div>
   </div>
 
-  <script>
-    const parts = window.location.pathname.split("/").filter(Boolean);
-    const partyId = (parts.length >= 2 && parts[0] === "party") ? parts[1] : "";
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const redirectedPath = params.get("path");
 
-    const pill = document.getElementById("partyPill");
+  const path = redirectedPath || window.location.pathname;
+  const parts = path.split("/").filter(Boolean);
 
+  const partyId =
+    parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
 
-    document.getElementById("openAppBtn").addEventListener("click", e => {
-      e.preventDefault();
-      const target = partyId ? `backstage://party/${partyId}` : "backstage://";
-      window.location.href = target;
-    });
-  </script>
+  const pill = document.getElementById("partyPill");
+
+  if (partyId && pill) {
+    pill.style.display = "block";
+    pill.textContent = "Opening party…";
+  }
+
+  if (partyId) {
+    // Attempt to open app
+    window.location.href = `backstage://party/${partyId}`;
+
+    // Fallback to App Store
+    setTimeout(() => {
+      window.location.href =
+        "https://apps.apple.com/us/app/backstage-events/id6751863780";
+    }, 1200);
+  }
+</script>
+
 </body>
 </html>
