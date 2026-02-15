@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Successful</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #0f0f0f;
+      color: white;
+    }
+
+    .card {
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 12px;
+      background: #1a1a1a;
+    }
+
+    .check {
+      font-size: 50px;
+      color: #4CAF50;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #9C4FF2;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="check">✔</div>
+  <h2>Payment Successful</h2>
+  <p id="message">Verifying your ticket...</p>
+  <button onclick="window.location.href='/'">Return Home</button>
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const sessionId = params.get("session_id");
+
+if (!sessionId) {
+  document.getElementById("message").innerText =
+    "Missing session. Please check your email.";
+} else {
+
+  fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId })
+  })
+  .then(res => res.json())
+.then(data => {
+
+  console.log("VERIFY RESPONSE:", data);
+
+  if (data.success && Array.isArray(data.codes) && data.codes.length > 0) {
+
+    const codesHtml = data.codes
+      .map(code => {
+  const formatted = code.slice(0, 4) + " - " + code.slice(4);
+  return `
+        <div style="
+          margin:12px 0;
+          font-size:22px;
+          font-weight:bold;
+          letter-spacing:2px;
+          background:#111;
+          padding:10px;
+          border-radius:8px;
+        ">
+         ${formatted}
+ </div>
+`;
+})
+      .join("");
+
+    document.getElementById("message").innerHTML = `
+      <p>Payment successful.</p>
+      <p>Use the code(s) below to redeem inside the Backstage app:</p>
+      ${codesHtml}
+      <p style="margin-top:20px;">
+        Download the Backstage app and enter your code to access your ticket.
+      </p>
+<a
+  href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+  target="_blank"
+  rel="noopener noreferrer"
+  style="display:inline-block; margin-top:16px;"
+>
+  <img
+    src="/assets/app-store-badge.svg"
+    alt="Download on the App Store"
+    style="height:48px;"
+  />
+</a>
+    `;
+  } else {
+    document.getElementById("message").innerText =
+      "Payment confirmed, but no ticket codes were returned.";
+  }
+
+})
+  .catch(() => {
+    document.getElementById("message").innerText =
+      "Payment confirmed. Please check your email shortly.";
+  });
+
+}
+
+</script>
+
+</body>
+</html>
+
+

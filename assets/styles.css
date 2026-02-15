@@ -1,0 +1,259 @@
+body {
+  margin: 0;
+  background: #0f0f0f;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+h1 {
+  padding: 20px 16px 10px 16px;
+  font-size: 24px;
+}
+
+#events-container {
+  padding: 0 16px 40px 16px;
+}
+
+.event-card {
+  background: #171717;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.event-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.event-content {
+  padding: 16px;
+}
+
+.event-content h2 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+}
+
+.event-date {
+  font-size: 14px;
+  color: #9C4FF2;
+  margin-bottom: 6px;
+}
+
+.event-location {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+
+button {
+  width: 100%;
+  background: #9C4FF2;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  #events-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.detail-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.detail-image {
+  width: 100%;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.detail-card {
+  background: #111;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.detail-date {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.detail-price {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.ticket-button {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6F1EFF, #5D03FF);
+  color: white;
+}
+
+/* Mobile Safety */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: white;
+}
+
+.detail-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.detail-image {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  display: block;
+}
+
+.detail-card {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #111;
+}
+
+.ticket-button {
+  width: 100%;
+  padding: 18px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+.checkout-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.checkout-card {
+  background: #111;
+  padding: 20px;
+  border-radius: 18px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.price-option {
+  margin-bottom: 14px;
+}
+
+.price-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6F1EFF, #5D03FF);
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+.quantity-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.quantity-controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+
+#quantity-display {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#total-display {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.price-label {
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+
+.global-total {
+  margin-top: 25px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#final-pay-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#final-pay-button.loading {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
+#final-pay-button.loading .btn-spinner {
+  display: inline-block;
+}
+
+#final-pay-button.loading .btn-text {
+  opacity: 0.9;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

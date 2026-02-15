@@ -1,0 +1,81 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ===============================
+   Firebase Config
+   Replace with your real values
+================================ */
+
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAOftoMjETRbr3v7zncb-kVvLewkpmE2n0",
+  authDomain: "backstageapp-27cb3.firebaseapp.com",
+  projectId: "backstageapp-27cb3",
+  storageBucket: "backstageapp-27cb3.firebasestorage.app",
+  messagingSenderId: "148403387572",
+  appId: "1:148403387572:web:98e9369e385a8449046be1",
+  measurementId: "G-PQMTKCL1RC"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadEvents() {
+  try {
+    const snapshot = await getDocs(collection(db, "parties"));
+
+    const container = document.getElementById("events-container");
+    container.innerHTML = "";
+
+    if (snapshot.empty) {
+      container.innerHTML = "<p>No events found.</p>";
+      return;
+    }
+
+    snapshot.forEach((doc) => {
+      const event = doc.data();
+      renderEventCard(event, doc.id);
+    });
+  } catch (error) {
+    console.error("Error loading events:", error);
+  }
+}
+
+function renderEventCard(event, id) {
+  const container = document.getElementById("events-container");
+
+  const startDate = event.startsAt?.seconds
+    ? new Date(event.startsAt.seconds * 1000)
+    : null;
+
+  const imageUrl = event.mediaUrl
+    ? event.mediaUrl
+    : "https://via.placeholder.com/800x400?text=Backstage+Event";
+
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  card.onclick = () => {
+  window.location.href = `eventsDetail.html?id=${id}`;
+};
+
+  card.innerHTML = `
+    <img src="${imageUrl}" class="event-image" />
+    <div class="event-content">
+      <h2>${event.title || "Untitled Event"}</h2>
+      <p class="event-date">${startDate ? startDate.toLocaleString() : ""}</p>
+      <p class="event-location">${event.location || ""}</p>
+    </div>
+  `;
+
+  container.appendChild(card);
+}
+
+
+
+loadEvents();

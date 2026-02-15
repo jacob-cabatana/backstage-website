@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout Info | Backstage</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f0f14, #1a1a22);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .checkout-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 28px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      margin: 0 0 30px 0;
+      font-size: 24px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .buyer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .buyer-form input {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    .buyer-form input:focus {
+      border-color: #9c4ff2;
+      box-shadow: 0 0 0 3px rgba(156,79,242,0.25);
+    }
+
+    .buyer-form input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    #final-pay-button {
+      margin-top: 28px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      background: linear-gradient(90deg, #9c4ff2, #225cda);
+      color: white;
+    }
+
+    #final-pay-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #final-pay-button:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(156,79,242,0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="checkout-container">
+    <h1>Complete Your Purchase</h1>
+
+    <div class="buyer-form">
+      <input id="first-name" type="text" placeholder="First Name" />
+      <input id="last-name" type="text" placeholder="Last Name" />
+      <input id="email" type="email" placeholder="Email Address" />
+    </div>
+
+<button id="final-pay-button" disabled>
+  <span class="btn-text">Pay Now</span>
+  <span class="btn-spinner"></span>
+</button>
+  </div>
+
+  <script type="module" src="assets/checkout-info.js"></script>
+
+</body>
+</html>

@@ -152,6 +152,7 @@
 <script>
   const params = new URLSearchParams(window.location.search);
   const redirectedPath = params.get("path");
+  const fromBrowserFlow = params.get("browserFlow") === "1";
 
   const path = redirectedPath || window.location.pathname;
   const parts = path.split("/").filter(Boolean);
@@ -166,16 +167,14 @@
     pill.textContent = "Opening party…";
   }
 
-  if (partyId) {
-    // Attempt to open app
-    window.location.href = `backstage://party/${partyId}`;
+if (partyId && !fromBrowserFlow) {
+  window.location.href = `backstage://party/${partyId}`;
 
-    // Fallback to App Store
-    setTimeout(() => {
-      window.location.href =
-        "https://apps.apple.com/us/app/backstage-events/id6751863780";
-    }, 1200);
-  }
+  setTimeout(() => {
+    window.location.href =
+      "https://apps.apple.com/us/app/backstage-events/id6751863780";
+  }, 1200);
+}
 </script>
 
 </body>
