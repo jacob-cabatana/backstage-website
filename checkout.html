@@ -5,18 +5,144 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Checkout | Backstage</title>
   <link rel="stylesheet" href="assets/styles.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(156,79,242,0.15), transparent 40%),
+        linear-gradient(135deg, #0f0f14, #1a1a22);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .checkout-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 36px 26px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .checkout-subtitle {
+      margin: 8px 0 28px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .checkout-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .price-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .price-card h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .price-label {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .quantity-controls button {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .quantity {
+      font-size: 16px;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .global-total {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    #checkout-button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(90deg, #9c4ff2, #225cda);
+      color: white;
+      transition: 0.2s ease;
+    }
+
+    #checkout-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(156,79,242,0.4);
+    }
+
+    .secure-note {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+    }
+  </style>
 </head>
 
 <body>
 
   <div class="checkout-container">
     <h1>Secure Tickets</h1>
+    <p class="checkout-subtitle">All pricing shown is all-in</p>
 
     <div id="checkout-event"></div>
 
-    <button id="checkout-button" class="ticket-button">
-      Pay Now
+    <button id="checkout-button">
+      Continue
     </button>
+
+    <p class="secure-note">Powered by Stripe • Secure payment</p>
   </div>
 
   <script type="module" src="assets/checkout.js"></script>

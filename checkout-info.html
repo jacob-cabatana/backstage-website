@@ -10,7 +10,9 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #0f0f14, #1a1a22);
+      background:
+        radial-gradient(circle at top, rgba(156,79,242,0.15), transparent 40%),
+        linear-gradient(135deg, #0f0f14, #1a1a22);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -21,7 +23,7 @@
     .checkout-container {
       width: 100%;
       max-width: 420px;
-      padding: 40px 28px;
+      padding: 36px 26px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 24px;
       backdrop-filter: blur(20px);
@@ -29,36 +31,62 @@
     }
 
     h1 {
-      margin: 0 0 30px 0;
+      margin: 0;
       font-size: 24px;
       text-align: center;
       font-weight: 600;
     }
 
+    .subtitle {
+      margin: 8px 0 32px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+    }
+
     .buyer-form {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 14px;
     }
 
-    .buyer-form input {
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.08);
-      color: white;
-      font-size: 16px;
-      outline: none;
-      transition: 0.2s ease;
+    .email-row {
+  padding-right: 34px;
+}
+
+.email-row input {
+  width: 100%;
+}
+
+    .name-row {
+      display: flex;
+      gap: 12px;
+    }
+
+.buyer-form input {
+  padding: 16px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 16px;
+  outline: none;
+  transition: 0.2s ease;
+  width: 100%;
+}
+
+#email {
+  margin-top: 4px;
+}
+
+    .buyer-form input::placeholder {
+      color: rgba(255,255,255,0.6);
     }
 
     .buyer-form input:focus {
       border-color: #9c4ff2;
-      box-shadow: 0 0 0 3px rgba(156,79,242,0.25);
-    }
-
-    .buyer-form input::placeholder {
-      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 2px rgba(156,79,242,0.35);
     }
 
     #final-pay-button {
@@ -73,16 +101,51 @@
       transition: 0.2s ease;
       background: linear-gradient(90deg, #9c4ff2, #225cda);
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
     #final-pay-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     #final-pay-button:not(:disabled):hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 30px rgba(156,79,242,0.4);
+    }
+
+    #final-pay-button.loading .btn-text {
+      opacity: 0.7;
+    }
+
+    .btn-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    #final-pay-button.loading .btn-spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .secure-note {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
     }
   </style>
 </head>
@@ -91,17 +154,24 @@
 
   <div class="checkout-container">
     <h1>Complete Your Purchase</h1>
+    <p class="subtitle">You’ll be redirected to secure checkout</p>
 
     <div class="buyer-form">
-      <input id="first-name" type="text" placeholder="First Name" />
-      <input id="last-name" type="text" placeholder="Last Name" />
-      <input id="email" type="email" placeholder="Email Address" />
+      <div class="name-row">
+        <input id="first-name" type="text" placeholder="First Name" />
+        <input id="last-name" type="text" placeholder="Last Name" />
+      </div>
+      <div class="email-row">
+  <input id="email" type="email" placeholder="Email Address" />
+</div>
     </div>
 
-<button id="final-pay-button" disabled>
-  <span class="btn-text">Pay Now</span>
-  <span class="btn-spinner"></span>
-</button>
+    <button id="final-pay-button" disabled>
+      <span class="btn-text">Go to Checkout</span>
+      <span class="btn-spinner"></span>
+    </button>
+
+    <p class="secure-note">Powered by Stripe • Secure payment</p>
   </div>
 
   <script type="module" src="assets/checkout-info.js"></script>

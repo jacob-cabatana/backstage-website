@@ -21,6 +21,10 @@ function validate() {
     isValidEmail(email.value.trim());
 
   button.disabled = !valid;
+
+  if (!valid) {
+    button.classList.remove("loading");
+  }
 }
 
 firstName.addEventListener("input", validate);
@@ -62,7 +66,6 @@ button.onclick = async () => {
     console.error(err);
     alert("Error creating checkout session.");
 
-    // Only revert if something failed
     button.classList.remove("loading");
     validate();
   }

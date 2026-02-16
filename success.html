@@ -1,127 +1,288 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Payment Successful</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px;
-      background: #0f0f0f;
-      color: white;
+    :root{
+      --bg1:#0f0f14;
+      --bg2:#1a1a22;
+      --accent1:#9c4ff2;
+      --accent2:#225cda;
+      --text:#ffffff;
+      --muted: rgba(255,255,255,0.68);
+      --card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.10);
+      --radius: 24px;
     }
 
-    .card {
-      max-width: 400px;
-      margin: auto;
-      padding: 30px;
-      border-radius: 12px;
-      background: #1a1a1a;
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(156,79,242,0.15), transparent 40%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 40px 16px;
     }
 
-    .check {
-      font-size: 50px;
-      color: #4CAF50;
+    .card{
+      width:100%;
+      max-width: 420px;
+      padding: 34px 26px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      text-align:center;
+      position: relative;
+      overflow: hidden;
     }
 
-    button {
-      margin-top: 20px;
-      padding: 12px 20px;
-      background: #9C4FF2;
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(520px 240px at 20% 0%, rgba(156,79,242,0.18), transparent 60%),
+        radial-gradient(520px 240px at 90% 110%, rgba(34,92,218,0.14), transparent 60%);
+      opacity: 0.95;
+      pointer-events:none;
+    }
+
+    .card > *{ position: relative; z-index: 1; }
+
+    h2{
+      margin: 14px 0 8px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    #message{
+      margin: 0;
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.55;
+    }
+
+    /* SUCCESS ANIMATION */
+    .checkwrap{
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position: relative;
+      animation: popIn 520ms cubic-bezier(.2,.9,.2,1) both;
+    }
+
+    .checkwrap::after{
+      content:"";
+      position:absolute;
+      inset:-14px;
+      border-radius: 999px;
+      border: 2px solid rgba(156,79,242,0.0);
+      animation: ring 1.2s ease-out 180ms both;
+      pointer-events:none;
+    }
+
+    .check{
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 18px 45px rgba(156,79,242,0.25);
+      position: relative;
+    }
+
+    .check svg{
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      stroke-width: 3.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+      animation: draw 620ms ease forwards 220ms;
+    }
+
+    @keyframes popIn{
+      from{ transform: scale(0.72); opacity: 0; }
+      to{ transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes draw{
+      to{ stroke-dashoffset: 0; }
+    }
+
+    @keyframes ring{
+      0%{ transform: scale(0.7); opacity: 0; border-color: rgba(156,79,242,0.0); }
+      25%{ opacity: 0.9; border-color: rgba(156,79,242,0.35); }
+      100%{ transform: scale(1.15); opacity: 0; border-color: rgba(156,79,242,0.0); }
+    }
+
+    .btn{
+      margin-top: 18px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
       border: none;
-      color: white;
-      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      color: white;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(156,79,242,0.4);
+    }
+
+    .subnote{
+      margin-top: 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+    }
+
+    .codes{
+      margin-top: 14px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .codepill{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .appstore{
+      display:inline-block;
+      margin-top: 14px;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation: none !important; transition: none !important; }
+      .check svg{ stroke-dashoffset: 0; }
     }
   </style>
 </head>
+
 <body>
 
-<div class="card">
-  <div class="check">✔</div>
-  <h2>Payment Successful</h2>
-  <p id="message">Verifying your ticket...</p>
-  <button onclick="window.location.href='/'">Return Home</button>
-</div>
 
-<script>
 
-const params = new URLSearchParams(window.location.search);
-const sessionId = params.get("session_id");
+  <div class="card">
+    <div class="checkwrap" aria-hidden="true">
+      <div class="check">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+      </div>
+    </div>
 
-if (!sessionId) {
-  document.getElementById("message").innerText =
-    "Missing session. Please check your email.";
-} else {
+    <h2>Payment Successful</h2>
+    <p id="message">Verifying your ticket...</p>
 
-  fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId })
-  })
-  .then(res => res.json())
-.then(data => {
+    <button class="btn" onclick="window.location.href='/'">Return Home</button>
+    <div class="subnote">Powered by Stripe • Secure payment</div>
+  </div>
 
-  console.log("VERIFY RESPONSE:", data);
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
 
-  if (data.success && Array.isArray(data.codes) && data.codes.length > 0) {
+    if (!sessionId) {
+      document.getElementById("message").innerText =
+        "Missing session. Please check your email.";
+    } else {
 
-    const codesHtml = data.codes
-      .map(code => {
-  const formatted = code.slice(0, 4) + " - " + code.slice(4);
-  return `
-        <div style="
-          margin:12px 0;
-          font-size:22px;
-          font-weight:bold;
-          letter-spacing:2px;
-          background:#111;
-          padding:10px;
-          border-radius:8px;
-        ">
-         ${formatted}
- </div>
-`;
-})
-      .join("");
+      fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId })
+      })
+      .then(res => res.json())
+      .then(data => {
 
-    document.getElementById("message").innerHTML = `
-      <p>Payment successful.</p>
-      <p>Use the code(s) below to redeem inside the Backstage app:</p>
-      ${codesHtml}
-      <p style="margin-top:20px;">
-        Download the Backstage app and enter your code to access your ticket.
-      </p>
-<a
-  href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-  target="_blank"
-  rel="noopener noreferrer"
-  style="display:inline-block; margin-top:16px;"
->
-  <img
-    src="/assets/app-store-badge.svg"
-    alt="Download on the App Store"
-    style="height:48px;"
-  />
-</a>
-    `;
-  } else {
-    document.getElementById("message").innerText =
-      "Payment confirmed, but no ticket codes were returned.";
-  }
+        console.log("VERIFY RESPONSE:", data);
 
-})
-  .catch(() => {
-    document.getElementById("message").innerText =
-      "Payment confirmed. Please check your email shortly.";
-  });
+        if (data.success && Array.isArray(data.codes) && data.codes.length > 0) {
 
-}
+          const codesHtml = data.codes
+            .map(code => {
+              const formatted = code.slice(0, 4) + " - " + code.slice(4);
+              return `<div class="codepill">${formatted}</div>`;
+            })
+            .join("");
 
-</script>
+          document.getElementById("message").innerHTML = `
+            <p style="margin:0; color: rgba(255,255,255,0.92); font-weight:700;">Payment successful.</p>
+            <p style="margin:8px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
+              Use the code(s) below to redeem inside the Backstage app
+            </p>
+            <div class="codes">
+              ${codesHtml}
+            </div>
+            <p style="margin:16px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
+              Download the Backstage app and enter your code to access your ticket
+            </p>
+            <a
+              class="appstore"
+              href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="/assets/app-store-badge.svg"
+                alt="Download on the App Store"
+                style="height:48px;"
+              />
+            </a>
+          `;
+
+        } else {
+          document.getElementById("message").innerText =
+            "Payment confirmed, but no ticket codes were returned.";
+        }
+
+      })
+      .catch(() => {
+        document.getElementById("message").innerText =
+          "Payment confirmed. Please check your email shortly.";
+      });
+
+    }
+  </script>
 
 </body>
 </html>
-
-

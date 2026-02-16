@@ -49,7 +49,7 @@ h1 {
   margin-bottom: 12px;
 }
 
-button {
+button:not(.success-btn) {
   width: 100%;
   background: #9C4FF2;
   border: none;
@@ -110,13 +110,6 @@ button {
   color: white;
 }
 
-/* Mobile Safety */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #000;
-  color: white;
-}
 
 .detail-container {
   max-width: 600px;
