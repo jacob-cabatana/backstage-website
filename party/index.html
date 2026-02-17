@@ -167,15 +167,10 @@
     pill.textContent = "Opening party…";
   }
 
-if (partyId && !fromBrowserFlow) {
-  window.location.href = `backstage://party/${partyId}`;
-
-  setTimeout(() => {
-    window.location.href =
-      "https://apps.apple.com/us/app/backstage-events/id6751863780";
-  }, 1200);
+if (partyId) {
+  // Let Universal Link handle it
+  window.location.href = `https://backstageaccess.app/party/${partyId}`;
 }
 </script>
-
 </body>
 </html>

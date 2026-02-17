@@ -69,32 +69,8 @@ const admissionPrice = "Tickets Available";
     `;
 
 document.getElementById("get-tickets-btn").onclick = () => {
-
-const universalLink = `backstage://party/${eventId}`;
-const webCheckout = `checkout.html?id=${eventId}`;
-
-let didHide = false;
-
-const visibilityHandler = () => {
-  if (document.hidden) {
-    didHide = true;
-  }
+  window.location.href = `https://backstageaccess.app/party/${eventId}`;
 };
-
-document.addEventListener("visibilitychange", visibilityHandler);
-
-window.location.href = universalLink;
-
-setTimeout(() => {
-  document.removeEventListener("visibilitychange", visibilityHandler);
-
-  if (!didHide) {
-    window.location.href = webCheckout;
-  }
-}, 1500);
-
-};
-
   } catch (err) {
     console.error(err);
     if (el) el.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
