@@ -10,6 +10,11 @@ const lastName = document.getElementById("last-name");
 const email = document.getElementById("email");
 const button = document.getElementById("final-pay-button");
 const promoDigits = document.querySelectorAll(".promo-digit");
+const promoFeedback = document.getElementById("promo-feedback");
+
+let promoIsValid = false;
+let promoChecked = false;
+
 promoDigits.forEach((input, index) => {
   input.addEventListener("input", (e) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -51,8 +56,62 @@ firstName.addEventListener("input", validate);
 lastName.addEventListener("input", validate);
 email.addEventListener("input", validate);
 
+async function verifyPromoIfNeeded() {
+  const code = Array.from(promoDigits)
+    .map(d => d.value.trim())
+    .join("")
+    .toUpperCase();
+
+  if (!code) {
+    promoIsValid = false;
+    promoChecked = false;
+    return true; // no promo entered, allow checkout
+  }
+
+  if (code.length < 6) {
+    promoFeedback.textContent = "Enter full promo code";
+    promoFeedback.style.color = "#ff6b6b";
+    return false;
+  }
+
+  try {
+    const res = await fetch(
+      "https://us-central1-backstageapp-27cb3.cloudfunctions.net/validatePromoCode",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ promoCode: code })
+      }
+    );
+
+    const data = await res.json();
+
+    promoChecked = true;
+    promoIsValid = data.valid === true;
+
+    if (promoIsValid) {
+      promoFeedback.textContent = "Code applied";
+      promoFeedback.style.color = "#4cd964";
+      return true;
+    } else {
+      promoFeedback.textContent = "Invalid promo code";
+      promoFeedback.style.color = "#ff6b6b";
+      return false;
+    }
+
+  } catch (err) {
+    promoFeedback.textContent = "Error validating code";
+    promoFeedback.style.color = "#ff6b6b";
+    return false;
+  }
+}
+
+
 button.onclick = async () => {
   if (button.disabled || button.classList.contains("loading")) return;
+  const promoOk = await verifyPromoIfNeeded();
+if (!promoOk) return;
+
 
   button.classList.add("loading");
   button.disabled = true;
