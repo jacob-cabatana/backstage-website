@@ -72,23 +72,21 @@ document.getElementById("get-tickets-btn").onclick = () => {
   const deepLink = `backstage://party/${eventId}`;
   const webCheckout = `/checkout.html?id=${eventId}`;
 
-  let appOpened = false;
+  let fallbackTriggered = false;            
 
-  const onBlur = () => {
-    appOpened = true;
-  };
+  const timer = setTimeout(() => {
+    fallbackTriggered = true;
+    window.location.href = webCheckout;
+  }, 1200);
 
-  window.addEventListener("blur", onBlur);
-
-  window.location.href = deepLink;
-
-  setTimeout(() => {
-    window.removeEventListener("blur", onBlur);
-
-    if (!appOpened) {
+  try {
+    window.location.href = deepLink;
+  } catch (e) {
+    if (!fallbackTriggered) {
+      clearTimeout(timer);
       window.location.href = webCheckout;
     }
-  }, 800);
+  }
 };
   } catch (err) {
     console.error(err);
