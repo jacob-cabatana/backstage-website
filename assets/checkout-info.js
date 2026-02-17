@@ -11,6 +11,12 @@ const email = document.getElementById("email");
 const button = document.getElementById("final-pay-button");
 const promoDigits = document.querySelectorAll(".promo-digit");
 const promoFeedback = document.getElementById("promo-feedback");
+const applyButton = document.getElementById("apply-promo");
+const applyText = applyButton.querySelector(".apply-text");
+const applySuccess = applyButton.querySelector(".apply-success");
+
+
+
 
 let promoIsValid = false;
 let promoChecked = false;
@@ -90,7 +96,6 @@ async function verifyPromoIfNeeded() {
     promoIsValid = data.valid === true;
 
     if (promoIsValid) {
-      promoFeedback.textContent = "Code applied";
       promoFeedback.style.color = "#4cd964";
       return true;
     } else {
@@ -158,3 +163,61 @@ if (!promoOk) return;
     validate();
   }
 };
+
+applyButton.addEventListener("click", async () => {
+  const code = Array.from(promoDigits)
+    .map(d => d.value.trim())
+    .join("")
+    .toUpperCase();
+
+  if (!code || code.length < 6) {
+    promoFeedback.textContent = "Enter full promo code";
+    promoFeedback.style.color = "#ff6b6b";
+    return;
+  }
+
+  applyButton.classList.add("loading");
+  applyButton.disabled = true;
+  promoFeedback.style.color = "rgba(255,255,255,0.6)";
+
+  try {
+    const res = await fetch(
+      "https://us-central1-backstageapp-27cb3.cloudfunctions.net/validatePromoCode",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ promoCode: code })
+      }
+    );
+
+    const data = await res.json();
+
+if (data.valid) {
+  promoIsValid = true;
+
+  applyButton.classList.remove("loading");
+  applyButton.classList.add("success");
+  applyButton.disabled = true;
+
+  setTimeout(() => {
+    applyButton.classList.remove("success");
+    applyButton.disabled = false;
+  }, 2000);
+
+  return;
+}
+ else {
+      promoFeedback.textContent = "Invalid promo code";
+      promoFeedback.style.color = "#ff6b6b";
+      promoIsValid = false;
+    }
+
+  } catch (err) {
+    promoFeedback.textContent = "Error validating code";
+    promoFeedback.style.color = "#ff6b6b";
+  }
+
+  applyButton.classList.remove("loading");
+  applyButton.disabled = false;
+});
+
