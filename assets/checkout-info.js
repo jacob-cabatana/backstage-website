@@ -9,6 +9,26 @@ const firstName = document.getElementById("first-name");
 const lastName = document.getElementById("last-name");
 const email = document.getElementById("email");
 const button = document.getElementById("final-pay-button");
+const promoDigits = document.querySelectorAll(".promo-digit");
+promoDigits.forEach((input, index) => {
+  input.addEventListener("input", (e) => {
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    e.target.value = value;
+
+    if (value && index < promoDigits.length - 1) {
+      promoDigits[index + 1].focus();
+    }
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" && !input.value && index > 0) {
+      promoDigits[index - 1].focus();
+    }
+  });
+});
+
+
+
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -49,7 +69,16 @@ button.onclick = async () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventId, tickets, buyer })
+        body: JSON.stringify({
+          eventId,
+          tickets,
+          buyer,
+          promoCode: Array.from(promoDigits)
+            .map(d => d.value.trim())
+            .join("")
+            .toUpperCase() || null
+})
+
       }
     );
 
