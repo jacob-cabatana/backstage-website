@@ -4,955 +4,628 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Backstage</title>
-  <meta name="description" content="Know the vibe before you pull up. Real time nightlife intel, tickets, and venue tools." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg: #101213;
-      --text: #e8e9ee;
-      --muted: rgba(232,233,238,0.65);
-      --hairline: rgba(11,11,16,0.10);
-      --card: rgba(255,255,255,0.82);
-      --shadow: 0 18px 55px rgba(11,11,16,0.12);
-      --radius: 22px;
-      --maxw: 1120px;
-      --accent1: #6b4eff;
-      --accent2: #b06cff;
+      --bg:#000000;
+      --section:#0a0a0a;
+      --card:#111111;
+      --text:#f5f5f7;
+      --muted:rgba(255,255,255,0.65);
+      --hair:rgba(255,255,255,0.08);
+      --accent1:#6b4eff;
+      --accent2:#b06cff;
     }
 
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+
     body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-    background:
-      radial-gradient(1000px 800px at 50% 110%, rgba(0,0,0,0.55), transparent 60%),
-      var(--bg);
-
-      line-height: 1.55;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
+      font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
     }
 
-    a{ color: inherit; text-decoration: none; }
-    .wrap{ max-width: var(--maxw); margin:0 auto; padding: 0 22px; }
+    a{text-decoration:none;color:inherit;}
 
-    .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(14px);
-      background: rgba(16,18,19,0.75);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
+    /* NAV */
+
     .nav{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--hair);
+    }
+
+    .nav-inner{
+      max-width:1200px;
+      margin:auto;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding: 14px 0;
-      gap: 18px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-    .brand img{
-      width: 200px;
-      height: auto;
-      display:block;
+      padding:16px 24px;
     }
 
-    .navlinks{
-      display:flex;
-      align-items:center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+    .nav img{
+      height:38px;
     }
 
-    .navlinks a{
-      font-weight: 600;
-      color: #e8e9ee;
-      padding: 10px 12px;
-      border-radius: 999px;
-      transition: background 160ms ease, color 160ms ease;
+    .nav a{
+      font-weight:600;
+      font-size:14px;
+      opacity:0.8;
+      transition:opacity .2s ease;
     }
 
+    .nav a:hover{
+      opacity:1;
+    }
 
-.navlinks a:hover{
-  background: rgba(255,255,255,0.08);
-  color: #ffffff;
-}
-
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      padding: 12px 16px;
-      border-radius: 999px;
-      font-weight: 700;
-      border: 1px solid var(--hairline);
-      background: rgba(255,255,255,0.65);
-      color: rgba(11,11,16,0.92);
-      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-      will-change: transform;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 14px 38px rgba(11,11,16,0.10);
-      background: rgba(255,255,255,0.85);
-    }
-    .btn_primary{
-      border: 0;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      color: #ffffff;
-      box-shadow: 0 20px 55px rgba(11,11,16,0.25);
-    }
-    .btn_primary:hover{
-      box-shadow: 0 22px 55px rgba(107,78,255,0.26);
-    }
+    /* HERO */
 
     .hero{
-      padding: 88px 0 44px;
-    }
-    .hero_grid{
-      display:grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: 28px;
-      align-items: start;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 12px;
-      border: 1px solid rgba(176,108,255,0.35);
-      background: rgba(176,108,255,0.12);
-      border-radius: 999px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: 0.2px;
-   }
-
-    .h1{
-      font-size: clamp(40px, 5.2vw, 64px);
-      line-height: 1.04;
-      margin: 0 0 14px;
-      letter-spacing: -0.6px;
-    }
-    .grad{
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .lead{
-      margin: 0 0 22px;
-      max-width: 58ch;
-      color: var(--muted);
-      font-size: clamp(16px, 1.7vw, 19px);
-    }
-    .hero_actions{
-      display:flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 10px;
-    }
-    .micro{
-      margin-top: 14px;
-      color: rgba(11,11,16,0.52);
-      font-weight: 600;
-      font-size: 13px;
+      text-align:center;
+      padding:140px 20px 100px;
     }
 
-.glass{
-  border-radius: var(--radius);
-  border: 1px solid rgba(176,108,255,0.55);
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.04)
-  );
-  box-shadow:
-    0 0 0 1px rgba(176,108,255,0.25),
-    0 22px 60px rgba(0,0,0,0.65);
-  overflow: hidden;
-}
-
-    .sidecard{
-      padding: 18px;
+    .hero h1{
+      font-size:clamp(44px,6vw,76px);
+      font-weight:800;
+      letter-spacing:-0.02em;
+      margin-bottom:20px;
+      line-height:1.05;
     }
-    .sidecard{
-  position: relative;
-  isolation: isolate;
-}
 
-.sidecard > *{
-  position: relative;
-  z-index: 2;
-}
-
-.sidecard::before{
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: var(--radius);
-  background:
-    radial-gradient(520px 240px at 20% 0%, rgba(176,108,255,0.18), transparent 60%),
-    radial-gradient(520px 240px at 90% 110%, rgba(107,78,255,0.14), transparent 60%);
-  opacity: 0.9;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.sidecard::after{
-  content: "";
-  position: absolute;
-  top: -45%;
-  left: -70%;
-  width: 55%;
-  height: 190%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.10), transparent);
-  transform: rotate(10deg);
-  animation: liveSweep 7.5s ease-in-out infinite;
-  opacity: 0.55;
-  z-index: 1;
-  pointer-events: none;
-}
-
-@keyframes liveSweep{
-  0%{ transform: translateX(0) rotate(10deg); opacity: 0; }
-  18%{ opacity: 0.55; }
-  55%{ transform: translateX(260%) rotate(10deg); opacity: 0.55; }
-  70%{ opacity: 0; }
-  100%{ transform: translateX(260%) rotate(10deg); opacity: 0; }
-}
-
-.live_badge{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(176,108,255,0.35);
-  background: rgba(176,108,255,0.14);
-}
-
-.live_dot{
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  animation: livePulse 1.6s ease-out infinite;
-}
-
-@keyframes livePulse{
-  0%{ box-shadow: 0 0 0 0 rgba(176,108,255,0.45); }
-  70%{ box-shadow: 0 0 0 10px rgba(176,108,255,0); }
-  100%{ box-shadow: 0 0 0 0 rgba(176,108,255,0); }
-}
-
-.live-subtext{
-  margin: 2px 0 14px;
-  color: rgba(232,233,238,0.78);
-  font-weight: 650;
-}
-
-.live_spark{
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin-right: 10px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  animation: sparkBreathe 2.4s ease-in-out infinite;
-  vertical-align: middle;
-}
-
-@keyframes sparkBreathe{
-  0%,100%{ transform: scale(1); opacity: 0.85; }
-  50%{ transform: scale(1.25); opacity: 1; }
-}
-
-.stat{
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-  opacity: 0;
-  transform: translateY(10px);
-  animation: statIn 520ms ease forwards;
-}
-
-.statrow .stat:nth-child(1){ animation-delay: 80ms; }
-.statrow .stat:nth-child(2){ animation-delay: 140ms; }
-.statrow .stat:nth-child(3){ animation-delay: 200ms; }
-.statrow .stat:nth-child(4){ animation-delay: 260ms; }
-
-@keyframes statIn{
-  to{ opacity: 1; transform: translateY(0); }
-}
-
-.stat:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(11,11,16,0.14);
-  background: rgba(255,255,255,0.78);
-}
-
-    .side_top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--hairline);
-      margin-bottom: 14px;
+    .gradient-text{
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
     }
-    .side_top b{ font-size: 14px; letter-spacing: 0.2px; }
-    .badge{
-      font-size: 12px;
-      font-weight: 800;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(11,11,16,0.06);
-      color: rgba(11,11,16,0.70);
+
+    .hero p{
+      font-size:20px;
+      color:var(--muted);
+      max-width:700px;
+      margin:0 auto 32px;
     }
-    .statrow{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 12px;
+
+    .hero .cta{
+      display:inline-block;
+      padding:14px 28px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      color:white;
+      font-weight:600;
+      transition:transform .2s ease, box-shadow .2s ease;
     }
-    .stat{
-      border: 1px solid var(--hairline);
-      border-radius: 16px;
-      padding: 12px;
-      background: rgba(255,255,255,0.68);
+
+    .hero .cta:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 30px rgba(107,78,255,0.35);
     }
-    .stat .k{
-      font-size: 12px;
-      color: rgba(11,11,16,0.55);
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-    .stat .v{
-      margin-top: 6px;
-      font-weight: 800;
-      font-size: 14px;
-      color: rgba(11,11,16,0.88);
-    }
+
+    /* SECTION */
 
     .section{
-      padding: 56px 0;
+      padding:110px 20px;
+      text-align:center;
+      background:var(--section);
+      border-top:1px solid var(--hair);
     }
-    .section_head{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 20px;
-      margin-bottom: 18px;
+
+    .section.alt{
+      background:#000000;
     }
-.section_head h2{
-  margin: 0;
-  font-size: 28px;
-  letter-spacing: -0.3px;
-  color: var(--text);
-}
 
-.section_head p{
-  margin: 0;
-  max-width: 60ch;
-  color: rgba(232,233,238,0.68);
-  font-weight: 600;
-}
+    .section h2{
+      font-size:42px;
+      font-weight:800;
+      margin-bottom:18px;
+      letter-spacing:-0.02em;
+    }
 
+    .section p{
+      font-size:20px;
+      color:var(--muted);
+      max-width:720px;
+      margin:0 auto 28px;
+    }
 
-    .grid3{
+    .section .stat{
+      font-size:72px;
+      font-weight:800;
+      margin:12px 0;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+
+    .section .sub{
+      font-size:16px;
+      color:var(--muted);
+    }
+
+    /* PROMOTERS */
+
+    .grid{
+      max-width:1000px;
+      margin:70px auto 0;
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      grid-template-columns:1fr 1fr;
+      gap:40px;
     }
+
     .card{
-      padding: 18px;
-      border-radius: var(--radius);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+      background:var(--card);
+      border:1px solid var(--hair);
+      border-radius:24px;
+      padding:40px;
+      text-align:left;
+      box-shadow:0 20px 60px rgba(0,0,0,0.4);
+      transition:transform .3s ease, box-shadow .3s ease;
     }
-    .card b{
-      display:block;
-      margin-bottom: 8px;
-      letter-spacing: -0.2px;
-      font-size: 16px;
+
+    .card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 30px 80px rgba(0,0,0,0.6);
     }
+
+    .card h3{
+      font-size:24px;
+      margin-bottom:14px;
+      font-weight:700;
+    }
+
     .card p{
-      margin: 0;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 14px;
+      font-size:16px;
+      color:var(--muted);
+      margin-bottom:18px;
     }
 
-    .split{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .bigcard{
-      padding: 22px;
-    }
-    .bigcard h3{
-      margin: 0 0 8px;
-      font-size: 20px;
-      letter-spacing: -0.2px;
-    }
-    .bigcard p{
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .bullets{
-      display:grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .bullet{
-      display:flex;
-      gap: 10px;
-      align-items:flex-start;
-      color: rgba(11,11,16,0.80);
-      font-weight: 650;
-    }
-    .dot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      margin-top: 6px;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      flex: 0 0 auto;
-    }
-    .muted_small{
-      color: rgba(11,11,16,0.56);
-      font-weight: 600;
-      font-size: 13px;
-      margin-top: 10px;
+    .card .big{
+      font-size:36px;
+      font-weight:800;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      -webkit-background-clip:text;
+      color:transparent;
     }
 
-    .cta{
-      padding: 58px 0 70px;
-    }
-    .cta_box{
-      padding: 26px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-    .cta_box h3{
-      margin: 0 0 6px;
-      font-size: 22px;
-      letter-spacing: -0.2px;
-    }
-    .cta_box p{
-      margin: 0;
-      color: var(--muted);
-      font-weight: 600;
-    }
+    /* TAP TO PAY */
 
-    .footer_corp{
-      padding: 54px 0 34px;
-      border-top: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.18);
-      backdrop-filter: blur(12px);
-    }
-
-    .footer_grid{
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr 1fr;
-      gap: 22px;
-      padding-bottom: 22px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .footer_brand{
-      max-width: 42ch;
-    }
-
-.footer_logo_img{
-  width: 170px;
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,0.35));
+.tap-visual{
+  text-align:center;
 }
 
+.device{
+  width:270px;
+  height:360px;
+  margin: 0 auto;
+  border-radius: 44px;
+  background: #0b0b0c;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 14px;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
+}
 
-    .footer_tagline{
-      margin: 10px 0 14px;
-      color: rgba(232,233,238,0.62);
-      font-weight: 600;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-.footer_social{
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.screen{
+  width:100%;
+  height:100%;
+  border-radius: 32px;
+  background:
+    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.22), transparent 55%),
+    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.18), transparent 55%),
+    #0f0f12;
+  border: 1px solid rgba(255,255,255,0.08);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.screen::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-60%;
+  height:55%;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.12), transparent);
+  opacity: 0;
+  animation: scanDown 3.6s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes scanDown{
+  0%{ transform: translateY(0); opacity: 0; }
+  14%{ opacity: 0.35; }
+  58%{ transform: translateY(240%); opacity: 0; }
+  100%{ transform: translateY(240%); opacity: 0; }
+}
+
+.nfc-wrap{
+  width:160px;
+  height:160px;
+  position:relative;
+  display:grid;
+  place-items:center;
+  margin-bottom: 8px;
+}
+
+.nfc-core{
+  width:16px;
+  height:16px;
+  border-radius:999px;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  box-shadow: 0 0 0 10px rgba(176,108,255,0.12);
+  animation: corePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes corePulse{
+  0%,100%{ transform: scale(1); box-shadow: 0 0 0 10px rgba(176,108,255,0.12); }
+  50%{ transform: scale(1.12); box-shadow: 0 0 0 16px rgba(176,108,255,0.18); }
+}
+
+.nfc-wave{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  border: 2px solid rgba(255,255,255,0.20);
+  opacity:0;
+  animation: nfcWave 2.4s ease-out infinite;
+}
+
+.nfc-wave.w1{ animation-delay: 0s; }
+.nfc-wave.w2{ animation-delay: 0.6s; }
+.nfc-wave.w3{ animation-delay: 1.2s; }
+
+@keyframes nfcWave{
+  0%{ width:28px; height:28px; opacity:0; }
+  12%{ opacity:0.55; }
+  100%{ width:160px; height:160px; opacity:0; }
+}
+
+.tap-label{
+  font-weight: 800;
+  letter-spacing: -0.01em;
   margin-top: 6px;
 }
 
-.social_icon{
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
+.tap-sub{
+  margin-top: 6px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.60);
+  font-weight: 650;
+}
+
+.tap-list{
+  display:grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.tap-item{
+  display:flex;
+  gap: 10px;
+  align-items:flex-start;
+  color: rgba(255,255,255,0.68);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.tap-item::before{
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  margin-top: 6px;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  flex: 0 0 auto;
+}
+
+
+    @media(max-width:900px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    footer{
+      padding:70px 20px;
+      text-align:center;
+      font-size:14px;
+      color:var(--muted);
+      border-top:1px solid var(--hair);
+      background:#000;
+    }
+
+    /* SONG REQUESTS */
+
+.song-visual{
+  text-align:center;
+}
+
+.sr-phone{
+  width: 310px;
+  margin: 0 auto;
+  border-radius: 28px;
+  padding: 18px;
   background:
-    linear-gradient(var(--bg), var(--bg)) padding-box,
-    linear-gradient(135deg, var(--accent1), var(--accent2)) border-box;
-  border: 1.5px solid transparent;
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-
-
-.social_icon svg{
-  width: 20px;
-  height: 20px;
-  fill: rgba(232,233,238,0.82);
-}
-
-.social_icon:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 4px rgba(176,108,255,0.12);
-}
-
-
-.social_icon:hover svg{
-  fill: rgba(232,233,238,0.92);
-}
-
-
-    .footer_col b{
-      display: block;
-      margin-bottom: 10px;
-      color: rgba(232,233,238,0.92);
-      font-weight: 800;
-      font-size: 13px;
-      letter-spacing: 0.2px;
-      text-transform: uppercase;
-    }
-
-    .footer_col a{
-      display: block;
-      padding: 7px 0;
-      color: rgba(232,233,238,0.62);
-      font-weight: 650;
-      font-size: 14px;
-      transition: color 160ms ease, transform 160ms ease;
-    }
-
-    .footer_col a:hover{
-      color: rgba(232,233,238,0.92);
-      transform: translateX(2px);
-    }
-
-    .footer_bottom{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      padding-top: 18px;
-    }
-
-    
-
-    .footer_copy{
-      color: rgba(232,233,238,0.52);
-      font-weight: 650;
-      font-size: 13px;
-    }
-
-    .footer_links{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .footer_links a{
-      padding: 8px 10px;
-      border-radius: 999px;
-      color: rgba(232,233,238,0.62);
-      font-weight: 700;
-      font-size: 13px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      transition: background 160ms ease, transform 160ms ease, color 160ms ease;
-    }
-
-    .footer_links a:hover{
-      background: rgba(255,255,255,0.07);
-      transform: translateY(-1px);
-      color: rgba(232,233,238,0.92);
-    }
-
-    @media (max-width: 960px){
-      .footer_grid{
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 560px){
-      .footer_grid{
-        grid-template-columns: 1fr;
-      }
-    }
-
-.logo-strip{
+    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.20), transparent 55%),
+    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.16), transparent 55%),
+    #0f0f12;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
+  text-align:left;
+  position: relative;
   overflow: hidden;
-  width: 100%;
-  margin-top: 108px;
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 10%,
-    black 90%,
-    transparent
-  );
+}
+
+.sr-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 
-.logo-marquee{
-  display: flex;
-  width: 200%;
-  animation: scroll 18s linear infinite;
+.sr-pill{
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.70);
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
 }
 
-.logo-set{
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 50%;
+.sr-title{
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 4px;
 }
 
-.logo-set img{
-  height: 80px;
-  width: auto;
+.sr-artist{
+  font-size: 14px;
+  color: rgba(255,255,255,0.62);
+  font-weight: 650;
+  margin-top: 6px;
+}
+
+.sr-queue{
+  margin-top: 18px;
+  display:grid;
+  gap: 10px;
+}
+
+.sr-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  transform: translateY(10px);
+  opacity: 0;
+  animation: srIn 700ms ease forwards;
+}
+
+.sr-row:nth-child(1){ animation-delay: 120ms; }
+.sr-row:nth-child(2){ animation-delay: 260ms; }
+.sr-row:nth-child(3){ animation-delay: 400ms; }
+
+@keyframes srIn{
+  to{ transform: translateY(0); opacity: 1; }
+}
+
+.sr-left{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+}
+
+.sr-album{
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(107,78,255,0.55), rgba(176,108,255,0.45));
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  flex: 0 0 auto;
+}
+
+.sr-song{
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.sr-meta{
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.60);
+  font-weight: 650;
 }
 
 
-@keyframes scroll{
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+.sr-hint{
+  margin-top: 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 650;
 }
 
 
-
-
-    @media (max-width: 960px){
-      .hero_grid{ grid-template-columns: 1fr; }
-      .grid3{ grid-template-columns: 1fr; }
-      .split{ grid-template-columns: 1fr; }
-    }
   </style>
 </head>
+
 <body>
 
-  <header class="topbar">
-    <div class="wrap">
-      <div class="nav">
-        <a class="brand" href="#top" aria-label="Backstage home">
-          <img src="assets/LOGO-A4.png" alt="Backstage logo" />
-        </a>
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="assets/LOGO-A4.png" alt="Backstage logo">
+      <a href="events.html">Events</a>
+    </div>
+  </nav>
 
-        <div class="navlinks" aria-label="Primary">
-<a href="events.html">Events</a>
-<a class="btn btn_primary" href="#partner">Partner</a>
+  <!-- HERO -->
+
+  <section class="hero">
+    <h1>
+      <span class="gradient-text">Know the vibe before you pull up.</span>
+    </h1>
+    <p>Real-time nightlife intelligence. Ticketing. Promoter tools. Built for modern venues.</p>
+    <a href="#" class="cta">Download Now</a>
+  </section>
+
+  <!-- ZERO CUT -->
+
+  <section class="section">
+    <h2>Backstage does not take a cut off your ticket sales.</h2>
+    <p>You set the price. You sell the tickets. You keep the revenue.</p>
+    <div class="stat">0%</div>
+    <div class="sub">Backstage takes nothing</div>
+  </section>
+
+  <!-- PROMOTERS -->
+
+  <section class="section alt">
+    <h2>Promoters commission.</h2>
+    <p>Simple splits. Transparent tracking. Built per event.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Example</h3>
+        <p>Ticket sold for $25</p>
+        <div class="big">5% promoter cut</div>
+        <p>Promoter earns $1.25 per ticket.</p>
+      </div>
+
+      <div class="card">
+        <h3>Your control</h3>
+        <p>Approve or Deny promoters</p>
+        <div class="big">Insight</div>
+        <p>Track performance live inside Backstage.</p>
+      </div>
+    </div>
+  </section>
+
+    <!-- TAP TO PAY -->
+
+  <section class="section">
+    <h2>Tap to Pay.</h2>
+    <p>Accept payments at the door with Tap to Pay on iPhone. No terminals. Just your phone.</p>
+
+    <div class="grid">
+      <div class="card tap-visual">
+        <div class="device">
+          <div class="screen">
+            <div class="nfc-wrap" aria-hidden="true">
+              <div class="nfc-wave w1"></div>
+              <div class="nfc-wave w2"></div>
+              <div class="nfc-wave w3"></div>
+              <div class="nfc-core"></div>
+            </div>
+            <div class="tap-label">Hold near</div>
+            <div class="tap-sub">Tap to Pay</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card tap-copy">
+        <h3>Door checkout</h3>
+        <p>Fast entry. Clean payouts. Less friction.</p>
+
+        <div class="tap-list">
+          <div class="tap-item">Works with iPhone</div>
+          <div class="tap-item">Uses Apples built in Tap to Pay flow</div>
+          <div class="tap-item">Perfect for tickets and cover</div>
+          <div class="tap-item">No extra hardware</div>
         </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <main id="top">
-    <section class="hero">
-      <div class="wrap">
-        <div class="hero_grid">
-          <div>
- 
+    <!-- SONG REQUESTS -->
 
-            <h1 class="h1">
-              Know the vibe
-              <span class="grad">before you pull up</span>.
-            </h1>
+  <section class="section alt">
+    <h2>Song requests.</h2>
+    <p>Guests request songs for your event. You approve what hits. Keep the vibe in control.</p>
 
-            <p class="lead">
-              Backstage shows what is actually happening at bars, clubs, and venues in real time.
-              For venues, it is a simple way to drive traffic, sell tickets, and market smarter.
-            </p>
-
-       <div class="hero_actions">
-  <a class="btn btn_primary" href="#partner">Get your venue on Backstage</a>
-
-  <div style="margin-left:62px;">
-    <a href="https://apps.apple.com/us/app/bckstge/id6751863780" aria-label="Download on the App Store">
-      <img src="assets/app-store-badge.svg" alt="Download on the App Store" style="height:48px;">
-    </a>
-  </div>
-</div>
-
-
-
-
-
+    <div class="grid">
+      <div class="card song-visual">
+        <div class="sr-phone">
+          <div class="sr-top">
+  
           </div>
 
 
-        </div>
-      </div>
-    </section>
-
-    <section id="product" class="section">
-      <div class="wrap">
-        <div class="section_head">
-          <div>
-            <h2>Built for tonight</h2>
-            <p>Simple, fast, and focused on outcomes. No guessing. No wasted nights.</p>
-          </div>
-        </div>
-
-        <div class="grid3">
-          <div class="card">
-            <b>See where it is busy</b>
-            <p>Scan venues fast and pick the move with confidence.</p>
-          </div>
-          <div class="card">
-            <b>Know the music before you go</b>
-            <p>See what is playing so you match the vibe, not hope for it.</p>
-          </div>
-          <div class="card">
-            <b>Instant tickets</b>
-            <p>Buy in app and move through the door quicker.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="venues" class="section">
-      <div class="wrap">
-        <div class="section_head">
-          <div>
-            <h2>Venues win with clarity</h2>
-            <p>Turn attention into foot traffic and sales with tools built for operators.</p>
-          </div>
-        </div>
-
-        <div class="split">
-          <div class="card bigcard">
-            <h3>Drive traffic that actually shows up</h3>
-            <p>Get discovered by people already looking for a place to go tonight.</p>
-            <div class="bullets">
-              <div class="bullet"><span class="dot"></span><span>Show live energy and real updates</span></div>
-              <div class="bullet"><span class="dot"></span><span>Push promotions when it matters</span></div>
-              <div class="bullet"><span class="dot"></span><span>Build repeat visitors with follows</span></div>
+          <div class="sr-queue">
+            <div class="sr-row">
+              <div class="sr-left">
+                <div class="sr-album"></div>
+                <div>
+                  <div class="sr-song">Zedd - Clarity</div>
+                  <div class="sr-meta">2 requests</div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="card bigcard">
-            <h3>Sell tickets with less friction</h3>
-            <p>One flow, clean checkout, and a better experience at the door.</p>
-            <div class="bullets">
-              <div class="bullet"><span class="dot"></span><span>Ticket links that convert</span></div>
-              <div class="bullet"><span class="dot"></span><span>Scan friendly entry</span></div>
-              <div class="bullet"><span class="dot"></span><span>Clear performance visibility</span></div>
+            <div class="sr-row">
+              <div class="sr-left">
+                <div class="sr-album"></div>
+                <div>
+                  <div class="sr-song">Rihanna - We found love</div>
+                  <div class="sr-meta">1 request</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sr-row">
+              <div class="sr-left">
+                <div class="sr-album"></div>
+                <div>
+                  <div class="sr-song">USHER - Year!</div>
+                  <div class="sr-meta">3 requests</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="muted_small">
-          Add venue logos here once you have your first set. It instantly boosts trust.
-        </div>
-      </div>
-    </section>
-
-    <section id="how" class="section">
-      <div class="wrap">
-        <div class="section_head">
-          <div>
-            <h2>How it works</h2>
-            <p>Three steps. Quick setup. You can be live the same week.</p>
-          </div>
-        </div>
-
-        <div class="grid3">
-          <div class="card">
-            <b>1. Add your venue</b>
-            <p>We set up your profile, photos, and ticket links.</p>
-          </div>
-          <div class="card">
-            <b>2. Go live</b>
-            <p>Your venue appears in app so people can find you tonight.</p>
-          </div>
-          <div class="card">
-            <b>3. Grow</b>
-            <p>Use promos, follows, and tickets to build consistent traffic.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="partner" class="cta">
-      <div class="wrap">
-        <div class="glass cta_box">
-          <div>
-            <h3>Ready to onboard your venue</h3>
-            <p>Send your venue name and city. We will reach out with next steps.</p>
-          </div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
-<button class="btn btn_primary" id="revealEmailBtn">
-  Email to partner
-</button>
-
-<div id="partnerEmailBox" style="display:none; margin-top:14px; gap:12px; align-items:center;">
-  <span id="partnerEmail" style="font-weight:700; color:#ffffff;">
-    jacobcabatana@backstageaccess.app
-  </span>
-
-  <button class="btn" id="copyEmailBtn" type="button">
-    Copy
-  </button>
-</div>
-
-
-
-           <a href="https://apps.apple.com/us/app/bckstge/id6751863780" aria-label="Download on the App Store">
-  <img src="assets/app-store-badge.svg" alt="Download on the App Store" style="height:48px;">
-</a>
-
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="download" class="section">
-      <div class="wrap">
-        <div class="section_head">
-          <div>
-            <h2>Download</h2>
-            <p>Available now on the App Store.</p>
-
-          </div>
-        </div>
-
-        <div class="split">
-          <div class="card bigcard">
-
-            <a href="https://apps.apple.com/us/app/bckstge/id6751863780" aria-label="Download on the App Store">
-  <img src="assets/app-store-badge.svg" alt="Download on the App Store" style="height:48px;">
-</a>
-
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="footer_corp">
-    <div class="wrap">
-
-      <div class="footer_grid">
-
-        <div class="footer_brand">
-          <img class="footer_logo_img" src="assets/LOGO-A4.png" alt="Backstage logo">
-          <p class="footer_tagline">
-  Know the vibe <span class="grad">before you pull up.</span>
-</p>
-
-
-      <div class="footer_social">
-  <a class="social_icon" href="https://www.instagram.com/bckstgeapp/?igsh=MWFnZHd1Mnh4NnVidQ%3D%3D&utm_source=qr#" target="_blank" rel="noopener" aria-label="Backstage on Instagram">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9A3.5 3.5 0 0 0 20 16.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm4.5 3.2A4.8 4.8 0 1 1 7.2 12 4.8 4.8 0 0 1 12 7.2Zm0 2A2.8 2.8 0 1 0 14.8 12 2.8 2.8 0 0 0 12 9.2ZM17.3 6.7a1.1 1.1 0 1 1-1.1 1.1 1.1 1.1 0 0 1 1.1-1.1Z"></path>
-    </svg>
-  </a>
-
-  <a class="social_icon" href="https://www.tiktok.com/@backstage.app?_r=1&_t=ZP-92KtZ18oOuV" target="_blank" rel="noopener" aria-label="Backstage on TikTok">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M15.6 3c.5 2.9 2.6 5 5.4 5.3v3.1c-1.9-.1-3.6-.8-5-2v6.2c0 3.5-2.8 6.4-6.4 6.4S3.2 19.1 3.2 15.6 6.1 9.2 9.6 9.2c.4 0 .8 0 1.2.1v3.2c-.4-.1-.8-.2-1.2-.2-1.8 0-3.3 1.5-3.3 3.3S7.8 19 9.6 19s3.3-1.5 3.3-3.3V3h2.7Z"></path>
-    </svg>
-  </a>
-</div>
-
-        </div>
-
-        <div class="footer_col">
-          <b>Product</b>
-          <a href="#product">Product</a>
-          <a href="#venues">Venues</a>
-          <a href="#how">How it works</a>
-          <a href="#download">Download</a>
-        </div>
-
-        <div class="footer_col">
-          <b>Company</b>
-          <a href="#partner">Partner</a>
-          <a href="mailto:jacobcabatana@backstageaccess.app?subject=Backstage%20Support">Support</a>
-          <a href="mailto:jacobcabatana@backstageaccess.app?subject=Backstage%20Press">Press</a>
-        </div>
-
-        <div class="footer_col">
-          <b>Legal</b>
-          <a href="privacy.html">Privacy</a>
-          <a href="terms_and_conditions.html">Terms</a>
-        </div>
-
       </div>
 
-      <div class="footer_bottom">
-        <div class="footer_copy">© <span id="year"></span> Pary Lux LLC</div>
-        <div class="footer_links">
-    
-          <a href="#top">Back to top</a>
+      <div class="card song-copy">
+        <h3>Control the vibe</h3>
+        <p>Guests submit. You choose. No chaos.</p>
+
+        <div class="tap-list">
+          <div class="tap-item">Requests tied to the event</div>
+          <div class="tap-item">See what is trending live</div>
         </div>
       </div>
-
     </div>
+  </section>
+
+
+
+  <footer>
+    © 2026 Backstage
   </footer>
-
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-<script>
-  const revealBtn = document.getElementById("revealEmailBtn");
-  const emailBox = document.getElementById("partnerEmailBox");
-  const copyBtn = document.getElementById("copyEmailBtn");
-  const emailText = document.getElementById("partnerEmail");
-
-  revealBtn.addEventListener("click", () => {
-    emailBox.style.display = "flex";
-    revealBtn.style.display = "none";
-  });
-
-  copyBtn.addEventListener("click", () => {
-    navigator.clipboard.writeText(emailText.textContent.trim());
-    copyBtn.textContent = "Copied";
-    setTimeout(() => {
-      copyBtn.textContent = "Copy";
-    }, 1400);
-  });
-</script>
 
 </body>
 </html>
