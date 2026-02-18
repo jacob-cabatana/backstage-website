@@ -81,12 +81,33 @@
       line-height:1.05;
     }
 
-    .gradient-text{
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
+    .hero-line{
+  display:block;
+  opacity:0;
+  animation: fadeUp 1.9s ease forwards;
+}
+
+.hero-white{
+  color: var(--text);
+  animation-delay: 0.5s;
+}
+
+.hero-accent{
+  color: var(--accent2);
+  animation-delay: 1.5s;
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform: translateY(14px);
+  }
+  to{
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+
 
     .hero p{
       font-size:20px;
@@ -104,6 +125,30 @@
       font-weight:600;
       transition:transform .2s ease, box-shadow .2s ease;
     }
+
+.hero-ctas{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:center;
+}
+
+
+.hero .cta.secondary{
+  background:#225CDA;
+  padding:12px 26px;
+  border-radius:999px;
+  font-weight:600;
+  opacity:0.9;
+}
+
+
+
+    .hero .cta.secondary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 26px rgba(34,92,218,0.35);
+    }
+
 
     .hero .cta:hover{
       transform:translateY(-2px);
@@ -150,6 +195,25 @@
       font-size:16px;
       color:var(--muted);
     }
+    .nothing{
+  opacity:0;
+  color: var(--accent2);
+  font-weight:800;
+  animation: nothingIn 1.6s ease forwards;
+  animation-delay: 1.9s;
+}
+
+@keyframes nothingIn{
+  from{
+    opacity:0;
+    transform: translateY(6px);
+  }
+  to{
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+
 
     /* PROMOTERS */
 
@@ -188,6 +252,26 @@
       margin-bottom:18px;
     }
 
+.earn-amount{
+  opacity:0;
+  color:#3DFF8F;
+  font-weight:800;
+}
+
+
+@keyframes earnIn{
+  from{
+    opacity:0;
+    transform: translateY(14px);
+  }
+  to{
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+
+
+
     .card .big{
       font-size:36px;
       font-weight:800;
@@ -198,37 +282,18 @@
 
     /* TAP TO PAY */
 
+    .iphone-mock{
+  width:260px;
+  display:block;
+  margin:0 auto;
+  filter: drop-shadow(0 30px 90px rgba(0,0,0,0.65));
+}
+
+
 .tap-visual{
   text-align:center;
 }
 
-.device{
-  width:270px;
-  height:360px;
-  margin: 0 auto;
-  border-radius: 44px;
-  background: #0b0b0c;
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 14px;
-  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
-}
-
-.screen{
-  width:100%;
-  height:100%;
-  border-radius: 32px;
-  background:
-    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.22), transparent 55%),
-    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.18), transparent 55%),
-    #0f0f12;
-  border: 1px solid rgba(255,255,255,0.08);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-}
 
 .screen::after{
   content:"";
@@ -243,58 +308,7 @@
   pointer-events:none;
 }
 
-@keyframes scanDown{
-  0%{ transform: translateY(0); opacity: 0; }
-  14%{ opacity: 0.35; }
-  58%{ transform: translateY(240%); opacity: 0; }
-  100%{ transform: translateY(240%); opacity: 0; }
-}
 
-.nfc-wrap{
-  width:160px;
-  height:160px;
-  position:relative;
-  display:grid;
-  place-items:center;
-  margin-bottom: 8px;
-}
-
-.nfc-core{
-  width:16px;
-  height:16px;
-  border-radius:999px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  box-shadow: 0 0 0 10px rgba(176,108,255,0.12);
-  animation: corePulse 1.6s ease-in-out infinite;
-}
-
-@keyframes corePulse{
-  0%,100%{ transform: scale(1); box-shadow: 0 0 0 10px rgba(176,108,255,0.12); }
-  50%{ transform: scale(1.12); box-shadow: 0 0 0 16px rgba(176,108,255,0.18); }
-}
-
-.nfc-wave{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform: translate(-50%,-50%);
-  width:28px;
-  height:28px;
-  border-radius:999px;
-  border: 2px solid rgba(255,255,255,0.20);
-  opacity:0;
-  animation: nfcWave 2.4s ease-out infinite;
-}
-
-.nfc-wave.w1{ animation-delay: 0s; }
-.nfc-wave.w2{ animation-delay: 0.6s; }
-.nfc-wave.w3{ animation-delay: 1.2s; }
-
-@keyframes nfcWave{
-  0%{ width:28px; height:28px; opacity:0; }
-  12%{ opacity:0.55; }
-  100%{ width:160px; height:160px; opacity:0; }
-}
 
 .tap-label{
   font-weight: 800;
@@ -349,6 +363,214 @@
       border-top:1px solid var(--hair);
       background:#000;
     }
+/* SKIP THE LINE PASSES */
+
+.pass-visual{
+  text-align:center;
+}
+
+.pass-shell{
+  width: 320px;
+  margin: 0 auto;
+  border-radius: 26px;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    #D4AF37,
+    #FFD700,
+    #C9A227
+  );
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
+}
+
+
+.pass-inner{
+  border-radius: 24px;
+  padding: 26px 22px;
+  background:
+    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.18), transparent 55%),
+    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.14), transparent 55%),
+    #0f0f12;
+  border: 1px solid rgba(255,255,255,0.10);
+  text-align:left;
+  position: relative;
+}
+
+.pass-glow{
+  position:absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.22), transparent 60%);
+  opacity: 0.35;
+  animation: passGlow 2.8s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes passGlow{
+  0%,100%{ transform: scale(0.92); opacity: 0.22; }
+  50%{ transform: scale(1.05); opacity: 0.40; }
+}
+
+.pass-kicker{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.70);
+}
+
+.pass-title{
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.pass-meta{
+  margin-top: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.62);
+  font-weight: 650;
+}
+
+.pass-price{
+  margin-top: 18px;
+  display: inline-block;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: priceBreath 2.2s ease-in-out infinite;
+}
+
+@keyframes priceBreath{
+  0%,100%{ transform: scale(1); }
+  50%{ transform: scale(1.03); }
+}
+
+.pass-foot{
+  margin-top: 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 650;
+}
+
+/* GEOFENCE MARKETING */
+
+.geo-visual{
+  text-align:center;
+}
+
+.geo-phone{
+  width: 310px;
+  margin: 0 auto;
+  border-radius: 30px;
+  padding: 16px;
+  background: #0b0b0c;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
+  position: relative;
+  overflow: hidden;
+}
+
+.geo-notch{
+  width: 90px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin: 0 auto 14px;
+}
+
+.geo-map{
+  height: 190px;
+  border-radius: 22px;
+  background:
+    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.22), transparent 55%),
+    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.18), transparent 55%),
+    #0f0f12;
+  border: 1px solid rgba(255,255,255,0.10);
+  position: relative;
+  overflow: hidden;
+  display:grid;
+  place-items:center;
+}
+
+.geo-ring{
+  position:absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.18);
+  opacity: 0;
+  animation: geoPulse 2.8s ease-out infinite;
+}
+
+.geo-ring.r1{ animation-delay: 0s; }
+.geo-ring.r2{ animation-delay: 0.9s; }
+.geo-ring.r3{ animation-delay: 1.8s; }
+
+@keyframes geoPulse{
+  0%{ transform: scale(0.35); opacity: 0; }
+  15%{ opacity: 0.55; }
+  100%{ transform: scale(3.2); opacity: 0; }
+}
+
+.geo-pin{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  box-shadow: 0 0 0 14px rgba(176,108,255,0.12);
+  animation: pinBreathe 1.8s ease-in-out infinite;
+}
+
+@keyframes pinBreathe{
+  0%,100%{ transform: scale(1); box-shadow: 0 0 0 14px rgba(176,108,255,0.12); }
+  50%{ transform: scale(1.12); box-shadow: 0 0 0 20px rgba(176,108,255,0.18); }
+}
+
+.geo-notif{
+  margin-top: 14px;
+  border-radius: 20px;
+  padding: 14px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  transform: translateY(10px);
+  opacity: 0;
+  animation: notifIn 2.8s ease-in-out infinite;
+}
+
+@keyframes notifIn{
+  0%{ transform: translateY(14px); opacity: 0; }
+  18%{ transform: translateY(0); opacity: 1; }
+  70%{ transform: translateY(0); opacity: 1; }
+  100%{ transform: translateY(-4px); opacity: 0; }
+}
+
+.geo-badge{
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.70);
+}
+
+.geo-title{
+  margin-top: 6px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.geo-copy{
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.62);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 
     /* SONG REQUESTS */
 
@@ -441,14 +663,14 @@
 }
 
 .sr-album{
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background:
-    linear-gradient(135deg, rgba(107,78,255,0.55), rgba(176,108,255,0.45));
-  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
-  flex: 0 0 auto;
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  object-fit:cover;
+  box-shadow:0 10px 24px rgba(0,0,0,0.35);
+  flex:0 0 auto;
 }
+
 
 .sr-song{
   font-weight: 800;
@@ -487,10 +709,15 @@
 
   <section class="hero">
     <h1>
-      <span class="gradient-text">Know the vibe before you pull up.</span>
+      <span class="hero-line hero-white">Know the vibe</span>
+      <span class="hero-line hero-accent">before you go.</span>
     </h1>
     <p>Real-time nightlife intelligence. Ticketing. Promoter tools. Built for modern venues.</p>
-    <a href="#" class="cta">Download Now</a>
+    <div class="hero-ctas">
+      <a href="#" class="cta">Download Now</a>
+      <a href="events.html" class="cta secondary">View events</a>
+    </div>
+
   </section>
 
   <!-- ZERO CUT -->
@@ -498,8 +725,8 @@
   <section class="section">
     <h2>Backstage does not take a cut off your ticket sales.</h2>
     <p>You set the price. You sell the tickets. You keep the revenue.</p>
-    <div class="stat">0%</div>
-    <div class="sub">Backstage takes nothing</div>
+    <div class="stat" id="cutStat">30%</div>
+   <div class="sub">Backstage takes <span class="nothing">nothing</span></div>
   </section>
 
   <!-- PROMOTERS -->
@@ -513,7 +740,7 @@
         <h3>Example</h3>
         <p>Ticket sold for $25</p>
         <div class="big">5% promoter cut</div>
-        <p>Promoter earns $1.25 per ticket.</p>
+        <p>Promoter earns <span class="earn-amount">$1.25</span> per ticket.</p>
       </div>
 
       <div class="card">
@@ -533,18 +760,8 @@
 
     <div class="grid">
       <div class="card tap-visual">
-        <div class="device">
-          <div class="screen">
-            <div class="nfc-wrap" aria-hidden="true">
-              <div class="nfc-wave w1"></div>
-              <div class="nfc-wave w2"></div>
-              <div class="nfc-wave w3"></div>
-              <div class="nfc-core"></div>
-            </div>
-            <div class="tap-label">Hold near</div>
-            <div class="tap-sub">Tap to Pay</div>
-          </div>
-        </div>
+<img src="assets/IphoneTapToPay.png" class="iphone-mock" alt="Tap to Pay on iPhone">
+
       </div>
 
       <div class="card tap-copy">
@@ -578,7 +795,7 @@
           <div class="sr-queue">
             <div class="sr-row">
               <div class="sr-left">
-                <div class="sr-album"></div>
+                <img src="assets/ZeddClarity.png" class="sr-album" alt="Zedd Clarity album cover">
                 <div>
                   <div class="sr-song">Zedd - Clarity</div>
                   <div class="sr-meta">2 requests</div>
@@ -588,7 +805,7 @@
 
             <div class="sr-row">
               <div class="sr-left">
-                <div class="sr-album"></div>
+                <img src="assets/RihannaLove.png" class="sr-album" alt="Rihanna We Found Love album cover">
                 <div>
                   <div class="sr-song">Rihanna - We found love</div>
                   <div class="sr-meta">1 request</div>
@@ -598,7 +815,7 @@
 
             <div class="sr-row">
               <div class="sr-left">
-                <div class="sr-album"></div>
+                <img src="assets/UsherYeah!.png" class="sr-album" alt="Usher Yeah album cover">
                 <div>
                   <div class="sr-song">USHER - Year!</div>
                   <div class="sr-meta">3 requests</div>
@@ -621,11 +838,118 @@
     </div>
   </section>
 
+    <!-- SKIP THE LINE PASSES -->
+
+  <section class="section">
+    <h2>Skip the line passes.</h2>
+    <p>Priority entry tickets that keep the door moving and the vibe clean.</p>
+
+    <div class="grid">
+      <div class="card pass-visual">
+        <div class="pass-shell" aria-hidden="true">
+          <div class="pass-glow"></div>
+
+          <div class="pass-inner">
+            <div class="pass-kicker">PRIORITY ENTRY</div>
+            <div class="pass-title">Skip the line pass</div>
+            <div class="pass-meta">Valid for this event</div>
+
+            <div class="pass-price">$10</div>
+
+            <div class="pass-foot">Limited quantity</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pass-copy">
+        <h3>Make entry faster</h3>
+        <p>Sell passes when demand spikes. Keep lines under control.</p>
+
+        <div class="tap-list">
+          <div class="tap-item">Sell priority entry tickets</div>
+          <div class="tap-item">Limit quantity per event</div>
+          <div class="tap-item">Reduce crowding at the door</div>
+          <div class="tap-item">Simple for guests</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- GEOFENCE MARKETING -->
+
+  <section class="section alt">
+    <h2>Geofence marketing.</h2>
+    <p>When guests walk in, they get notified with the deals you are running that night.</p>
+
+    <div class="grid">
+<div class="card geo-visual">
+  <img src="assets/GeoMarketing.png" class="iphone-mock" alt="Geofence marketing on iPhone">
+</div>
+
+
+      <div class="card geo-copy">
+        <h3>Hit them at the right time</h3>
+        <p>Marketing that feels like it belongs. No spam. Only when they are inside.</p>
+
+        <div class="tap-list">
+          <div class="tap-item">Trigger deals on entry</div>
+          <div class="tap-item">Run night specific promos</div>
+          <div class="tap-item">Increase conversion at the door</div>
+          <div class="tap-item">Works for bars, clubs, events</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
 
 
   <footer>
     © 2026 Backstage
   </footer>
+<script>
+  const statEl = document.getElementById("cutStat");
+  let started = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !started) {
+        started = true;
+
+        let value = 30;
+        statEl.textContent = value + "%";
+
+        const interval = setInterval(() => {
+          value--;
+          statEl.textContent = value + "%";
+
+          if (value <= 0) {
+            clearInterval(interval);
+            statEl.textContent = "0%";
+          }
+        }, 60);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  observer.observe(statEl);
+</script>
+
+<script>
+  const earnEl = document.querySelector(".earn-amount");
+
+  const earnObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        earnEl.style.animation = "earnIn 0.6s ease forwards";
+        earnObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.6 });
+
+  earnObserver.observe(earnEl);
+</script>
 
 </body>
 </html>
