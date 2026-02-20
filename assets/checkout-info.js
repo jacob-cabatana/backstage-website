@@ -20,6 +20,11 @@ const applySuccess = applyButton.querySelector(".apply-success");
 
 let promoIsValid = false;
 let promoChecked = false;
+let promoDiscountPercent = 0;
+const discountRow = document.getElementById("discount-row");
+
+
+
 
 promoDigits.forEach((input, index) => {
   input.addEventListener("input", (e) => {
@@ -68,11 +73,14 @@ async function verifyPromoIfNeeded() {
     .join("")
     .toUpperCase();
 
-  if (!code) {
-    promoIsValid = false;
-    promoChecked = false;
-    return true; // no promo entered, allow checkout
-  }
+if (!code) {
+  promoIsValid = false;
+  promoChecked = false;
+  promoDiscountPercent = 0;
+  discountRow.style.display = "none";
+  return true;
+}
+
 
   if (code.length < 6) {
     promoFeedback.textContent = "Enter full promo code";
@@ -95,10 +103,13 @@ async function verifyPromoIfNeeded() {
     promoChecked = true;
     promoIsValid = data.valid === true;
 
-    if (promoIsValid) {
-      promoFeedback.style.color = "#4cd964";
-      return true;
-    } else {
+if (promoIsValid) {
+  promoDiscountPercent = data.discountPercent || 0.05;
+  discountRow.style.display = "block";
+  promoFeedback.style.color = "#4cd964";
+  return true;
+}
+ else {
       promoFeedback.textContent = "Invalid promo code";
       promoFeedback.style.color = "#ff6b6b";
       return false;
@@ -194,6 +205,9 @@ applyButton.addEventListener("click", async () => {
 
 if (data.valid) {
   promoIsValid = true;
+  promoDiscountPercent = data.discountPercent || 0.05;
+
+  discountRow.style.display = "block";
 
   applyButton.classList.remove("loading");
   applyButton.classList.add("success");
@@ -206,10 +220,14 @@ if (data.valid) {
 
   return;
 }
+
  else {
       promoFeedback.textContent = "Invalid promo code";
       promoFeedback.style.color = "#ff6b6b";
       promoIsValid = false;
+      promoDiscountPercent = 0;
+      discountRow.style.display = "none";
+
     }
 
   } catch (err) {
