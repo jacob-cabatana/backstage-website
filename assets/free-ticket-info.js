@@ -35,6 +35,7 @@ const emailInput = document.getElementById("email");
 const button = document.getElementById("claim-free-button");
 const codeDisplay = document.getElementById("code-display");
 const codeEl = document.getElementById("acquire-code");
+const copyButton = document.getElementById("copy-code-button");
 
 
 
@@ -99,6 +100,21 @@ button.addEventListener("click", async () => {
       const formattedCode = rawCode.slice(0, 4) + " - " + rawCode.slice(4);
       codeEl.innerText = formattedCode;
       codeDisplay.style.display = "block";
+
+      copyButton.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(rawCode);
+    copyButton.innerText = "Copied";
+    copyButton.classList.add("copied");
+
+    setTimeout(() => {
+      copyButton.innerText = "Copy";
+      copyButton.classList.remove("copied");
+    }, 2000);
+  } catch (e) {
+    alert("Unable to copy code.");
+  }
+};
 
       // Hide form + button
       document.querySelector(".form").style.display = "none";
