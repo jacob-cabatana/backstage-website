@@ -154,7 +154,8 @@
     }
 
 #copy-code-button {
-  padding: 10px 14px;
+  width: 100%;
+  padding: 12px 0;
   border-radius: 12px;
   border: none;
   font-size: 14px;
@@ -168,9 +169,8 @@
 .acquire-code-column {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 14px;
-  margin-top: 6px;
+  margin-top: 10px;
 }
 
 
@@ -189,19 +189,16 @@
       color: rgba(255,255,255,0.6);
     }
 
-    .app-store-button {
-  margin-top: 18px;
-  display: block;
+.app-store-button {
   width: 100%;
-  padding: 16px;
-  border-radius: 18px;
+  padding: 12px 0;
+  border-radius: 12px;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   color: white;
   background: linear-gradient(90deg, #9c4ff2, #225cda);
-  box-shadow: 0 12px 30px rgba(156,79,242,0.35);
   transition: 0.2s ease;
 }
 
@@ -236,19 +233,16 @@
 <div class="acquire-code-column">
   <div class="acquire-code" id="acquire-code">XXXXXXX</div>
   <button id="copy-code-button">Copy</button>
-</div>
-<div class="redeem-note">
-  Download Backstage to claim your ticket and enter the acquire code.
-</div>
 
-<a
-  href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-  target="_blank"
-  rel="noopener"
-  class="app-store-button"
->
-  Download Backstage on the App Store
-</a>
+  <a
+    href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+    target="_blank"
+    rel="noopener"
+    class="app-store-button"
+  >
+    Download Backstage to access your ticket
+  </a>
+</div>
     </div>
   </div>
 
