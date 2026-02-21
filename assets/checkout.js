@@ -5,6 +5,17 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+import {
+  getFunctions,
+  httpsCallable
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+
+import {
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyAOftoMjETRbr3v7zncb-kVvLewkpmE2n0",
   authDomain: "backstageapp-27cb3.firebaseapp.com",
@@ -17,11 +28,22 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const functions = getFunctions(app);
+const auth = getAuth(app);
 
 const params = new URLSearchParams(window.location.search);
 const eventId = params.get("id");
 
 const container = document.getElementById("checkout-event");
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+  } else {
+    signInAnonymously(auth);
+  }
+});
 
 
 
@@ -72,6 +94,37 @@ async function loadCheckout() {
 
   const event = docSnap.data();
 
+  let freeHTML = "";
+
+if (event.freeTicketsEnabled === true) {
+
+  const maleRemaining =
+    (event.freeMaleTotal || 0) - (event.freeMaleClaimed || 0);
+
+  const femaleRemaining =
+    (event.freeFemaleTotal || 0) - (event.freeFemaleClaimed || 0);
+
+  if (maleRemaining > 0) {
+    freeHTML += `
+      <div class="price-card free-ticket" data-gender="men">
+        <h3>Free Male Ticket</h3>
+        <p class="price-label">${maleRemaining} free left</p>
+        <button class="claim-free">Claim Free Ticket</button>
+      </div>
+    `;
+  }
+
+  if (femaleRemaining > 0) {
+    freeHTML += `
+      <div class="price-card free-ticket" data-gender="women">
+        <h3>Free Female Ticket</h3>
+        <p class="price-label">${femaleRemaining} free left</p>
+        <button class="claim-free">Claim Free Ticket</button>
+      </div>
+    `;
+  }
+}
+
   let pricingHTML = "";
 
   if (event.genderTicketPricing === true) {
@@ -118,17 +171,18 @@ async function loadCheckout() {
     `;
   }
 
-  container.innerHTML = `
-    <div class="checkout-card">
-      <h2>${event.title}</h2>
-      ${pricingHTML}
-      <div id="global-total" class="global-total">
-        Total: —
-      </div>
+container.innerHTML = `
+  <div class="checkout-card">
+    <h2>${event.title}</h2>
+    ${freeHTML}
+    ${pricingHTML}
+    <div id="global-total" class="global-total">
+      Total: —
     </div>
-  `;
+  </div>
+`;
 
-document.querySelectorAll(".price-card").forEach(card => {
+document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
 
   const unitPrice = Number(card.dataset.price);
   const quantityEl = card.querySelector(".quantity");
@@ -181,45 +235,63 @@ function updateGlobalTotal() {
 /* AUTO SELECT FIRST CARD */
 const firstCard = document.querySelector(".price-card");
 
+const checkoutBtn = document.getElementById("checkout-button");
+
+if (checkoutBtn) {
+  checkoutBtn.onclick = () => {
+
+    const selectedTickets = [];
+
+    document.querySelectorAll(".price-card").forEach(card => {
+      const unitPrice = Number(card.dataset.price);
+      const qty = Number(card.querySelector(".quantity")?.innerText || 0);
+
+      if (qty > 0) {
+        const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
+
+        selectedTickets.push({
+          ticketType: title.includes("female")
+            ? "women"
+            : title.includes("male")
+            ? "men"
+            : "general",
+          quantity: qty,
+          unitPrice: unitPrice
+        });
+      }
+    });
+
+    if (selectedTickets.length === 0) {
+      alert("Select at least one ticket.");
+      return;
+    }
+
+    sessionStorage.setItem("checkout_tickets", JSON.stringify(selectedTickets));
+    sessionStorage.setItem("checkout_event_id", eventId);
+
+    window.location.href = "/checkout-info.html";
+  };
+}
+
 if (firstCard) {
   firstCard.click();
 }
+
+document.querySelectorAll(".claim-free").forEach(button => {
+
+  button.onclick = (e) => {
+
+    e.preventDefault();
+
+    const card = button.closest(".free-ticket");
+    const gender = card.dataset.gender;
+
+window.location.href = `/free-ticket-info.html?partyId=${eventId}&type=${gender}`;
+  };
+
+});
   
 }
 
-
 loadCheckout();
 
-document.getElementById("checkout-button").onclick = () => {
-
-  const selectedTickets = [];
-
-  document.querySelectorAll(".price-card").forEach(card => {
-    const unitPrice = Number(card.dataset.price);
-    const qty = Number(card.querySelector(".quantity").innerText);
-
-    if (qty > 0) {
-const title = card.querySelector("h3").innerText.toLowerCase();
-
-selectedTickets.push({
-  ticketType: title.includes("female")
-    ? "women"
-    : title.includes("male")
-    ? "men"
-    : "general",
-  quantity: qty,
-  unitPrice: unitPrice
-});
-    }
-  });
-
-  if (selectedTickets.length === 0) {
-    alert("Select at least one ticket.");
-    return;
-  }
-
-  sessionStorage.setItem("checkout_tickets", JSON.stringify(selectedTickets));
-  sessionStorage.setItem("checkout_event_id", eventId);
-
-  window.location.href = "/checkout-info.html";
-};
