@@ -51,6 +51,23 @@ async function loadEventDetail() {
       ? new Date(event.startsAt.seconds * 1000)
       : null;
 
+const getOrdinal = (n) => {
+  if (n > 3 && n < 21) return n + "th";
+  switch (n % 10) {
+    case 1: return n + "st";
+    case 2: return n + "nd";
+    case 3: return n + "rd";
+    default: return n + "th";
+  }
+};
+
+const formattedDate = startDate
+  ? `${startDate.toLocaleDateString("en-US", { month: "long" })} ${getOrdinal(startDate.getDate())} @ ${startDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit"
+    })}`
+  : null;
+
     const imageUrl = event.mediaUrl
       ? event.mediaUrl
       : "https://via.placeholder.com/800x400?text=Backstage+Event";
@@ -61,7 +78,7 @@ const admissionPrice = "Tickets Available";
       <div class="detail-container">
         <img src="${imageUrl}" class="detail-image" />
         <div class="detail-card">
-          <p class="detail-date">${startDate ? startDate.toLocaleString() : "Date TBA"}</p>
+          <p class="detail-date">${formattedDate || "Date TBA"}</p>
           <p class="detail-price">${admissionPrice}</p>
           <button class="ticket-button" id="get-tickets-btn">Get Tickets</button>
         </div>

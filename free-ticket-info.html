@@ -153,13 +153,6 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .acquire-code-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
 #copy-code-button {
   padding: 10px 14px;
   border-radius: 12px;
@@ -171,6 +164,15 @@
   color: white;
   transition: 0.2s ease;
 }
+
+.acquire-code-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
 
 #copy-code-button:hover {
   background: rgba(255,255,255,0.2);
@@ -231,7 +233,7 @@
 
     <div class="code-display" id="code-display">
       <h2>Your Free Ticket Code</h2>
-      <div class="acquire-code-row">
+<div class="acquire-code-column">
   <div class="acquire-code" id="acquire-code">XXXXXXX</div>
   <button id="copy-code-button">Copy</button>
 </div>
