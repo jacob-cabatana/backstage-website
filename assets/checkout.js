@@ -212,7 +212,7 @@ function updateGlobalTotal() {
 
   let total = 0;
 
-  document.querySelectorAll(".price-card").forEach(card => {
+  document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
 
     const unitPrice = Number(card.dataset.price);
     const qty = Number(card.querySelector(".quantity").innerText);
@@ -242,7 +242,7 @@ if (checkoutBtn) {
 
     const selectedTickets = [];
 
-    document.querySelectorAll(".price-card").forEach(card => {
+    document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
       const unitPrice = Number(card.dataset.price);
       const qty = Number(card.querySelector(".quantity")?.innerText || 0);
 
