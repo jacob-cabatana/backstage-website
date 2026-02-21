@@ -185,6 +185,24 @@
       border-radius: 14px;
     }
 
+    .copy-btn{
+  margin-top: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.copy-btn:hover{
+  background: rgba(156,79,242,0.25);
+  border-color: rgba(156,79,242,0.5);
+}
+
     .appstore{
       display:inline-block;
       margin-top: 14px;
@@ -238,12 +256,19 @@
 
         if (data.success && Array.isArray(data.codes) && data.codes.length > 0) {
 
-          const codesHtml = data.codes
-            .map(code => {
-              const formatted = code.slice(0, 4) + " - " + code.slice(4);
-              return `<div class="codepill">${formatted}</div>`;
-            })
-            .join("");
+const codesHtml = data.codes
+  .map((code, index) => {
+    const formatted = code.slice(0, 4) + " - " + code.slice(4);
+    return `
+      <div>
+        <div class="codepill">${formatted}</div>
+        <button class="copy-btn" onclick="copyCode('${code}', this)">
+          Copy Code
+        </button>
+      </div>
+    `;
+  })
+  .join("");
 
           document.getElementById("message").innerHTML = `
             <p style="margin:8px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
@@ -281,6 +306,18 @@
       });
 
     }
+    function copyCode(rawCode, button){
+  navigator.clipboard.writeText(rawCode)
+    .then(() => {
+      button.innerText = "Copied!";
+      setTimeout(() => {
+        button.innerText = "Copy Code";
+      }, 1500);
+    })
+    .catch(() => {
+      alert("Unable to copy. Please copy manually.");
+    });
+}
   </script>
 
 </body>
