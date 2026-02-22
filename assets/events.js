@@ -46,6 +46,23 @@ async function loadEvents() {
   }
 }
 
+function formatEventDate(date) {
+  if (!date) return "";
+
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  const suffix =
+    day % 10 === 1 && day !== 11 ? "st" :
+    day % 10 === 2 && day !== 12 ? "nd" :
+    day % 10 === 3 && day !== 13 ? "rd" :
+    "th";
+
+  const month = date.toLocaleString("en-US", { month: "long" });
+
+  return `${month} ${day}${suffix} @ 11:00 PM`;
+}
+
 function renderEventCard(event, id) {
   const container = document.getElementById("events-container");
 
@@ -65,11 +82,16 @@ function renderEventCard(event, id) {
 };
 
   card.innerHTML = `
-    <img src="${imageUrl}" class="event-image" />
+    <div class="event-image-wrap">
+  <img src="${imageUrl}" class="event-image" />
+</div>
     <div class="event-content">
       <h2>${event.title || "Untitled Event"}</h2>
-      <p class="event-date">${startDate ? startDate.toLocaleString() : ""}</p>
-      <p class="event-location">${event.location || ""}</p>
+      <p class="event-date">${startDate ? formatEventDate(startDate) : ""}</p>
+     <p class="event-location">
+  <span class="label">Address</span>
+  <span class="value">${event.location || ""}</span>
+</p>
     </div>
   `;
 

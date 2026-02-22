@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #0f0f0f;
+  background: #000000;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -84,7 +84,7 @@ button:not(.success-btn) {
   background: #111;
   padding: 24px;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(156,79,242,0.7);
 }
 
 .detail-date {
