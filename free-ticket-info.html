@@ -7,18 +7,18 @@
   <link rel="stylesheet" href="assets/styles.css" />
 
   <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(156,79,242,0.15), transparent 40%),
-        linear-gradient(135deg, #0f0f14, #1a1a22);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: white;
-    }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 60px 16px;
+  color: white;
+  overflow-y: auto;
+}
 
     .free-container {
       width: 100%;
@@ -29,6 +29,11 @@
       backdrop-filter: blur(20px);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
+
+    .free-container {
+  display: flex;
+  flex-direction: column;
+}
 
     h1 {
       margin: 0;
@@ -206,13 +211,101 @@
   transform: translateY(-2px);
   box-shadow: 0 16px 40px rgba(156,79,242,0.45);
 }
+
+.scroll-hint{
+  margin-top: 24px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.page{
+  min-height: 100vh;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+}
+
+.card{
+  width:100%;
+  max-width: 420px;
+  padding: 34px 26px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  text-align:center;
+  position: relative;
+}
+
+.chevrons{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chevron{
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(45deg);
+  opacity: 0.8;
+  animation: chevronBounce 1.6s infinite;
+}
+
+@keyframes chevronBounce{
+  0%,100%{ transform: translateY(0) rotate(45deg); opacity: 0.4; }
+  50%{ transform: translateY(6px) rotate(45deg); opacity: 1; }
+}
+
+.how-to{
+  margin-top: 32px;
+  color: rgba(255,255,255,0.9);
+  text-align: left;
+}
+
+.how-to h3{
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.how-to ol{
+  padding-left: 18px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.how-to li{
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+}
+
+.video-section{
+  margin-top: 40px;
+  max-width: 320px;
+  width: 100%;
+}
   </style>
 </head>
 
 <body>
 
-  <div class="free-container">
-    <h1>Claim Your Free Ticket</h1>
+<div class="page">
+
+  <div class="card">
+
+    <h2>Claim Your Free Ticket</h2>
     <p class="subtitle">Enter your details to receive your ticket code</p>
 
     <div class="form">
@@ -230,23 +323,59 @@
 
     <div class="code-display" id="code-display">
       <h2>Your Free Ticket Code</h2>
-<div class="acquire-code-column">
-  <div class="acquire-code" id="acquire-code">XXXXXXX</div>
-  <button id="copy-code-button">Copy</button>
 
-  <a
-    href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-    target="_blank"
-    rel="noopener"
-    class="app-store-button"
-  >
-    Download Backstage to access your ticket
-  </a>
-</div>
+      <div class="acquire-code-column">
+        <div class="acquire-code" id="acquire-code">XXXXXXX</div>
+        <button id="copy-code-button">Copy</button>
+
+        <a
+          href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+          target="_blank"
+          rel="noopener"
+          class="app-store-button"
+        >
+          Download Backstage to access your ticket
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="scroll-hint" id="scroll-hint" style="display:none;">
+    <span>Scroll down</span>
+    <div class="chevrons">
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+      <div class="chevron"></div>
     </div>
   </div>
 
-  <script type="module" src="assets/free-ticket-info.js"></script>
+  <div class="how-to" id="how-to" style="display:none;">
+    <h3>How to claim your ticket in Backstage</h3>
+    <ol>
+      <li>Download the Backstage app</li>
+      <li>From the Home Feed, tap the Ticket view</li>
+      <li>Tap <strong>Claim Ticket</strong></li>
+      <li>Enter your code and tap <strong>Submit</strong></li>
+    </ol>
+  </div>
+
+  <div class="video-section" id="video-section" style="display:none;">
+    <video
+      id="redeemVideo"
+      playsinline
+      muted
+      loop
+      preload="metadata"
+      style="width:100%; max-height:500px; border-radius:24px;"
+    >
+      <source src="/assets/HowToClaim.mp4" type="video/mp4">
+    </video>
+  </div>
+
+</div>
+
+<script type="module" src="assets/free-ticket-info.js"></script>
 
 </body>
 </html>

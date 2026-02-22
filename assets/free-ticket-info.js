@@ -82,17 +82,17 @@ button.addEventListener("click", async () => {
       await signInAnonymously(auth);
     }
 
-    const claimFreeTicket = httpsCallable(functions, "generateFreeAcquireCode");
+const claimFreeTicket = httpsCallable(functions, "generateFreeAcquireCode");
 
-    const result = await claimFreeTicket({
-      partyId,
-      ticketType,
-      buyerFirstName: firstName,
-      buyerLastName: lastName,
-      buyerEmail: email
-    });
+const result = await claimFreeTicket({
+  partyId,
+  ticketType,
+  buyerFirstName: firstName,
+  buyerLastName: lastName,
+  buyerEmail: email
+});
 
-    const data = result.data;
+const data = result.data;
 
     if (data && data.acquireCode) {
 
@@ -100,6 +100,9 @@ button.addEventListener("click", async () => {
       const formattedCode = rawCode.slice(0, 4) + " - " + rawCode.slice(4);
       codeEl.innerText = formattedCode;
       codeDisplay.style.display = "block";
+      document.getElementById("scroll-hint").style.display = "flex";
+      document.getElementById("how-to").style.display = "block";
+      document.getElementById("video-section").style.display = "block";
 
       copyButton.onclick = async () => {
   try {
@@ -146,3 +149,18 @@ button.addEventListener("click", async () => {
     button.disabled = false;
   }
 });
+
+const video = document.getElementById("redeemVideo");
+
+if (video) {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        video.play();
+      }
+    },
+    { threshold: 0.6 }
+  );
+
+  observer.observe(video);
+}
