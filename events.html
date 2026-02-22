@@ -118,6 +118,51 @@ h1 {
   line-height: 1.35;
   color: rgba(255,255,255,0.80);
 }
+
+.empty-state {
+  position: relative;
+  height: 65vh;
+  border-radius: 22px;
+  overflow: hidden;
+  background-image: url("assets/SignUpImage.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.35),
+    rgba(0,0,0,0.9)
+  );
+}
+
+.empty-content {
+  position: relative;
+  text-align: center;
+  padding: 24px;
+  max-width: 320px;
+}
+
+.empty-content h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #9c4ff2, #225cda);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.empty-content p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.8);
+}
   </style>
 </head>
 

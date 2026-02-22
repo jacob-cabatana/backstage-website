@@ -32,10 +32,21 @@ async function loadEvents() {
     const container = document.getElementById("events-container");
     container.innerHTML = "";
 
-    if (snapshot.empty) {
-      container.innerHTML = "<p>No events found.</p>";
-      return;
-    }
+if (snapshot.empty) {
+  container.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-overlay"></div>
+      <div class="empty-content">
+<h2>No events near Jacksonville</h2>
+<p>
+Tonight’s giving “nahh not tonight” energy.<br>
+Check back later.
+</p>
+      </div>
+    </div>
+  `;
+  return;
+}
 
     snapshot.forEach((doc) => {
       const event = doc.data();
