@@ -21,18 +21,21 @@
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
 
-    body{
-      margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top, rgba(156,79,242,0.15), transparent 40%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 40px 16px;
-    }
+body{
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background: #000000;
+  padding: 40px 16px;
+}
+
+.page{
+  min-height: 100vh;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+}
 
     .card{
       width:100%;
@@ -208,6 +211,77 @@
       margin-top: 14px;
     }
 
+.scroll-hint{
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.chevrons{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chevron{
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(45deg);
+  opacity: 0.8;
+  animation: chevronBounce 1.6s infinite;
+}
+
+
+
+@keyframes chevronBounce{
+  0%,100%{ transform: translateY(0) rotate(45deg); opacity: 0.4; }
+  50%{ transform: translateY(6px) rotate(45deg); opacity: 1; }
+}
+
+@keyframes bounce{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(6px); }
+}
+
+.how-to{
+  margin-top: 32px;
+  max-width: 420px;
+  color: rgba(255,255,255,0.9);
+  text-align: left;
+}
+
+.how-to h3{
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.how-to ol{
+  padding-left: 18px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.how-to li{
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+}
+
+.video-section{
+  margin-top: 40px;
+  max-width: 420px;
+}
+
     @media (prefers-reduced-motion: reduce){
       *{ animation: none !important; transition: none !important; }
       .check svg{ stroke-dashoffset: 0; }
@@ -218,31 +292,64 @@
 <body>
 
 
-
-  <div class="card">
-    <div class="checkwrap" aria-hidden="true">
-      <div class="check">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 6L9 17l-5-5"></path>
-        </svg>
-      </div>
+<div class="page">
+<div class="card">
+  <div class="checkwrap" aria-hidden="true">
+    <div class="check">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 6L9 17l-5-5"></path>
+      </svg>
     </div>
-
-    <h2>Payment Successful</h2>
-    <p id="message">Verifying your ticket...</p>
-
-    <button class="btn" onclick="window.location.href='/'">Return Home</button>
-    <div class="subnote">Powered by Stripe • Secure payment</div>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get("session_id");
+  <h2>Payment Successful</h2>
+  <p id="message">Verifying your ticket...</p>
 
-    if (!sessionId) {
-      document.getElementById("message").innerText =
-        "Missing session. Please check your email.";
-    } else {
+  <button class="btn" onclick="window.location.href='/'">Return Home</button>
+  <div class="subnote">Powered by Stripe • Secure payment</div>
+</div>
+
+      <div class="scroll-hint">
+  <span>Scroll down</span>
+  <div class="chevrons">
+    <div class="chevron"></div>
+    <div class="chevron"></div>
+    <div class="chevron"></div>
+  </div>
+</div>
+
+<div class="how-to">
+  <h3>How to claim your ticket in Backstage</h3>
+  <ol>
+    <li>Download the Backstage app</li>
+    <li>From the Home Feed, tap the Ticket view</li>
+    <li>Tap <strong>Claim Ticket</strong></li>
+    <li>Enter your code and tap <strong>Submit</strong></li>
+  </ol>
+</div>
+
+<div class="video-section">
+<video
+  id="redeemVideo"
+  playsinline
+  muted
+  loop
+  preload="metadata"
+  style="width:100%; border-radius:24px;"
+>
+<source src="/assets/HowToClaim.mp4" type="video/mp4">
+  </video>
+</div>
+
+  <script>
+
+    const params = new URLSearchParams(window.location.search);
+const sessionId = params.get("session_id");
+
+if (!sessionId) {
+  document.getElementById("message").innerText =
+    "Missing session. Please check your email.";
+} else {
 
       fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
         method: "POST",
@@ -306,6 +413,21 @@ const codesHtml = data.codes
       });
 
     }
+
+    const video = document.getElementById("redeemVideo");
+
+if (video) {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        video.play();
+      }
+    },
+    { threshold: 0.6 }
+  );
+
+  observer.observe(video);
+}
     function copyCode(rawCode, button){
   navigator.clipboard.writeText(rawCode)
     .then(() => {
