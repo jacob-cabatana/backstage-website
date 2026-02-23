@@ -104,25 +104,33 @@ if (event.freeTicketsEnabled === true) {
   const femaleRemaining =
     (event.freeFemaleTotal || 0) - (event.freeFemaleClaimed || 0);
 
-  if (maleRemaining > 0) {
-    freeHTML += `
-      <div class="price-card free-ticket" data-gender="men">
-        <h3>Free Male Ticket</h3>
-        <p class="price-label">${maleRemaining} free left</p>
-        <button class="claim-free">Claim Free Ticket</button>
-      </div>
-    `;
-  }
+if (maleRemaining > 0) {
+  freeHTML += `
+    <div class="price-card free-ticket" data-gender="men">
+      <h3>Free Male Ticket</h3>
+      <p class="price-label">${maleRemaining} free left</p>
+      <p style="font-size: 0.85rem; margin: 6px 0 12px 0; color: white;">
+        <span style="color: red; font-weight: 600;">Disclaimer:</span>
+        Verifying gender at the door. If you have the wrong ticket type, you will be charged double.
+      </p>
+      <button class="claim-free">Claim Free Ticket</button>
+    </div>
+  `;
+}
 
-  if (femaleRemaining > 0) {
-    freeHTML += `
-      <div class="price-card free-ticket" data-gender="women">
-        <h3>Free Female Ticket</h3>
-        <p class="price-label">${femaleRemaining} free left</p>
-        <button class="claim-free">Claim Free Ticket</button>
-      </div>
-    `;
-  }
+if (femaleRemaining > 0) {
+  freeHTML += `
+    <div class="price-card free-ticket" data-gender="women">
+      <h3>Free Female Ticket</h3>
+      <p class="price-label">${femaleRemaining} free left</p>
+      <p style="font-size: 0.85rem; margin: 6px 0 12px 0; color: white;">
+        <span style="color: red; font-weight: 600;">Disclaimer:</span>
+        Verifying gender at the door. If you have the wrong ticket type, you will be charged double.
+      </p>
+      <button class="claim-free">Claim Free Ticket</button>
+    </div>
+  `;
+}
 }
 
   let pricingHTML = "";

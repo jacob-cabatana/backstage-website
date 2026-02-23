@@ -61,8 +61,6 @@ function formatEventDate(date) {
   if (!date) return "";
 
   const day = date.getDate();
-  const year = date.getFullYear();
-
   const suffix =
     day % 10 === 1 && day !== 11 ? "st" :
     day % 10 === 2 && day !== 12 ? "nd" :
@@ -71,7 +69,12 @@ function formatEventDate(date) {
 
   const month = date.toLocaleString("en-US", { month: "long" });
 
-  return `${month} ${day}${suffix} @ 11:00 PM`;
+  const time = date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+
+  return `${month} ${day}${suffix} @ ${time}`;
 }
 
 function renderEventCard(event, id) {
