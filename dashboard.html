@@ -161,27 +161,41 @@ onSnapshot(ref, (snap) => {
     return;
   }
 
-  const data = snap.data();
+const data = snap.data();
 
-  payoutsEnabled = data.payoutsEnabled === true;
-  const last4 = data.bankLast4;
+payoutsEnabled = data.payoutsEnabled === true;
+const stripeStatus = data.stripeStatus || "incomplete";
+const last4 = data.bankLast4;
 
-  if (payoutsEnabled) {
-    statusBadge.textContent = "Payouts enabled";
-    statusBadge.className = "badge ok";
+if (stripeStatus === "enabled") {
+  statusBadge.textContent = "Payouts enabled";
+  statusBadge.className = "badge ok";
 
-    headline.textContent = last4
-      ? `Bank account •••• ${last4}`
-      : "Bank account connected";
+  headline.textContent = last4
+    ? `Bank account •••• ${last4}`
+    : "Bank account connected";
 
-    connectBtn.textContent = "Edit bank account";
-  } else {
-    statusBadge.textContent = "Payouts not set up";
-    statusBadge.className = "badge warn";
+  connectBtn.textContent = "Edit bank account";
+  connectBtn.disabled = false;
+}
 
-    headline.textContent = "Connect your bank account";
-    connectBtn.textContent = "Connect bank account";
-  }
+if (stripeStatus === "in_review") {
+  statusBadge.textContent = "Stripe reviewing account";
+  statusBadge.className = "badge warn";
+
+  headline.textContent = "Account under review";
+  connectBtn.textContent = "View Stripe details";
+  connectBtn.disabled = false;
+}
+
+if (stripeStatus === "incomplete") {
+  statusBadge.textContent = "Payouts not set up";
+  statusBadge.className = "badge warn";
+
+  headline.textContent = "Connect your bank account";
+  connectBtn.textContent = "Connect bank account";
+  connectBtn.disabled = false;
+}
 });
     });
 
