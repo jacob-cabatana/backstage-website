@@ -134,8 +134,9 @@
 
   <script type="module">
     import { auth, db } from "/js/firebase.js";
-    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const form = document.getElementById("signupForm");
     const btn = document.getElementById("submitBtn");
@@ -184,7 +185,7 @@
           createdAt: serverTimestamp()
         });
 
-        window.location.href = "/host/dashboard.html";
+        window.location.href = "/dashboard.html";
 
       } catch (err) {
         showError(err.message || "Signup failed.");

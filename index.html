@@ -692,7 +692,48 @@
   font-weight: 650;
 }
 
+/* SLIDE MENU */
 
+#menuOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease;
+  z-index:200;
+}
+
+#sideMenu{
+  position:fixed;
+  top:0;
+  right:0;
+  height:100%;
+  width:260px;
+  background:#0b0b0b;
+  border-left:1px solid var(--hair);
+  transform:translateX(100%);
+  transition:transform .35s ease;
+  z-index:201;
+  display:flex;
+  flex-direction:column;
+  padding:80px 24px;
+  gap:22px;
+}
+
+#sideMenu a{
+  font-size:18px;
+  font-weight:700;
+}
+
+body.menu-open #sideMenu{
+  transform:translateX(0);
+}
+
+body.menu-open #menuOverlay{
+  opacity:1;
+  pointer-events:auto;
+}
   </style>
 </head>
 
@@ -701,12 +742,21 @@
   <nav class="nav">
 <div class="nav-inner">
   <img src="assets/LOGO-A4.png" alt="Backstage logo">
-  <div style="display:flex; gap:20px; align-items:center;">
-    <a href="events.html">Events</a>
-    <a href="signup.html">Sign up</a>
-  </div>
+<button id="menuBtn" aria-label="Open menu" style="background:none;border:none;cursor:pointer;">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <path d="M3 6h18M3 12h18M3 18h18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</button>
 </div>
   </nav>
+
+  <div id="menuOverlay"></div>
+
+<div id="sideMenu">
+  <a href="events.html">Events</a>
+  <a href="signup.html">Sign up</a>
+  <a href="login.html">Log in</a>
+</div>
 
   <!-- HERO -->
 
@@ -965,6 +1015,19 @@
   }, { threshold: 0.6 });
 
   earnObserver.observe(earnEl);
+</script>
+
+<script>
+  const menuBtn = document.getElementById("menuBtn");
+  const overlay = document.getElementById("menuOverlay");
+
+  menuBtn.onclick = () => {
+    document.body.classList.add("menu-open");
+  };
+
+  overlay.onclick = () => {
+    document.body.classList.remove("menu-open");
+  };
 </script>
 
 </body>
