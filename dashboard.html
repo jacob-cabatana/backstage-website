@@ -378,12 +378,13 @@
         </div>
       </div>
 
-      <div class="nav">
-        <button class="nav-btn active" data-page="dashboard">Bank</button>
-        <button class="nav-btn" data-page="profile">Profile</button>
-        <button class="nav-btn" data-page="host">Host Event</button>
-        <button class="nav-btn" data-page="analytics">Analytics</button>
-      </div>
+<div class="nav">
+  <button class="nav-btn active" data-page="dashboard">Bank</button>
+  <button class="nav-btn" data-page="events">My Events</button>
+  <button class="nav-btn" data-page="profile">Profile</button>
+  <button class="nav-btn" data-page="host">Host Event</button>
+  <button class="nav-btn" data-page="analytics">Analytics</button>
+</div>
 
     <div class="card">
 
@@ -414,6 +415,19 @@
     </div>
 
   </div>
+
+  <!-- MY EVENTS SECTION -->
+<div class="section-page" id="eventsSection">
+  <h1>My Events</h1>
+  <p>Your hosted events.</p>
+
+  <div id="myEventsContainer">
+    <p style="color: var(--muted2); font-size:13px;">
+      Loading events...
+    </p>
+  </div>
+</div>
+
 
 
   <!-- PROFILE SECTION -->
@@ -470,7 +484,15 @@
   <script type="module">
     import { auth, db, functions } from "/js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
     const connectBtn = document.getElementById("connectBtn");
@@ -481,6 +503,51 @@
     const headline = document.getElementById("headline");
 
     onAuthStateChanged(auth, async (user) => {
+      const myEventsContainer = document.getElementById("myEventsContainer");
+
+async function loadMyEvents(businessId) {
+  const q = query(
+    collection(db, "events"),
+    where("hostBusinessId", "==", businessId),
+    orderBy("createdAt", "desc")
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    myEventsContainer.innerHTML = `
+      <p style="color: var(--muted2); font-size:13px;">
+        No events yet.
+      </p>
+    `;
+    return;
+  }
+
+  myEventsContainer.innerHTML = "";
+
+  snap.forEach(docSnap => {
+    const e = docSnap.data();
+
+    const card = document.createElement("div");
+    card.className = "stat-card";
+    card.style.cursor = "pointer";
+
+    card.innerHTML = `
+      <div style="font-weight:800; margin-bottom:4px;">
+        ${e.title || "Untitled Event"}
+      </div>
+      <div style="font-size:12px; color:var(--muted2);">
+        ${e.startTime ? new Date(e.startTime.seconds * 1000).toLocaleString() : ""}
+      </div>
+    `;
+
+    card.onclick = () => {
+      window.location.href = "/eventDetail.html?id=${docSnap.id}";
+    };
+
+    myEventsContainer.appendChild(card);
+  });
+}
       if (!user) {
         window.location.href = "/signup.html";
         return;
@@ -499,6 +566,12 @@
       }
 
       const ref = doc(db, "businessUsers", user.uid);
+
+      loadMyEvents(user.uid);
+
+      
+
+  
 
       onSnapshot(ref, (snap) => {
         if (!snap.exists()) {
@@ -568,6 +641,7 @@
 
 const sections = {
   dashboard: document.getElementById("bankSection"),
+  events: document.getElementById("eventsSection"),
   profile: document.getElementById("profileSection"),
   host: document.getElementById("hostSection"),
   analytics: document.getElementById("analyticsSection")
