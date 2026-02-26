@@ -104,6 +104,37 @@
       color: var(--muted);
       display: none;
     }
+
+    .btn {
+  position: relative;
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.1);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
   </style>
 </head>
 
@@ -120,29 +151,28 @@
         This allows you to receive ticket payments immediately with no payout delays.
       </p>
 
-      <button class="btn" id="connectBtn">
-        Connect bank account
-      </button>
+<button class="btn" id="connectBtn">
+  <span class="btn-text">Connect bank account</span>
+  <span class="spinner" id="connectSpinner"></span>
+</button>
 
       <button class="btn" id="hostBtn" style="margin-top:12px;">
         Host Event
       </button>
 
-      <div class="loading" id="loadingText">
-        Redirecting to secure Stripe setup…
-      </div>
+     
     </div>
   </div>
 
   <script type="module">
-    import { auth, db } from "/js/firebase.js";
+    import { auth, db, functions } from "/js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { functions } from "/js/firebase.js";
     import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
     const connectBtn = document.getElementById("connectBtn");
-    const loadingText = document.getElementById("loadingText");
+    const connectSpinner = document.getElementById("connectSpinner");
+    const connectBtnText = connectBtn.querySelector(".btn-text");
     const statusBadge = document.getElementById("statusBadge");
     let payoutsEnabled = false;
     const headline = document.getElementById("headline");
@@ -152,6 +182,18 @@
         window.location.href = "/signup.html";
         return;
       }
+
+      // 🔄 Force Stripe → Firestore sync on dashboard load
+try {
+  const syncFn = httpsCallable(
+    functions,
+    "businessStripeOnboarding-checkBusinessStripeAccountStatus"
+  );
+
+  await syncFn();
+} catch (err) {
+  console.error("Stripe sync failed:", err);
+}
 
 const ref = doc(db, "businessUsers", user.uid);
 
@@ -163,9 +205,16 @@ onSnapshot(ref, (snap) => {
 
 const data = snap.data();
 
-payoutsEnabled = data.payoutsEnabled === true;
-const stripeStatus = data.stripeStatus || "incomplete";
-const last4 = data.bankLast4;
+const payouts = data.payouts || {};
+const last4 = payouts.last4 || data.bankLast4 || null;
+
+payoutsEnabled =
+  data.payoutsEnabled === true ||
+  payouts.connected === true;
+
+const stripeStatus =
+  data.stripeStatus ||
+  (payoutsEnabled ? "enabled" : "incomplete");
 
 if (stripeStatus === "enabled") {
   statusBadge.textContent = "Payouts enabled";
@@ -175,25 +224,18 @@ if (stripeStatus === "enabled") {
     ? `Bank account •••• ${last4}`
     : "Bank account connected";
 
-  connectBtn.textContent = "Edit bank account";
+ connectBtnText.textContent = "Edit bank account";
   connectBtn.disabled = false;
 }
 
-if (stripeStatus === "in_review") {
-  statusBadge.textContent = "Stripe reviewing account";
-  statusBadge.className = "badge warn";
 
-  headline.textContent = "Account under review";
-  connectBtn.textContent = "View Stripe details";
-  connectBtn.disabled = false;
-}
 
 if (stripeStatus === "incomplete") {
   statusBadge.textContent = "Payouts not set up";
   statusBadge.className = "badge warn";
 
   headline.textContent = "Connect your bank account";
-  connectBtn.textContent = "Connect bank account";
+  connectBtnText.textContent = "Connect bank account";
   connectBtn.disabled = false;
 }
 });
@@ -201,8 +243,11 @@ if (stripeStatus === "incomplete") {
 
 connectBtn.addEventListener("click", async () => {
   connectBtn.disabled = true;
-  loadingText.style.display = "block";
+  connectSpinner.style.display = "inline-block";
+  connectBtnText.textContent = "Connecting...";
 
+  // Force repaint so spinner appears before async call
+  await new Promise(resolve => setTimeout(resolve, 50));
   try {
     const fn = httpsCallable(
       functions,
@@ -215,7 +260,8 @@ connectBtn.addEventListener("click", async () => {
   } catch (err) {
     alert("Unable to start Stripe setup.");
     connectBtn.disabled = false;
-    loadingText.style.display = "none";
+    connectSpinner.style.display = "none";
+    connectBtnText.textContent = "Connect bank account";
   }
 });
 
@@ -227,8 +273,7 @@ hostBtn.addEventListener("click", async () => {
     return;
   }
 
-  hostBtn.disabled = true;
-  loadingText.style.display = "block";
+
 
   try {
     const fn = httpsCallable(
@@ -241,8 +286,6 @@ hostBtn.addEventListener("click", async () => {
 
   } catch (err) {
     alert("Unable to start Stripe setup.");
-    hostBtn.disabled = false;
-    loadingText.style.display = "none";
   }
 });
   </script>

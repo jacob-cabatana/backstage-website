@@ -146,8 +146,8 @@
 
   <script type="module">
     import { auth, db } from "/js/firebase.js";
-    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const form = document.getElementById("loginForm");
     const btn = document.getElementById("submitBtn");
@@ -186,21 +186,18 @@
 
         if (!snap.exists()) {
           showError("No host account found for this email.");
-          await auth.signOut();
+          await signOut(auth);
           return;
         }
 
         const data = snap.data();
 
-        if (data.payoutsEnabled === true) {
-          window.location.href = "/hostEvent.html";
-        } else {
-          window.location.href = "/dashboard.html";
-        }
+window.location.href = "/dashboard.html";
 
       } catch (err) {
-        showError("Invalid email or password.");
-      } finally {
+  console.error(err);
+  showError("Login failed. Check your email and password.");
+} finally {
         btn.disabled = false;
         btn.textContent = "Log in";
       }
