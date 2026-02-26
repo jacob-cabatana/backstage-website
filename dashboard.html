@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Backstage Events • Host Dashboard</title>
+  <link rel="stylesheet" href="/css/my-events.css">
 
   <style>
     :root{
@@ -421,7 +422,7 @@
   <h1>My Events</h1>
   <p>Your hosted events.</p>
 
-  <div id="myEventsContainer">
+  <div id="myEventsContainer" class="my-events-list">
     <p style="color: var(--muted2); font-size:13px;">
       Loading events...
     </p>
@@ -507,8 +508,8 @@
 
 async function loadMyEvents(businessId) {
   const q = query(
-    collection(db, "events"),
-    where("hostBusinessId", "==", businessId),
+    collection(db, "parties"),
+    where("hostUid", "==", businessId),
     orderBy("createdAt", "desc")
   );
 
@@ -528,18 +529,69 @@ async function loadMyEvents(businessId) {
   snap.forEach(docSnap => {
     const e = docSnap.data();
 
-    const card = document.createElement("div");
-    card.className = "stat-card";
+const card = document.createElement("div");
+card.className = "event-card";
     card.style.cursor = "pointer";
 
-    card.innerHTML = `
-      <div style="font-weight:800; margin-bottom:4px;">
-        ${e.title || "Untitled Event"}
+const now = Date.now();
+const isLive = e.startsAt?.seconds * 1000 <= now && e.endsAt?.seconds * 1000 >= now;
+
+card.innerHTML = `
+  <div class="event-header">
+    <div class="event-title">${e.title || "Untitled Event"}</div>
+    ${isLive ? `<div class="event-status">LIVE</div>` : ``}
+  </div>
+
+  <div class="event-location">${e.location || ""}</div>
+
+  <div class="event-grid">
+    <div class="event-stat">
+      <div class="event-stat-label">Starts</div>
+      <div class="event-stat-value">
+        ${new Date(e.startsAt.seconds * 1000).toLocaleString()}
       </div>
-      <div style="font-size:12px; color:var(--muted2);">
-        ${e.startTime ? new Date(e.startTime.seconds * 1000).toLocaleString() : ""}
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Admission</div>
+      <div class="event-stat-value">$${e.admissionPrice ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Sold</div>
+      <div class="event-stat-value">${e.soldCount ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Door Men</div>
+      <div class="event-stat-value">$${e.doorPriceMen ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Door Women</div>
+      <div class="event-stat-value">$${e.doorPriceWomen ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Free Tickets</div>
+      <div class="event-stat-value">
+        ${e.freeMaleClaimed ?? 0}/${e.freeMaleTotal ?? 0} M ·
+        ${e.freeFemaleClaimed ?? 0}/${e.freeFemaleTotal ?? 0} F
       </div>
-    `;
+    </div>
+  </div>
+
+  <div class="event-footer">
+    <div class="door-code">
+      Door Code: ${e.doorCode?.code ?? "—"}
+    </div>
+
+    <div class="event-actions">
+      <button class="event-btn">Edit</button>
+      <button class="event-btn">View</button>
+    </div>
+  </div>
+`;
 
     card.onclick = () => {
       window.location.href = "/eventDetail.html?id=${docSnap.id}";
