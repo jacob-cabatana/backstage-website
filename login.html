@@ -146,10 +146,28 @@
 
   <script type="module">
     import { auth, db } from "/js/firebase.js";
-    import { signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserLocalPersistence 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const form = document.getElementById("loginForm");
+    await setPersistence(auth, browserLocalPersistence);
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const snap = await getDoc(doc(db, "businessUsers", user.uid));
+    if (snap.exists()) {
+      window.location.href = "/dashboard.html";
+    } else {
+      await signOut(auth);
+    }
+  }
+});
     const btn = document.getElementById("submitBtn");
     const errorBox = document.getElementById("errorBox");
 
