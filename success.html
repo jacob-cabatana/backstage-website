@@ -402,8 +402,12 @@ const codesHtml = data.codes
           `;
 
         } else {
-          document.getElementById("message").innerText =
-            "Payment confirmed, but no ticket codes were returned.";
+       document.getElementById("message").innerText =
+  "Finalizing your ticket… this may take a moment.";
+
+setTimeout(() => {
+  window.location.reload();
+}, 1500);
         }
 
       })
