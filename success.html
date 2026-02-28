@@ -377,29 +377,36 @@ const codesHtml = data.codes
   })
   .join("");
 
-          document.getElementById("message").innerHTML = `
-            <p style="margin:8px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
-              Use the code(s) below to redeem inside the Backstage app
-            </p>
-            <div class="codes">
-              ${codesHtml}
-            </div>
-            <p style="margin:16px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
-              Download the Backstage app and enter your code to access your ticket
-            </p>
-            <a
-              class="appstore"
-              href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="/assets/app-store-badge.svg"
-                alt="Download on the App Store"
-                style="height:48px;"
-              />
-            </a>
-          `;
+document.getElementById("message").innerHTML = `
+  <p style="margin:8px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
+    Use the code(s) below to redeem inside the Backstage app
+  </p>
+
+  <div class="codes">
+    ${codesHtml}
+  </div>
+
+  <p style="margin:12px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
+    We also emailed you your ticket code in case you forget
+  </p>
+
+  <p style="margin:16px 0 0; color: rgba(255,255,255,0.68); font-weight:600;">
+    Download the Backstage app and enter your code to access your ticket
+  </p>
+
+  <a
+    class="appstore"
+    href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img
+      src="/assets/app-store-badge.svg"
+      alt="Download on the App Store"
+      style="height:48px;"
+    />
+  </a>
+`;
 
         } else {
        document.getElementById("message").innerText =
