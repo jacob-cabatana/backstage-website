@@ -4,7 +4,7 @@
     "details": [
       {
         "appID": "682DHS6NJT.com.jacobcabatana.backstage",
-        "paths": ["/party/*"]
+        "paths": ["/auth*", "/party/*"]
       }
     ]
   }

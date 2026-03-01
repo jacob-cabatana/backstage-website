@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backstage — Account Verified</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #191422;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .container {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .card {
+      max-width: 420px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 28px;
+    }
+
+    .button {
+      display: inline-block;
+      width: 90%;
+      padding: 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #6F1EFF, #5D03FF);
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 14px 30px rgba(111, 30, 255, 0.45);
+    }
+
+    .subtle {
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Account verified</h1>
+      <p>
+        Your email has been confirmed.<br />
+        Tap below to return to Backstage and finish locking in your account.
+      </p>
+
+      <a id="openApp" class="button" href="#">
+        Open Backstage
+      </a>
+
+      <div class="subtle">
+        If nothing happens, make sure the app is installed.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // CHANGE THIS TO YOUR CUSTOM SCHEME
+      const APP_SCHEME_URL = "backstage://auth-complete";
+
+      const appLink = document.getElementById("openApp");
+
+      appLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.location.href = APP_SCHEME_URL;
+      });
+
+      // Optional: auto-attempt after short delay
+      setTimeout(() => {
+        window.location.href = APP_SCHEME_URL;
+      }, 600);
+    })();
+  </script>
+</body>
+</html>
