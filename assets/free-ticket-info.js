@@ -144,7 +144,7 @@ try {
   // 2️⃣ Get download URL
   const downloadURL = await getDownloadURL(photoRef);
 
-    // 3️⃣ Write photo URL to ticket doc
+  // 3️⃣ Write photo URL to ticket doc
 const attachRes = await fetch(
   "https://us-central1-backstageapp-27cb3.cloudfunctions.net/attachTicketPhoto",
   
@@ -158,12 +158,7 @@ const attachRes = await fetch(
       })
     }
   );
-  if (!attachRes.ok) {
-  alert("Failed to attach photo to ticket.");
-  button.classList.remove("loading");
-  button.disabled = false;
-  return;
-}
+  
 
       const rawCode = data.acquireCode;
       const formattedCode = rawCode.slice(0, 4) + " - " + rawCode.slice(4);

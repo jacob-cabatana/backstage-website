@@ -1,3 +1,23 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAOftoMjETRbr3v7zncb-kVvLewkpmE2n0",
+  authDomain: "backstageapp-27cb3.firebaseapp.com",
+  projectId: "backstageapp-27cb3",
+  storageBucket: "backstageapp-27cb3.firebasestorage.app",
+  messagingSenderId: "148403387572",
+  appId: "1:148403387572:web:98e9369e385a8449046be1"
+};
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
 const tickets = JSON.parse(sessionStorage.getItem("checkout_tickets") || "[]");
 const eventId = sessionStorage.getItem("checkout_event_id");
 
@@ -9,6 +29,11 @@ const firstName = document.getElementById("first-name");
 const lastName = document.getElementById("last-name");
 const email = document.getElementById("email");
 const button = document.getElementById("final-pay-button");
+const photoInput = document.getElementById("profile-photo");
+const photoPreview = document.getElementById("profile-preview");
+const photoPlus = document.querySelector(".photo-plus");
+
+let profilePhotoFile = null;
 const promoDigits = document.querySelectorAll(".promo-digit");
 const promoFeedback = document.getElementById("promo-feedback");
 const applyButton = document.getElementById("apply-promo");
@@ -51,10 +76,11 @@ function isValidEmail(value) {
 }
 
 function validate() {
-  const valid =
-    firstName.value.trim().length > 0 &&
-    lastName.value.trim().length > 0 &&
-    isValidEmail(email.value.trim());
+const valid =
+  firstName.value.trim().length > 0 &&
+  lastName.value.trim().length > 0 &&
+  isValidEmail(email.value.trim()) &&
+  profilePhotoFile;
 
   button.disabled = !valid;
 
@@ -66,6 +92,21 @@ function validate() {
 firstName.addEventListener("input", validate);
 lastName.addEventListener("input", validate);
 email.addEventListener("input", validate);
+photoInput.addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  profilePhotoFile = file;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    photoPreview.src = reader.result;
+    photoPreview.style.display = "block";
+    photoPlus.style.display = "none";
+    validate();
+  };
+  reader.readAsDataURL(file);
+});
 
 async function verifyPromoIfNeeded() {
   const code = Array.from(promoDigits)
@@ -159,10 +200,32 @@ if (!promoOk) return;
 
     const data = await response.json();
 
-    if (data.url) {
-      window.location.href = data.url;
-      return;
+if (data.url && data.checkoutSessionId) {
+
+  const photoRef = ref(
+    storage,
+    `ticketProfiles/${eventId}/${data.checkoutSessionId}.jpg`
+  );
+
+  await uploadBytes(photoRef, profilePhotoFile);
+  const photoURL = await getDownloadURL(photoRef);
+
+  await fetch(
+    "https://us-central1-backstageapp-27cb3.cloudfunctions.net/attachPaidTicketPhoto",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventId,
+        checkoutSessionId: data.checkoutSessionId,
+        photoURL
+      })
     }
+  );
+
+  window.location.href = data.url;
+  return;
+}
 
     throw new Error("No checkout URL returned");
 

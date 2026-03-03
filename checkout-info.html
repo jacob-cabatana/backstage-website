@@ -58,6 +58,49 @@
   width: 100%;
 }
 
+.photo-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.photo-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(135deg, #9c4ff2, #225cda) border-box;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.photo-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.photo-plus {
+  font-size: 36px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  position: absolute;
+}
+
+#profile-photo {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
     .name-row {
       display: flex;
       gap: 12px;
@@ -276,6 +319,18 @@
 
 
     <div class="buyer-form">
+      <div class="photo-picker">
+  <label class="photo-circle">
+    <img id="profile-preview" />
+    <div class="photo-plus">+</div>
+    <input
+      id="profile-photo"
+      type="file"
+      accept="image/*"
+      required
+    />
+  </label>
+</div>
       <div class="name-row">
         <input id="first-name" type="text" placeholder="First Name" />
         <input id="last-name" type="text" placeholder="Last Name" />
