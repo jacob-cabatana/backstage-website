@@ -1,5 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
   getAuth,
   signInAnonymously
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -20,6 +26,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const functions = getFunctions(app);
+const storage = getStorage(app);
 
 const params = new URLSearchParams(window.location.search);
 const partyId = params.get("partyId");
@@ -32,7 +39,12 @@ console.log("ticketType:", ticketType);
 const firstNameInput = document.getElementById("first-name");
 const lastNameInput = document.getElementById("last-name");
 const emailInput = document.getElementById("email");
+const photoInput = document.getElementById("profile-photo");
+const photoPreview = document.getElementById("profile-preview");
+const photoPlus = document.querySelector(".photo-plus");
 const button = document.getElementById("claim-free-button");
+
+let profilePhotoFile = null;
 const codeDisplay = document.getElementById("code-display");
 const codeEl = document.getElementById("acquire-code");
 const copyButton = document.getElementById("copy-code-button");
@@ -53,10 +65,11 @@ console.log("first:", first);
 console.log("last:", last);
 console.log("email:", email);
 
-  const valid =
-    first.length > 1 &&
-    last.length > 1 &&
-    email.includes("@");
+const valid =
+  first.length > 1 &&
+  last.length > 1 &&
+  email.includes("@") &&
+  profilePhotoFile;
 
   button.disabled = !valid;
 }
@@ -64,8 +77,24 @@ console.log("email:", email);
 firstNameInput.addEventListener("input", validateForm);
 lastNameInput.addEventListener("input", validateForm);
 emailInput.addEventListener("input", validateForm);
+photoInput.addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  profilePhotoFile = file;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    photoPreview.src = reader.result;
+    photoPreview.style.display = "block";
+    photoPlus.style.display = "none";
+    validateForm();
+  };
+  reader.readAsDataURL(file);
+});
 
 button.addEventListener("click", async () => {
+  if (button.classList.contains("loading")) return;
 
   const firstName = firstNameInput.value.trim();
   const lastName = lastNameInput.value.trim();
@@ -94,7 +123,47 @@ const result = await claimFreeTicket({
 
 const data = result.data;
 
-    if (data && data.acquireCode) {
+   if (data && data.acquireCode) {
+
+  const acquireCode = data.acquireCode;
+
+  // 1️⃣ Upload photo to Storage
+  const photoRef = ref(
+    storage,
+    `ticketProfiles/${partyId}/${acquireCode}.jpg`
+  );
+try {
+  await uploadBytes(photoRef, profilePhotoFile);
+} catch (e) {
+  alert("Photo upload failed. Please try again.");
+  button.classList.remove("loading");
+  button.disabled = false;
+  return;
+}
+
+  // 2️⃣ Get download URL
+  const downloadURL = await getDownloadURL(photoRef);
+
+    // 3️⃣ Write photo URL to ticket doc
+const attachRes = await fetch(
+  "https://us-central1-backstageapp-27cb3.cloudfunctions.net/attachTicketPhoto",
+  
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        partyId,
+        acquireCode,
+        photoURL: downloadURL
+      })
+    }
+  );
+  if (!attachRes.ok) {
+  alert("Failed to attach photo to ticket.");
+  button.classList.remove("loading");
+  button.disabled = false;
+  return;
+}
 
       const rawCode = data.acquireCode;
       const formattedCode = rawCode.slice(0, 4) + " - " + rawCode.slice(4);

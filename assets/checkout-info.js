@@ -238,4 +238,3 @@ if (data.valid) {
   applyButton.classList.remove("loading");
   applyButton.disabled = false;
 });
-
