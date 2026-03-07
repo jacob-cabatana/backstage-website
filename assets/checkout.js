@@ -6,11 +6,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import {
-  getFunctions,
-  httpsCallable
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
-
-import {
   getAuth,
   signInAnonymously,
   onAuthStateChanged
@@ -28,14 +23,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const functions = getFunctions(app);
 const auth = getAuth(app);
 
 const params = new URLSearchParams(window.location.search);
 const eventId = params.get("id");
 
 const container = document.getElementById("checkout-event");
+
 let currentUser = null;
+let activePhase = null;
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -45,18 +41,16 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-
-
 function calculateAllIn(unitPrice, quantity) {
 
   if (!unitPrice || unitPrice === 0) {
     return { total: 0 };
   }
 
-  const LOW_THRESHOLD = 7.00;
+  const LOW_THRESHOLD = 7;
   const LOW_FEE = 2.99;
   const STANDARD_FEE = 4.99;
-  const PER_TICKET_FEE = 3.99; // matches backend perTicketFee
+  const PER_TICKET_FEE = 3.99;
 
   const subtotal = unitPrice * quantity;
 
@@ -70,11 +64,92 @@ function calculateAllIn(unitPrice, quantity) {
 
   const preliminary = subtotal + fee;
 
-  const stripeFee = (preliminary * 0.029) + 0.30;
+  const stripeFee = preliminary * 0.029 + 0.30;
 
   const total = preliminary + stripeFee;
 
   return { total };
+}
+
+function parseFirestoreDate(value) {
+
+  if (!value) return null;
+
+  if (value instanceof Date) return value;
+
+  if (typeof value?.toDate === "function") {
+    return value.toDate();
+  }
+
+  if (typeof value?.seconds === "number") {
+    return new Date(value.seconds * 1000);
+  }
+
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  return null;
+}
+
+function getSortedPhases(ticketPhases = []) {
+
+  return [...ticketPhases].sort((a, b) => {
+
+    const aDate = parseFirestoreDate(a.expiresAt) || new Date("9999-12-31");
+    const bDate = parseFirestoreDate(b.expiresAt) || new Date("9999-12-31");
+
+    return aDate - bDate;
+  });
+}
+
+function getActivePhase(ticketPhases = []) {
+
+  const now = new Date();
+
+  const sorted = getSortedPhases(ticketPhases);
+
+  const active = sorted.find((phase) => {
+
+    const expiresAt = parseFirestoreDate(phase.expiresAt);
+    return expiresAt && now < expiresAt;
+
+  });
+
+  return active || sorted[sorted.length - 1] || null;
+}
+
+function getPhaseCountdown(phase) {
+
+  if (!phase) return "";
+
+  const expiresAt = parseFirestoreDate(phase.expiresAt);
+
+  if (!expiresAt) return "";
+
+  const now = new Date();
+  const seconds = Math.floor((expiresAt - now) / 1000);
+
+  if (seconds <= 0) return "";
+
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    return `⏳ Price increases in ${days} day${days > 1 ? "s" : ""}`;
+  }
+
+  if (hours > 0) {
+    return `⏳ Price increases in ${hours} hour${hours > 1 ? "s" : ""}`;
+  }
+
+  return `⏳ Price increases in ${minutes} minute${minutes > 1 ? "s" : ""}`;
+}
+
+function formatMoney(value) {
+  return `$${Number(value || 0).toFixed(2)}`;
 }
 
 async function loadCheckout() {
@@ -96,175 +171,165 @@ async function loadCheckout() {
 
   let freeHTML = "";
 
-if (event.freeTicketsEnabled === true) {
+  if (event.freeTicketsEnabled === true) {
 
-  const maleRemaining =
-    (event.freeMaleTotal || 0) - (event.freeMaleClaimed || 0);
+    const maleRemaining =
+      (event.freeMaleTotal || 0) - (event.freeMaleClaimed || 0);
 
-  const femaleRemaining =
-    (event.freeFemaleTotal || 0) - (event.freeFemaleClaimed || 0);
+    const femaleRemaining =
+      (event.freeFemaleTotal || 0) - (event.freeFemaleClaimed || 0);
 
-if (maleRemaining > 0) {
-  freeHTML += `
-    <div class="price-card free-ticket" data-gender="men">
-      <h3>Free Male Ticket</h3>
-      <p class="price-label">${maleRemaining} free left</p>
-      <p style="font-size: 0.85rem; margin: 6px 0 12px 0; color: white;">
-        <span style="color: red; font-weight: 600;">Disclaimer:</span>
-        Verifying gender at the door. If you have the wrong ticket type, you will be charged double.
-      </p>
-      <button class="claim-free">Claim Free Ticket</button>
-    </div>
-  `;
-}
+    if (maleRemaining > 0) {
 
-if (femaleRemaining > 0) {
-  freeHTML += `
-    <div class="price-card free-ticket" data-gender="women">
-      <h3>Free Female Ticket</h3>
-      <p class="price-label">${femaleRemaining} free left</p>
-      <p style="font-size: 0.85rem; margin: 6px 0 12px 0; color: white;">
-        <span style="color: red; font-weight: 600;">Disclaimer:</span>
-        Verifying gender at the door. If you have the wrong ticket type, you will be charged double.
-      </p>
-      <button class="claim-free">Claim Free Ticket</button>
-    </div>
-  `;
-}
-}
+      freeHTML += `
+      <div class="price-card free-ticket" data-gender="men">
+        <h3>Free Male Ticket</h3>
+        <p class="price-label">${maleRemaining} free left</p>
+        <button class="claim-free">Claim Free Ticket</button>
+      </div>`;
+    }
+
+    if (femaleRemaining > 0) {
+
+      freeHTML += `
+      <div class="price-card free-ticket" data-gender="women">
+        <h3>Free Female Ticket</h3>
+        <p class="price-label">${femaleRemaining} free left</p>
+        <button class="claim-free">Claim Free Ticket</button>
+      </div>`;
+    }
+  }
 
   let pricingHTML = "";
 
-  if (event.genderTicketPricing === true) {
+  if (event.pricingMode === "phases" && Array.isArray(event.ticketPhases)) {
 
-    const maleAllIn = calculateAllIn(event.maleTicketPrice || 0, 1).total;
-    const femaleAllIn = calculateAllIn(event.femaleTicketPrice || 0, 1).total;
+    activePhase = getActivePhase(event.ticketPhases);
+
+    const malePrice = Number(activePhase?.malePrice || 0);
+    const femalePrice = Number(activePhase?.femalePrice || 0);
+
+    const maleAllIn = calculateAllIn(malePrice, 1).total;
+    const femaleAllIn = calculateAllIn(femalePrice, 1).total;
+
+    const phaseText = getPhaseCountdown(activePhase);
 
     pricingHTML = `
-      <div class="price-card" data-price="${event.maleTicketPrice || 0}">
+      <div class="price-card"
+        data-ticket-type="men"
+        data-price="${malePrice}"
+        data-phase-name="${activePhase?.name || ""}">
+
         <h3>Male Ticket</h3>
-        <p class="price-label">Price: $${maleAllIn.toFixed(2)} </p>
+        <p class="phase-label">${activePhase?.name || ""}</p>
+        <p class="phase-timer">${phaseText}</p>
+        <p class="price-label">Price: ${formatMoney(maleAllIn)}</p>
+
         <div class="quantity-controls">
           <button class="minus">−</button>
           <span class="quantity">0</span>
           <button class="plus">+</button>
         </div>
+
       </div>
 
-      <div class="price-card" data-price="${event.femaleTicketPrice || 0}">
+      <div class="price-card"
+        data-ticket-type="women"
+        data-price="${femalePrice}"
+        data-phase-name="${activePhase?.name || ""}">
+
         <h3>Female Ticket</h3>
-        <p class="price-label">Price: $${femaleAllIn.toFixed(2)} </p>
+        <p class="phase-label">${activePhase?.name || ""}</p>
+        <p class="phase-timer">${phaseText}</p>
+        <p class="price-label">Price: ${formatMoney(femaleAllIn)}</p>
+
         <div class="quantity-controls">
           <button class="minus">−</button>
           <span class="quantity">0</span>
           <button class="plus">+</button>
         </div>
-      </div>
-    `;
 
-  } else {
-
-    const allIn = calculateAllIn(event.admissionPrice || 0, 1).total;
-
-    pricingHTML = `
-      <div class="price-card" data-price="${event.admissionPrice || 0}">
-        <h3>Secure Ticket</h3>
-        <p class="price-label">Price: $${allIn.toFixed(2)} </p>
-        <div class="quantity-controls">
-          <button class="minus">−</button>
-          <span class="quantity">1</span>
-          <button class="plus">+</button>
-        </div>
       </div>
     `;
   }
 
-container.innerHTML = `
-  <div class="checkout-card">
-    <h2>${event.title}</h2>
-    ${freeHTML}
-    ${pricingHTML}
-    <div id="global-total" class="global-total">
-      Total: —
+  container.innerHTML = `
+    <div class="checkout-card">
+      <h2>${event.title}</h2>
+      ${freeHTML}
+      ${pricingHTML}
+      <div id="global-total" class="global-total">
+        Total: $0.00
+      </div>
     </div>
-  </div>
-`;
+  `;
 
-document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
+  document.querySelectorAll(".plus").forEach(btn => {
 
-  const unitPrice = Number(card.dataset.price);
-  const quantityEl = card.querySelector(".quantity");
-  const plusBtn = card.querySelector(".plus");
-  const minusBtn = card.querySelector(".minus");
+    btn.onclick = () => {
 
-  // Increase quantity
-  plusBtn.onclick = () => {
-    const current = Number(quantityEl.innerText);
-    quantityEl.innerText = current + 1;
-    updateGlobalTotal();
-  };
+      const qty = btn.parentElement.querySelector(".quantity");
 
-  // Decrease quantity
-  minusBtn.onclick = () => {
-    const current = Number(quantityEl.innerText);
-    if (current > 0) {
-      quantityEl.innerText = current - 1;
-      updateGlobalTotal();
-    }
-  };
+      qty.innerText = Number(qty.innerText) + 1;
 
-});
-
-
-function updateGlobalTotal() {
-
-  let total = 0;
-
-  document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
-
-    const unitPrice = Number(card.dataset.price);
-    const qty = Number(card.querySelector(".quantity").innerText);
-
-    if (qty > 0) {
-      const calc = calculateAllIn(unitPrice, qty);
-      total += calc.total;
-    }
-
+      updateTotal();
+    };
   });
 
-  const totalEl = document.getElementById("global-total");
+  document.querySelectorAll(".minus").forEach(btn => {
 
-  totalEl.innerText =
-    total > 0
-      ? `Total: $${total.toFixed(2)} All-In`
-      : `Total: $0.00`;
-}
+    btn.onclick = () => {
 
-/* AUTO SELECT FIRST CARD */
-const firstCard = document.querySelector(".price-card");
+      const qty = btn.parentElement.querySelector(".quantity");
 
-const checkoutBtn = document.getElementById("checkout-button");
+      const current = Number(qty.innerText);
 
-if (checkoutBtn) {
+      if (current > 0) {
+        qty.innerText = current - 1;
+        updateTotal();
+      }
+    };
+  });
+
+  function updateTotal() {
+
+    let total = 0;
+
+    document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
+
+      const price = Number(card.dataset.price);
+      const qty = Number(card.querySelector(".quantity").innerText);
+
+      if (qty > 0) {
+
+        const calc = calculateAllIn(price, qty);
+
+        total += calc.total;
+      }
+    });
+
+    document.getElementById("global-total").innerText =
+      `Total: $${total.toFixed(2)} All In`;
+  }
+
+  const checkoutBtn = document.getElementById("checkout-button");
+
   checkoutBtn.onclick = () => {
 
     const selectedTickets = [];
 
     document.querySelectorAll(".price-card:not(.free-ticket)").forEach(card => {
-      const unitPrice = Number(card.dataset.price);
-      const qty = Number(card.querySelector(".quantity")?.innerText || 0);
+
+      const qty = Number(card.querySelector(".quantity").innerText);
 
       if (qty > 0) {
-        const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
 
         selectedTickets.push({
-          ticketType: title.includes("female")
-            ? "women"
-            : title.includes("male")
-            ? "men"
-            : "general",
+          ticketType: card.dataset.ticketType,
           quantity: qty,
-          unitPrice: unitPrice
+          unitPrice: Number(card.dataset.price),
+          pricingMode: "phases",
+          phaseName: card.dataset.phaseName
         });
       }
     });
@@ -277,29 +342,32 @@ if (checkoutBtn) {
     sessionStorage.setItem("checkout_tickets", JSON.stringify(selectedTickets));
     sessionStorage.setItem("checkout_event_id", eventId);
 
+    if (activePhase) {
+
+      sessionStorage.setItem(
+        "checkout_phase",
+        JSON.stringify({
+          name: activePhase.name,
+          expiresAt: parseFirestoreDate(activePhase.expiresAt)?.toISOString()
+        })
+      );
+    }
+
     window.location.href = "/checkout-info.html";
   };
-}
 
-if (firstCard) {
-  firstCard.click();
-}
+  document.querySelectorAll(".claim-free").forEach(btn => {
 
-document.querySelectorAll(".claim-free").forEach(button => {
+    btn.onclick = (e) => {
 
-  button.onclick = (e) => {
+      e.preventDefault();
 
-    e.preventDefault();
+      const gender = btn.closest(".free-ticket").dataset.gender;
 
-    const card = button.closest(".free-ticket");
-    const gender = card.dataset.gender;
-
-window.location.href = `/free-ticket-info.html?partyId=${eventId}&type=${gender}`;
-  };
-
-});
-  
+      window.location.href =
+        `/free-ticket-info.html?partyId=${eventId}&type=${gender}`;
+    };
+  });
 }
 
 loadCheckout();
-
