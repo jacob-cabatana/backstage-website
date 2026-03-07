@@ -202,56 +202,46 @@ async function loadCheckout() {
 
   let pricingHTML = "";
 
-  if (event.pricingMode === "phases" && Array.isArray(event.ticketPhases)) {
+if (event.genderTicketPricing === true) {
 
-    activePhase = getActivePhase(event.ticketPhases);
+  const malePrice = Number(event.maleTicketPrice || 0);
+  const femalePrice = Number(event.femaleTicketPrice || 0);
 
-    const malePrice = Number(activePhase?.malePrice || 0);
-    const femalePrice = Number(activePhase?.femalePrice || 0);
+  const maleAllIn = calculateAllIn(malePrice, 1).total;
+  const femaleAllIn = calculateAllIn(femalePrice, 1).total;
 
-    const maleAllIn = calculateAllIn(malePrice, 1).total;
-    const femaleAllIn = calculateAllIn(femalePrice, 1).total;
+  pricingHTML = `
+    <div class="price-card"
+      data-ticket-type="men"
+      data-price="${malePrice}">
 
-    const phaseText = getPhaseCountdown(activePhase);
+      <h3>Male Ticket</h3>
+      <p class="price-label">Price: ${formatMoney(maleAllIn)}</p>
 
-    pricingHTML = `
-      <div class="price-card"
-        data-ticket-type="men"
-        data-price="${malePrice}"
-        data-phase-name="${activePhase?.name || ""}">
-
-        <h3>Male Ticket</h3>
-        <p class="phase-label">${activePhase?.name || ""}</p>
-        <p class="phase-timer">${phaseText}</p>
-        <p class="price-label">Price: ${formatMoney(maleAllIn)}</p>
-
-        <div class="quantity-controls">
-          <button class="minus">−</button>
-          <span class="quantity">0</span>
-          <button class="plus">+</button>
-        </div>
-
+      <div class="quantity-controls">
+        <button class="minus">−</button>
+        <span class="quantity">0</span>
+        <button class="plus">+</button>
       </div>
 
-      <div class="price-card"
-        data-ticket-type="women"
-        data-price="${femalePrice}"
-        data-phase-name="${activePhase?.name || ""}">
+    </div>
 
-        <h3>Female Ticket</h3>
-        <p class="phase-label">${activePhase?.name || ""}</p>
-        <p class="phase-timer">${phaseText}</p>
-        <p class="price-label">Price: ${formatMoney(femaleAllIn)}</p>
+    <div class="price-card"
+      data-ticket-type="women"
+      data-price="${femalePrice}">
 
-        <div class="quantity-controls">
-          <button class="minus">−</button>
-          <span class="quantity">0</span>
-          <button class="plus">+</button>
-        </div>
+      <h3>Female Ticket</h3>
+      <p class="price-label">Price: ${formatMoney(femaleAllIn)}</p>
 
+      <div class="quantity-controls">
+        <button class="minus">−</button>
+        <span class="quantity">0</span>
+        <button class="plus">+</button>
       </div>
-    `;
-  }
+
+    </div>
+  `;
+}
 
   container.innerHTML = `
     <div class="checkout-card">
