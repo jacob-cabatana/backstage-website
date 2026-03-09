@@ -168,6 +168,7 @@ async function loadCheckout() {
   }
 
   const event = docSnap.data();
+  activePhase = getActivePhase(event.ticketPhases || []);
 
   let freeHTML = "";
 
@@ -186,6 +187,7 @@ async function loadCheckout() {
         <h3>Free Male Ticket</h3>
         <p class="price-label">${maleRemaining} free left</p>
         <button class="claim-free">Claim Free Ticket</button>
+        <p class="free-disclaimer">Disclaimer: Verifying ticket type at the door. If wrong ticket type is purchased, you will be charged double.</p>
       </div>`;
     }
 
@@ -195,28 +197,46 @@ async function loadCheckout() {
       <div class="price-card free-ticket" data-gender="women">
         <h3>Free Female Ticket</h3>
         <p class="price-label">${femaleRemaining} free left</p>
-        <button class="claim-free">Claim Free Ticket</button>
+       <button class="claim-free">Claim Free Ticket</button>
+      <p class="free-disclaimer">Disclaimer: Verifying ticket type at the door. If wrong ticket type is purchased, you will be charged double.</p>
       </div>`;
     }
   }
 
   let pricingHTML = "";
 
-if (event.genderTicketPricing === true) {
+if (event.pricingMode === "phases" || event.genderTicketPricing === true) {
 
-  const malePrice = Number(event.maleTicketPrice || 0);
-  const femalePrice = Number(event.femaleTicketPrice || 0);
+let malePrice = Number(event.maleTicketPrice || 0);
+let femalePrice = Number(event.femaleTicketPrice || 0);
+
+if (event.pricingMode === "phases" && event.ticketPhases?.length) {
+
+  activePhase = getActivePhase(event.ticketPhases);
+
+  if (activePhase?.malePrice !== undefined) {
+    malePrice = Number(activePhase.malePrice);
+  }
+
+  if (activePhase?.femalePrice !== undefined) {
+    femalePrice = Number(activePhase.femalePrice);
+  }
+
+}
 
   const maleAllIn = calculateAllIn(malePrice, 1).total;
   const femaleAllIn = calculateAllIn(femalePrice, 1).total;
 
   pricingHTML = `
-    <div class="price-card"
-      data-ticket-type="men"
-      data-price="${malePrice}">
+<div class="price-card"
+  data-ticket-type="men"
+  data-price="${malePrice}"
+  data-phase-name="${activePhase?.name || ''}">
 
-      <h3>Male Ticket</h3>
-      <p class="price-label">Price: ${formatMoney(maleAllIn)}</p>
+<h3>Male Ticket</h3>
+<p class="phase-label">${activePhase?.name || ""}</p>
+<p class="phase-timer">${getPhaseCountdown(activePhase)}</p>
+<p class="price-label">Price: ${formatMoney(maleAllIn)}</p>
 
       <div class="quantity-controls">
         <button class="minus">−</button>
@@ -226,12 +246,15 @@ if (event.genderTicketPricing === true) {
 
     </div>
 
-    <div class="price-card"
-      data-ticket-type="women"
-      data-price="${femalePrice}">
+<div class="price-card"
+  data-ticket-type="women"
+  data-price="${femalePrice}"
+  data-phase-name="${activePhase?.name || ''}">
 
-      <h3>Female Ticket</h3>
-      <p class="price-label">Price: ${formatMoney(femaleAllIn)}</p>
+<h3>Female Ticket</h3>
+<p class="phase-label">${activePhase?.name || ""}</p>
+<p class="phase-timer">${getPhaseCountdown(activePhase)}</p>
+<p class="price-label">Price: ${formatMoney(femaleAllIn)}</p>
 
       <div class="quantity-controls">
         <button class="minus">−</button>
@@ -247,7 +270,7 @@ if (event.genderTicketPricing === true) {
     <div class="checkout-card">
       <h2>${event.title}</h2>
       ${freeHTML}
-      ${pricingHTML}
+        ${pricingHTML}
       <div id="global-total" class="global-total">
         Total: $0.00
       </div>
