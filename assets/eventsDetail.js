@@ -4,7 +4,9 @@ import {
   doc,
   getDoc,
   collection,
-  getDocs
+  getDocs,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -27,137 +29,141 @@ async function loadEventDetail() {
 
   const el = document.getElementById("event-detail");
 
-  try {
+  if (!eventId) {
+    el.innerHTML = "<p>Missing event id.</p>";
+    return;
+  }
 
-    if (!el) {
-      document.body.innerHTML = "<p>Missing #event-detail container</p>";
-      return;
-    }
+  // Load event
+  const eventDoc = await getDoc(doc(db, "parties", eventId));
 
-    el.innerHTML = "<p>Loading…</p>";
+  if (!eventDoc.exists()) {
+    el.innerHTML = "<p>Event not found.</p>";
+    return;
+  }
 
-    if (!eventId) {
-      el.innerHTML = "<p>Missing event id in URL.</p>";
-      return;
-    }
+  const event = eventDoc.data();
 
-    // Get event
-    const docRef = doc(db, "parties", eventId);
-    const docSnap = await getDoc(docRef);
+  const startDate = event.startsAt?.seconds
+    ? new Date(event.startsAt.seconds * 1000)
+    : null;
 
-    if (!docSnap.exists()) {
-      el.innerHTML = "<p>Event not found.</p>";
-      return;
-    }
+  const formattedDate = startDate
+    ? startDate.toLocaleString()
+    : "Date TBA";
 
-    const event = docSnap.data();
+  const imageUrl = event.mediaUrl
+    ? event.mediaUrl
+    : "https://via.placeholder.com/800x400";
 
-    const startDate = event.startsAt?.seconds
-      ? new Date(event.startsAt.seconds * 1000)
-      : null;
+  // ----------------------------
+  // MATCH iOS LOGIC
+  // ----------------------------
 
-    const getOrdinal = (n) => {
-      if (n > 3 && n < 21) return n + "th";
-      switch (n % 10) {
-        case 1: return n + "st";
-        case 2: return n + "nd";
-        case 3: return n + "rd";
-        default: return n + "th";
-      }
-    };
+  const ticketsQuery = query(
+    collection(db, "tickets"),
+    where("partyId", "==", eventId)
+  );
 
-    const formattedDate = startDate
-      ? `${startDate.toLocaleDateString("en-US", { month: "long" })} ${getOrdinal(startDate.getDate())} @ ${startDate.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit"
-        })}`
-      : null;
+  const ticketsSnap = await getDocs(ticketsQuery);
 
-    const imageUrl = event.mediaUrl
-      ? event.mediaUrl
-      : "https://via.placeholder.com/800x400?text=Backstage+Event";
+const ticketCounts = {};
+const userIds = new Set();
+const ticketInfo = {};
 
-    const admissionPrice = "Tickets Available";
+ticketsSnap.forEach(doc => {
 
-    // Load ticket holders
-    const ticketsRef = collection(db, "parties", eventId, "tickets");
-    const ticketsSnap = await getDocs(ticketsRef);
+  const data = doc.data();
 
-    let guestsHTML = "";
+  const uid = data.userId || data.buyerLinkedUid;
 
-    ticketsSnap.forEach(ticketDoc => {
+  if (!uid) return;
 
-      const ticket = ticketDoc.data();
+  ticketCounts[uid] = (ticketCounts[uid] || 0) + 1;
+  userIds.add(uid);
 
-      const photo = ticket.photoURL || "https://via.placeholder.com/40";
-      const name = ticket.name || "Guest";
+  ticketInfo[uid] = data;
 
-      guestsHTML += `
-        <div class="guest-row">
-          <img src="${photo}" class="guest-avatar"/>
-          <span class="guest-name">${name}</span>
-        </div>
-      `;
-    });
+});
 
-    if (!guestsHTML) {
-      guestsHTML = "<p>No guests yet</p>";
-    }
+  let guestsHTML = "";
 
-    el.innerHTML = `
-      <div class="detail-container">
+  for (const uid of userIds) {
 
-        <img src="${imageUrl}" class="detail-image" />
+const userDoc = await getDoc(doc(db, "users", uid));
+const user = userDoc.data() || {};
+const ticket = ticketInfo[uid] || {};
 
-        <div class="detail-card">
-          <p class="detail-date">${formattedDate || "Date TBA"}</p>
-          <p class="detail-price">${admissionPrice}</p>
+const displayName =
+  `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+  `${ticket.buyerFirstName || ""} ${ticket.buyerLastName || ""}`.trim() ||
+  "Guest";
 
-          <button class="ticket-button" id="get-tickets-btn">
-            Get Tickets
-          </button>
-        </div>
+const photo =
+  ticket.photoURL ||
+  user.photoURL ||
+  user.profileImageURL ||
+  user.userProfilePicture ||
+  "/assets/avatar-placeholder.png";
 
-        <div class="guestlist">
-          <h3>Guest List</h3>
-          ${guestsHTML}
-        </div>
+    const ticketCount = ticketCounts[uid] || 1;
 
+    guestsHTML += `
+      <div class="guest-row">
+        <img src="${photo}" class="guest-avatar"/>
+        <span class="guest-name">${displayName}</span>
+        ${ticketCount > 1 ? `<span class="guest-count">x${ticketCount}</span>` : ""}
       </div>
     `;
+  }
 
-    document.getElementById("get-tickets-btn").onclick = () => {
+  if (!guestsHTML) {
+    guestsHTML = "<p>No guests yet</p>";
+  }
 
-      const deepLink = `backstage://party/${eventId}`;
-      const webCheckout = `/checkout.html?id=${eventId}`;
+  el.innerHTML = `
+    <div class="detail-container">
 
-      let fallbackTriggered = false;
+      <img src="${imageUrl}" class="detail-image"/>
 
-      const timer = setTimeout(() => {
-        fallbackTriggered = true;
+      <div class="detail-card">
+        <p class="detail-date">${formattedDate}</p>
+        <p class="detail-price">Tickets Available</p>
+        <button class="ticket-button" id="get-tickets-btn">
+          Get Tickets
+        </button>
+      </div>
+
+      <div class="guestlist">
+        <h3>Guest List</h3>
+        ${guestsHTML}
+      </div>
+
+    </div>
+  `;
+
+  document.getElementById("get-tickets-btn").onclick = () => {
+
+    const deepLink = `backstage://party/${eventId}`;
+    const webCheckout = `/checkout.html?id=${eventId}`;
+
+    let fallbackTriggered = false;
+
+    const timer = setTimeout(() => {
+      fallbackTriggered = true;
+      window.location.href = webCheckout;
+    }, 1200);
+
+    try {
+      window.location.href = deepLink;
+    } catch {
+      if (!fallbackTriggered) {
+        clearTimeout(timer);
         window.location.href = webCheckout;
-      }, 1200);
-
-      try {
-        window.location.href = deepLink;
-      } catch (e) {
-        if (!fallbackTriggered) {
-          clearTimeout(timer);
-          window.location.href = webCheckout;
-        }
       }
-
-    };
-
-  } catch (err) {
-
-    console.error(err);
-
-    if (el) {
-      el.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
     }
 
-  }
+  };
 
 }
 
