@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Backstage Events • Host Dashboard</title>
+  <link rel="stylesheet" href="/css/my-events.css">
+
+  <style>
+    :root{
+      --bg:#07070a;
+      --card:#0b0b10;
+      --card2:#0e0e16;
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.16);
+      --text:#ffffff;
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.50);
+      --accent:#7c3aed;
+      --accent2:#3b82f6;
+      --ok:#22c55e;
+      --warn:#ef4444;
+      --shadow: 0 30px 90px rgba(0,0,0,.60);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(124,58,237,.22), transparent 55%),
+        radial-gradient(900px 500px at 85% 20%, rgba(59,130,246,.18), transparent 55%),
+        radial-gradient(1000px 700px at 40% 100%, rgba(255,255,255,.05), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .wrap{
+      width:100%;
+      max-width: 640px;
+    }
+
+    .shell{
+      border-radius: 26px;
+      padding: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 8px 10px 14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .brand-title{
+      font-weight: 800;
+      letter-spacing: .2px;
+      font-size: 14px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-sub{
+      font-size: 12px;
+      color: var(--muted2);
+      line-height: 1.1;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav{
+      display:flex;
+      gap:8px;
+      padding: 0 10px 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn{
+      flex:1;
+      min-width: 120px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease, color .15s ease;
+    }
+
+    .nav-btn:hover{
+      background: rgba(255,255,255,.06);
+      border-color: var(--border2);
+    }
+
+    .nav-btn:active{
+      transform: translateY(1px);
+    }
+
+    .nav-btn.active{
+      background: linear-gradient(180deg, rgba(124,58,237,.22), rgba(59,130,246,.16));
+      border-color: rgba(124,58,237,.35);
+      color: var(--text);
+    }
+
+    .card{
+      border-radius: var(--radius);
+      padding: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      position: relative;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(700px 300px at 20% 0%, rgba(124,58,237,.22), transparent 60%),
+        radial-gradient(700px 300px at 90% 10%, rgba(59,130,246,.18), transparent 60%);
+      pointer-events:none;
+      opacity:.85;
+    }
+
+    .card > *{
+      position: relative;
+      z-index: 1;
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid;
+      letter-spacing: .2px;
+      user-select:none;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background: currentColor;
+      opacity:.9;
+    }
+
+    .badge.warn{
+      background: rgba(239,68,68,.12);
+      border-color: rgba(239,68,68,.35);
+      color: #fecaca;
+    }
+
+    .badge.ok{
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.35);
+      color: #bbf7d0;
+    }
+
+    h1{
+      margin: 6px 0 6px;
+      font-size: 24px;
+      letter-spacing: -0.2px;
+    }
+
+    p{
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .section{
+      margin-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top: 14px;
+    }
+
+    .actions{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top: 10px;
+    }
+
+    .btn{
+      position: relative;
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+    }
+
+    .btn:hover{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.20);
+    }
+
+    .btn:active{
+      transform: translateY(1px);
+    }
+
+    .btn.primary{
+      border-color: rgba(124,58,237,.38);
+      background: linear-gradient(180deg, rgba(124,58,237,.28), rgba(59,130,246,.18));
+    }
+
+    .btn.primary:hover{
+      border-color: rgba(124,58,237,.55);
+      background: linear-gradient(180deg, rgba(124,58,237,.34), rgba(59,130,246,.22));
+    }
+
+    .btn:disabled{
+      opacity: .62;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn .btn-text{
+      display:inline-block;
+      white-space: nowrap;
+    }
+
+    .spinner{
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,.30);
+      border-top: 2px solid rgba(255,255,255,.95);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      display:none;
+    }
+
+    @keyframes spin { to{ transform: rotate(360deg); } }
+
+    .hint{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 12px;
+    }
+
+    .hint .icon{
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      flex: 0 0 auto;
+    }
+
+    .footer{
+      text-align:center;
+      color: rgba(255,255,255,.38);
+      font-size: 12px;
+      margin-top: 10px;
+      padding: 10px 6px 2px;
+    }
+
+    .section-page{
+  display:none;
+  animation: fadeSlide .25s ease;
+}
+
+.section-page.active{
+  display:block;
+}
+
+.analytics-grid{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap:12px;
+}
+
+.stat-card{
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+}
+
+.stat-label{
+  font-size:12px;
+  color: var(--muted);
+  margin-bottom:6px;
+}
+
+.stat-value{
+  font-size:20px;
+  font-weight:800;
+}
+
+@keyframes fadeSlide{
+  from{
+    opacity:0;
+    transform: translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-text">
+            <div class="brand-title">Backstage Events</div>
+            <div class="brand-sub">Host dashboard</div>
+          </div>
+        </div>
+      </div>
+
+<div class="nav">
+  <button class="nav-btn active" data-page="dashboard">Bank</button>
+  <button class="nav-btn" data-page="events">My Events</button>
+  <button class="nav-btn" data-page="profile">Profile</button>
+  <button class="nav-btn" data-page="host">Host Event</button>
+  <button class="nav-btn" data-page="analytics">Analytics</button>
+</div>
+
+    <div class="card">
+
+  <!-- BANK SECTION -->
+  <div class="section-page active" id="bankSection">
+
+    <div class="row">
+      <div id="statusBadge" class="badge warn">
+        <span class="dot"></span>
+        Payouts not set up
+      </div>
+    </div>
+
+    <h1 id="headline">Connect your bank account</h1>
+    <p>
+      Connect a bank account to receive ticket payouts. You can update it anytime.
+    </p>
+
+    <div class="actions">
+      <button class="btn primary" id="connectBtn">
+        <span class="btn-text">Connect bank account</span>
+        <span class="spinner" id="connectSpinner"></span>
+      </button>
+
+      <button class="btn" id="hostBtn">
+        Host Event
+      </button>
+    </div>
+
+  </div>
+
+  <!-- MY EVENTS SECTION -->
+<div class="section-page" id="eventsSection">
+  <h1>My Events</h1>
+  <p>Your hosted events.</p>
+
+  <div id="myEventsContainer" class="my-events-list">
+    <p style="color: var(--muted2); font-size:13px;">
+      Loading events...
+    </p>
+  </div>
+</div>
+
+
+
+  <!-- PROFILE SECTION -->
+  <div class="section-page" id="profileSection">
+    <h1>Business Profile</h1>
+    <p>Update your business name, photo, and payout details.</p>
+
+    <div class="actions">
+      <button class="btn">Edit Business Name</button>
+      <button class="btn">Change Profile Photo</button>
+    </div>
+  </div>
+
+
+  <!-- HOST SECTION -->
+  <div class="section-page" id="hostSection">
+    <h1>Host a New Event</h1>
+    <p>Create and publish a new event in seconds.</p>
+
+    <div class="actions">
+      <button class="btn primary">Create Event</button>
+    </div>
+  </div>
+
+  <!-- ANALYTICS SECTION -->
+<div class="section-page" id="analyticsSection">
+  <h1>Analytics</h1>
+  <p>View performance insights for your events.</p>
+
+  <div class="analytics-grid">
+
+    <div class="stat-card">
+      <div class="stat-label">Total Tickets Sold</div>
+      <div class="stat-value">0</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">$0</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Conversion Rate</div>
+      <div class="stat-value">0%</div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db, functions } from "/js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
+
+    const connectBtn = document.getElementById("connectBtn");
+    const connectSpinner = document.getElementById("connectSpinner");
+    const connectBtnText = connectBtn.querySelector(".btn-text");
+    const statusBadge = document.getElementById("statusBadge");
+    let payoutsEnabled = false;
+    const headline = document.getElementById("headline");
+
+    onAuthStateChanged(auth, async (user) => {
+      const myEventsContainer = document.getElementById("myEventsContainer");
+
+async function loadMyEvents(businessId) {
+  const q = query(
+    collection(db, "parties"),
+    where("hostUid", "==", businessId),
+    orderBy("createdAt", "desc")
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    myEventsContainer.innerHTML = `
+      <p style="color: var(--muted2); font-size:13px;">
+        No events yet.
+      </p>
+    `;
+    return;
+  }
+
+  myEventsContainer.innerHTML = "";
+
+  snap.forEach(docSnap => {
+    const e = docSnap.data();
+
+const card = document.createElement("div");
+card.className = "event-card";
+    card.style.cursor = "pointer";
+
+const now = Date.now();
+const isLive = e.startsAt?.seconds * 1000 <= now && e.endsAt?.seconds * 1000 >= now;
+
+card.innerHTML = `
+  <div class="event-header">
+    <div class="event-title">${e.title || "Untitled Event"}</div>
+    ${isLive ? `<div class="event-status">LIVE</div>` : ``}
+  </div>
+
+  <div class="event-location">${e.location || ""}</div>
+
+  <div class="event-grid">
+    <div class="event-stat">
+      <div class="event-stat-label">Starts</div>
+      <div class="event-stat-value">
+        ${new Date(e.startsAt.seconds * 1000).toLocaleString()}
+      </div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Admission</div>
+      <div class="event-stat-value">$${e.admissionPrice ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Sold</div>
+      <div class="event-stat-value">${e.soldCount ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Door Men</div>
+      <div class="event-stat-value">$${e.doorPriceMen ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Door Women</div>
+      <div class="event-stat-value">$${e.doorPriceWomen ?? 0}</div>
+    </div>
+
+    <div class="event-stat">
+      <div class="event-stat-label">Free Tickets</div>
+      <div class="event-stat-value">
+        ${e.freeMaleClaimed ?? 0}/${e.freeMaleTotal ?? 0} M ·
+        ${e.freeFemaleClaimed ?? 0}/${e.freeFemaleTotal ?? 0} F
+      </div>
+    </div>
+  </div>
+
+  <div class="event-footer">
+    <div class="door-code">
+      Door Code: ${e.doorCode?.code ?? "—"}
+    </div>
+
+    <div class="event-actions">
+      <button class="event-btn">Edit</button>
+      <button class="event-btn">View</button>
+    </div>
+  </div>
+`;
+
+    card.onclick = () => {
+      window.location.href = "/eventDetail.html?id=${docSnap.id}";
+    };
+
+    myEventsContainer.appendChild(card);
+  });
+}
+      if (!user) {
+        window.location.href = "/signup.html";
+        return;
+      }
+
+      // 🔄 Force Stripe → Firestore sync on dashboard load
+      try {
+        const syncFn = httpsCallable(
+          functions,
+          "businessStripeOnboarding-checkBusinessStripeAccountStatus"
+        );
+
+        await syncFn();
+      } catch (err) {
+        console.error("Stripe sync failed:", err);
+      }
+
+      const ref = doc(db, "businessUsers", user.uid);
+
+      loadMyEvents(user.uid);
+
+      
+
+  
+
+      onSnapshot(ref, (snap) => {
+        if (!snap.exists()) {
+          alert("Business profile not found.");
+          return;
+        }
+
+        const data = snap.data();
+
+        const payouts = data.payouts || {};
+        const last4 = payouts.last4 || data.bankLast4 || null;
+
+        payoutsEnabled =
+          data.payoutsEnabled === true ||
+          payouts.connected === true;
+
+        const stripeStatus =
+          data.stripeStatus ||
+          (payoutsEnabled ? "enabled" : "incomplete");
+
+        if (stripeStatus === "enabled") {
+          statusBadge.innerHTML = `<span class="dot" aria-hidden="true"></span> Payouts enabled`;
+          statusBadge.className = "badge ok";
+
+          headline.textContent = last4
+            ? `Bank account •••• ${last4}`
+            : "Bank account connected";
+
+          connectBtnText.textContent = "Edit bank account";
+          connectBtn.disabled = false;
+        }
+
+        if (stripeStatus === "incomplete") {
+          statusBadge.innerHTML = `<span class="dot" aria-hidden="true"></span> Payouts not set up`;
+          statusBadge.className = "badge warn";
+
+          headline.textContent = "Connect your bank account";
+          connectBtnText.textContent = "Connect bank account";
+          connectBtn.disabled = false;
+        }
+      });
+    });
+
+    connectBtn.addEventListener("click", async () => {
+      connectBtn.disabled = true;
+      connectSpinner.style.display = "inline-block";
+      connectBtnText.textContent = "Connecting...";
+
+      // Force repaint so spinner appears before async call
+      await new Promise(resolve => setTimeout(resolve, 50));
+      try {
+        const fn = httpsCallable(
+          functions,
+          "businessStripeOnboarding-createBusinessStripeOnboardingLink"
+        );
+
+        const res = await fn();
+        window.location.href = res.data.url;
+
+      } catch (err) {
+        alert("Unable to start Stripe setup.");
+        connectBtn.disabled = false;
+        connectSpinner.style.display = "none";
+        connectBtnText.textContent = "Connect bank account";
+      }
+    });
+
+const sections = {
+  dashboard: document.getElementById("bankSection"),
+  events: document.getElementById("eventsSection"),
+  profile: document.getElementById("profileSection"),
+  host: document.getElementById("hostSection"),
+  analytics: document.getElementById("analyticsSection")
+};
+
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const page = btn.dataset.page;
+
+    Object.values(sections).forEach(sec => sec.classList.remove("active"));
+    sections[page].classList.add("active");
+
+  });
+});
+
+    const hostBtn = document.getElementById("hostBtn");
+
+    hostBtn.addEventListener("click", async () => {
+      if (payoutsEnabled) {
+        window.location.href = "/hostEvent.html";
+        return;
+      }
+
+      try {
+        const fn = httpsCallable(
+          functions,
+          "businessStripeOnboarding-createBusinessStripeOnboardingLink"
+        );
+
+        const res = await fn();
+        window.location.href = res.data.url;
+
+      } catch (err) {
+        alert("Unable to start Stripe setup.");
+      }
+    });
+  </script>
+</body>
+</html>

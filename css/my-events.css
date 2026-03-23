@@ -1,0 +1,94 @@
+.my-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.event-card {
+  border-radius: 18px;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.event-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.event-status {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(34,197,94,.15);
+  color: #bbf7d0;
+}
+
+.event-location {
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  margin-bottom: 12px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.event-stat {
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.event-stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 4px;
+}
+
+.event-stat-value {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.event-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.door-code {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .6px;
+}
+
+.event-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.event-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+}

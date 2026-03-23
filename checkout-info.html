@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout Info | Backstage</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(156,79,242,0.15), transparent 40%),
+        linear-gradient(135deg, #0f0f14, #1a1a22);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .checkout-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 36px 26px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      margin: 8px 0 32px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .buyer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .email-row {
+  padding-right: 34px;
+}
+
+.email-row input {
+  width: 100%;
+}
+
+.photo-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.photo-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(135deg, #9c4ff2, #225cda) border-box;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.photo-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.photo-plus {
+  font-size: 36px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  position: absolute;
+}
+
+#profile-photo {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+    .name-row {
+      display: flex;
+      gap: 12px;
+    }
+
+.buyer-form input {
+  padding: 16px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 16px;
+  outline: none;
+  transition: 0.2s ease;
+  width: 100%;
+}
+
+#email {
+  margin-top: 4px;
+}
+
+    .buyer-form input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .buyer-form input:focus {
+      border-color: #9c4ff2;
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 2px rgba(156,79,242,0.35);
+    }
+    
+.promo-wrapper {
+  margin-top: 6px;
+}
+
+.promo-code-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.promo-digit {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.promo-digit:focus {
+  border-color: #9c4ff2;
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 0 2px rgba(156,79,242,0.35);
+}
+
+
+.promo-apply {
+  margin-top: 12px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(90deg, #9c4ff2, #225cda);
+  color: white;
+  transition: 0.2s ease;
+}
+
+.promo-apply {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.apply-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
+.apply-success {
+  display: none;
+  font-weight: 600;
+}
+
+.promo-apply.success {
+  background: linear-gradient(90deg, #28c76f, #1ea95e);
+}
+
+.promo-apply.success .apply-text,
+.promo-apply.success .apply-spinner {
+  display: none;
+}
+
+.promo-apply.success .apply-success {
+  display: inline-block;
+}
+
+
+.promo-apply.loading .apply-spinner {
+  display: inline-block;
+}
+
+.promo-apply.loading .apply-text {
+  opacity: 0.6;
+}
+
+
+.promo-apply:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(156,79,242,0.4);
+}
+
+.promo-label {
+  margin: 10px 0 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  text-align: left;
+}
+
+
+.promo-feedback {
+  margin-top: 6px;
+  font-size: 12px;
+  text-align: left;
+  color: rgba(255,255,255,0.6);
+}
+
+
+    #final-pay-button {
+      margin-top: 28px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      background: linear-gradient(90deg, #9c4ff2, #225cda);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #final-pay-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #final-pay-button:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(156,79,242,0.4);
+    }
+
+    #final-pay-button.loading .btn-text {
+      opacity: 0.7;
+    }
+
+    .btn-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    #final-pay-button.loading .btn-spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .secure-note {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="checkout-container">
+    <h1>Complete Your Purchase</h1>
+    <p class="subtitle">You’ll be redirected to secure checkout</p>
+
+    <div id="price-summary" style="margin-bottom: 24px; font-size: 14px; color: rgba(255,255,255,0.75);">
+  <div id="discount-row" style="display:none; color:#28c76f; font-weight:600;">
+    Promo Discount Applied (10% Off)
+  </div>
+</div>
+
+
+    <div class="buyer-form">
+      <div class="photo-picker">
+  <label class="photo-circle">
+    <img id="profile-preview" />
+    <div class="photo-plus">+</div>
+    <input
+      id="profile-photo"
+      type="file"
+      accept="image/*"
+      required
+    />
+  </label>
+</div>
+      <div class="name-row">
+        <input id="first-name" type="text" placeholder="First Name" />
+        <input id="last-name" type="text" placeholder="Last Name" />
+      </div>
+      <div class="email-row">
+  <input id="email" type="email" placeholder="Email Address" />
+</div>
+<p class="promo-label">Enter Promo Code</p>
+<div class="promo-code-group" id="promo-code-group">
+  <input class="promo-digit" maxlength="1" />
+  <input class="promo-digit" maxlength="1" />
+  <input class="promo-digit" maxlength="1" />
+  <input class="promo-digit" maxlength="1" />
+  <input class="promo-digit" maxlength="1" />
+  <input class="promo-digit" maxlength="1" />
+</div>
+
+<div class="promo-wrapper">
+<button id="apply-promo" class="promo-apply">
+  <span class="apply-text">Apply</span>
+  <span class="apply-spinner"></span>
+  <span class="apply-success">Code Applied ✓</span>
+</button>
+
+
+  <p id="promo-feedback" class="promo-feedback"></p>
+</div>
+
+
+    </div>
+
+    <button id="final-pay-button" disabled>
+      <span class="btn-text">Go to Checkout</span>
+      <span class="btn-spinner"></span>
+    </button>
+
+    <p class="secure-note">Powered by Stripe • Secure payment</p>
+  </div>
+
+  <script type="module" src="assets/checkout-info.js"></script>
+
+</body>
+</html>

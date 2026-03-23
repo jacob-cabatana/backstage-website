@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Host Event</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="/css/hostEvent.css" />
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAArq4arnX8Z3ahlMv48i4aB2-cU2JM2qc&libraries=places"
+    defer
+  ></script>
+
+  <script type="module" src="/assets/hostEvent.js" defer></script>
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="header">
+      <h1>Host an Event</h1>
+    </header>
+
+    <form id="hostEventForm">
+
+      <!-- DETAILS -->
+      <section class="card">
+        <h2>Details</h2>
+
+        <input id="title" placeholder="Event name" required />
+
+        <!-- REQUIRED FOR PlaceAutocompleteElement -->
+        <div id="location-autocomplete"></div>
+
+        <label>Starts</label>
+        <input type="datetime-local" id="startDate" required />
+
+        <label>Ends</label>
+        <input type="datetime-local" id="endDate" required />
+      </section>
+
+      <!-- COVER -->
+      <section class="card">
+        <h2>Cover Media</h2>
+        <input type="file" id="media" accept="image/*,video/*" />
+      </section>
+
+      <!-- TICKET PRICING -->
+      <section class="card">
+        <h2>Ticket Pricing</h2>
+
+        <label>
+          <input type="radio" name="pricingMode" value="single" checked />
+          Single price
+        </label>
+
+        <label>
+          <input type="radio" name="pricingMode" value="gender" />
+          Gender pricing
+        </label>
+
+        <div id="singlePrice">
+          <input id="admissionPrice" type="number" min="0" placeholder="Ticket price" />
+        </div>
+
+        <div id="genderPrices" hidden>
+          <input id="maleTicketPrice" type="number" min="0" placeholder="Men price" />
+          <input id="femaleTicketPrice" type="number" min="0" placeholder="Women price" />
+        </div>
+      </section>
+
+      <!-- DOOR PRICING -->
+      <section class="card">
+        <h2>Door Pricing</h2>
+        <input id="doorPriceMen" type="number" min="0" placeholder="Men door price" />
+        <input id="doorPriceWomen" type="number" min="0" placeholder="Women door price" />
+      </section>
+
+      <!-- OPTIONS -->
+      <section class="card">
+        <h2>Options</h2>
+
+        <label>
+          <input type="checkbox" id="guestList" />
+          Guest list
+        </label>
+
+        <label>
+          <input type="checkbox" id="lowkeyMode" />
+          Lowkey mode
+        </label>
+
+        <label>
+          <input type="checkbox" id="skipEnabled" />
+          Skip the line
+        </label>
+
+        <input id="skipPrice" type="number" min="0" placeholder="Skip price" disabled />
+
+        <label>
+          <input type="checkbox" id="freeTicketsEnabled" />
+          Limited free tickets
+        </label>
+
+        <input id="freeMaleCount" type="number" min="0" placeholder="Free men tickets" disabled />
+        <input id="freeFemaleCount" type="number" min="0" placeholder="Free women tickets" disabled />
+
+        <input id="capacityLimit" type="number" min="1" placeholder="Capacity limit (optional)" />
+      </section>
+
+ <button id="submitBtn" type="submit">
+  Publish Event
+</button>
+
+<div id="loadingOverlay" hidden>
+  <div class="spinner"></div>
+  <p>Publishing event…</p>
+</div>
+
+    </form>
+  </div>
+</body>
+</html>
