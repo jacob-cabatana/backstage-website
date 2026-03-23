@@ -31,7 +31,6 @@ async function loadEventDetail() {
     return;
   }
 
-  // Load event
   const eventDoc = await getDoc(doc(db, "parties", eventId));
 
   if (!eventDoc.exists()) {
@@ -53,10 +52,6 @@ async function loadEventDetail() {
     ? event.mediaUrl
     : "https://via.placeholder.com/800x400";
 
-  // ----------------------------
-  // MATCH iOS LOGIC
-  // ----------------------------
-
   el.innerHTML = `
     <div class="detail-container">
 
@@ -70,8 +65,6 @@ async function loadEventDetail() {
         </button>
       </div>
 
-   
-
     </div>
   `;
 
@@ -79,7 +72,7 @@ async function loadEventDetail() {
 
     const deepLink = `backstage://party/${eventId}`;
     const webCheckout = `/checkout.html?id=${eventId}`;
-
+    
     let fallbackTriggered = false;
 
     const timer = setTimeout(() => {
