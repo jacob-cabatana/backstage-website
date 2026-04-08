@@ -44,9 +44,45 @@ async function loadEventDetail() {
     ? new Date(event.startsAt.seconds * 1000)
     : null;
 
-  const formattedDate = startDate
-    ? startDate.toLocaleString()
-    : "Date TBA";
+function getOrdinal(day) {
+  if (day > 3 && day < 21) return "th";
+  switch (day % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+}
+
+function formatPrettyDateTime(date) {
+  const day = date.getDate();
+  const ordinal = getOrdinal(day);
+
+  const month = date.toLocaleDateString("en-US", { month: "long" });
+  const year = date.getFullYear();
+
+  // Time formatting
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12 || 12;
+
+  let timeString = "";
+
+  if (minutes === 0) {
+    timeString = `${hours} ${ampm}`;
+  } else {
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    timeString = `${hours}:${paddedMinutes} ${ampm}`;
+  }
+
+  return `${month} ${day}${ordinal}, ${year} at ${timeString}`;
+}
+
+const formattedDate = startDate
+  ? formatPrettyDateTime(startDate)
+  : "Date TBA";
 
   const imageUrl = event.mediaUrl
     ? event.mediaUrl

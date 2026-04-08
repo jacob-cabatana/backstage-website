@@ -172,36 +172,58 @@ async function loadCheckout() {
 
   let freeHTML = "";
 
-  if (event.freeTicketsEnabled === true) {
+if (event.freeTicketsEnabled === true) {
 
-    const maleRemaining =
-      (event.freeMaleTotal || 0) - (event.freeMaleClaimed || 0);
+  const maleTotal = event.freeMaleTotal || 0;
+  const maleClaimed = event.freeMaleClaimed || 0;
+  const maleRemaining = maleTotal - maleClaimed;
 
-    const femaleRemaining =
-      (event.freeFemaleTotal || 0) - (event.freeFemaleClaimed || 0);
+  const femaleTotal = event.freeFemaleTotal || 0;
+  const femaleClaimed = event.freeFemaleClaimed || 0;
+  const femaleRemaining = femaleTotal - femaleClaimed;
 
-    if (maleRemaining > 0) {
+  // MALE
+  if (maleRemaining > 0) {
 
-      freeHTML += `
-      <div class="price-card free-ticket" data-gender="men">
-        <h3>Free Male Ticket</h3>
-        <p class="price-label">${maleRemaining} free left</p>
-        <button class="claim-free">Claim Free Ticket</button>
-        <p class="free-disclaimer">Disclaimer: Verifying ticket type at the door. If wrong ticket type is purchased, you will be charged double.</p>
-      </div>`;
-    }
-
-    if (femaleRemaining > 0) {
-
-      freeHTML += `
-      <div class="price-card free-ticket" data-gender="women">
-        <h3>Free Female Ticket</h3>
-        <p class="price-label">${femaleRemaining} free left</p>
-       <button class="claim-free">Claim Free Ticket</button>
+    freeHTML += `
+    <div class="price-card free-ticket" data-gender="men">
+      <h3>Free Male Ticket</h3>
+      <p class="price-label">${maleRemaining} free left (out of ${maleTotal})</p>
+      <button class="claim-free">Claim Free Ticket</button>
       <p class="free-disclaimer">Disclaimer: Verifying ticket type at the door. If wrong ticket type is purchased, you will be charged double.</p>
-      </div>`;
-    }
+    </div>`;
+
+  } else if (maleTotal > 0) {
+
+    freeHTML += `
+    <div class="price-card free-ticket sold-out" data-gender="men">
+      <h3>Free Male Ticket</h3>
+      <p class="price-label">Sold Out (${maleTotal} total)</p>
+      <button disabled>Sold Out</button>
+    </div>`;
   }
+
+  // FEMALE
+  if (femaleRemaining > 0) {
+
+    freeHTML += `
+    <div class="price-card free-ticket" data-gender="women">
+      <h3>Free Female Ticket</h3>
+      <p class="price-label">${femaleRemaining} free left (out of ${femaleTotal})</p>
+      <button class="claim-free">Claim Free Ticket</button>
+      <p class="free-disclaimer">Disclaimer: Verifying ticket type at the door. If wrong ticket type is purchased, you will be charged double.</p>
+    </div>`;
+
+  } else if (femaleTotal > 0) {
+
+    freeHTML += `
+    <div class="price-card free-ticket sold-out" data-gender="women">
+      <h3>Free Female Ticket</h3>
+      <p class="price-label">Sold Out (${femaleTotal} total)</p>
+      <button disabled>Sold Out</button>
+    </div>`;
+  }
+}
 
   let pricingHTML = "";
 

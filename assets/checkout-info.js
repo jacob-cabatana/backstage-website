@@ -145,8 +145,9 @@ if (!code) {
     promoIsValid = data.valid === true;
 
 if (promoIsValid) {
-  promoDiscountPercent = data.discountPercent || 0.05;
+  promoDiscountPercent = data.discountPercent || 0;
   discountRow.style.display = "block";
+  discountRow.textContent = `Promo Discount Applied (${Math.round(promoDiscountPercent * 100)}% Off)`;
   promoFeedback.style.color = "#4cd964";
   return true;
 }
@@ -268,9 +269,10 @@ applyButton.addEventListener("click", async () => {
 
 if (data.valid) {
   promoIsValid = true;
-  promoDiscountPercent = data.discountPercent || 0.05;
+promoDiscountPercent = Number(data.discountPercent) || 0;
 
-  discountRow.style.display = "block";
+discountRow.style.display = "block";
+discountRow.textContent = `Promo Discount Applied (${Math.round(promoDiscountPercent * 100)}% Off)`;
 
   applyButton.classList.remove("loading");
   applyButton.classList.add("success");
