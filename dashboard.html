@@ -5,6 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Backstage Fast Lane</title>
   <link rel="stylesheet" href="/css/dashboard.css" />
+  <style>
+  .payoutsStatusCard {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 18px;
+    margin: 18px 0;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .payoutsStatusCard.on {
+    border-color: rgba(40, 220, 120, 0.45);
+    background: linear-gradient(135deg, rgba(40,220,120,0.18), rgba(255,255,255,0.06));
+    box-shadow: 0 0 28px rgba(40,220,120,0.12);
+  }
+
+  .payoutsStatusCard.off {
+    border-color: rgba(255, 180, 60, 0.35);
+    background: linear-gradient(135deg, rgba(255,180,60,0.12), rgba(255,255,255,0.05));
+  }
+
+  .payoutsStatusIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    color: white;
+    background: rgba(255,255,255,0.14);
+  }
+
+  .payoutsStatusCard.on .payoutsStatusIcon {
+    background: #22c55e;
+  }
+
+  .payoutsStatusCard.on .payoutsStatusIcon::before {
+    content: "✓";
+  }
+
+  .payoutsStatusCard.on .payoutsStatusIcon {
+    font-size: 0;
+  }
+
+  .payoutsStatusCard.on .payoutsStatusIcon::before {
+    font-size: 22px;
+  }
+
+  .payoutsStatusCard strong {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .payoutsBankText {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.72);
+  }
+</style>
 </head>
 
 <body>
@@ -151,15 +214,23 @@
   <div id="historyList" class="ordersListFix"></div>
 </section>
 
-    <section id="payoutsView" class="view">
-      <h2>Payouts</h2>
+<section id="payoutsView" class="view">
+  <h2>Payouts</h2>
+
+  <div id="payoutsStatusCard" class="payoutsStatusCard off">
+    <div class="payoutsStatusIcon">!</div>
+
+    <div>
+      <strong id="payoutsStatusTitle">Payouts not connected</strong>
       <p id="payoutsText" class="muted">Connect Stripe so your bar can receive drink order payouts.</p>
+      <p id="payoutsBankText" class="payoutsBankText"></p>
+    </div>
+  </div>
 
-      <button id="connectStripeBtn" class="mainBtn">Connect payouts</button>
-      <button id="testPayoutsBtn" class="quietBtn">Mark payouts ready for testing</button>
+  <button id="connectStripeBtn" class="mainBtn">Connect payouts</button>
 
-      <p id="payoutsMessage" class="message"></p>
-    </section>
+  <p id="payoutsMessage" class="message"></p>
+</section>
   </main>
 
   <script type="module">
@@ -230,11 +301,12 @@ import {
     const historyRevenue = document.getElementById("historyRevenue");
     const historyOrderCount = document.getElementById("historyOrderCount");
 
+    const payoutsStatusCard = document.getElementById("payoutsStatusCard");
+    const payoutsStatusTitle = document.getElementById("payoutsStatusTitle");
     const payoutsText = document.getElementById("payoutsText");
+    const payoutsBankText = document.getElementById("payoutsBankText");
     const connectStripeBtn = document.getElementById("connectStripeBtn");
-    const testPayoutsBtn = document.getElementById("testPayoutsBtn");
     const payoutsMessage = document.getElementById("payoutsMessage");
-
     document.querySelectorAll(".tab").forEach(button => {
       button.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
@@ -340,11 +412,32 @@ import {
 
       goLiveBtn.disabled = !canGoLive;
 
-      payoutsText.textContent = payoutsDone
-        ? "Payouts are ready."
-        : "Connect Stripe so your bar can receive drink order payouts.";
+payoutsStatusCard.className = payoutsDone
+  ? "payoutsStatusCard on"
+  : "payoutsStatusCard off";
 
-      connectStripeBtn.textContent = payoutsDone ? "Edit payouts" : "Connect payouts";
+payoutsStatusTitle.textContent = payoutsDone
+  ? "Payouts enabled"
+  : "Payouts not connected";
+
+payoutsText.textContent = payoutsDone
+  ? "Your bar is connected to Stripe and can receive Fast Lane payouts."
+  : "Connect Stripe so your bar can receive drink order payouts.";
+
+const last4 =
+  payouts.last4 ||
+  business?.bankLast4 ||
+  null;
+
+const bankName =
+  payouts.bankName ||
+  null;
+
+payoutsBankText.textContent = payoutsDone && last4
+  ? `${bankName || "Bank"} ending in ${last4}`
+  : "";
+
+connectStripeBtn.textContent = payoutsDone ? "Manage payouts" : "Connect payouts";
 
       saveSetup(profileDone, pickupDone, menuDone, payoutsDone);
     }
@@ -979,27 +1072,6 @@ if (completedOrders.length === 0) {
         window.location.href = res.data.url;
       } catch (err) {
         payoutsMessage.textContent = "Unable to open Stripe.";
-      }
-    });
-
-    testPayoutsBtn.addEventListener("click", async () => {
-      payoutsMessage.textContent = "Updating...";
-
-      try {
-        await updateDoc(venueRef, {
-          "setup.payoutsReady": true,
-          updatedAt: serverTimestamp()
-        });
-
-        await updateDoc(businessRef, {
-          "payouts.connected": true,
-          "payouts.status": "test_ready",
-          updatedAt: serverTimestamp()
-        });
-
-        payoutsMessage.textContent = "Payouts marked ready.";
-      } catch (err) {
-        payoutsMessage.textContent = err.message || "Could not update payouts.";
       }
     });
 
