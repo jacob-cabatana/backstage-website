@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Backstage Events • Sign Up</title>
+  <title>Backstage Fast Lane • Sign Up</title>
 
   <style>
     :root {
@@ -13,9 +13,13 @@
       --text:#fff;
       --muted:#a7a7a7;
       --accent:#3b82f6;
+      --purple:#9c4ff2;
     }
 
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -30,18 +34,20 @@
 
     .wrap {
       width: 100%;
-      max-width: 420px;
+      max-width: 460px;
     }
 
     h1 {
       margin: 0 0 6px;
-      font-size: 26px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
     }
 
     p {
       margin: 0 0 18px;
       font-size: 14px;
       color: var(--muted);
+      line-height: 1.45;
     }
 
     .card {
@@ -52,6 +58,20 @@
       box-shadow: 0 18px 60px rgba(0,0,0,.55);
     }
 
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(156,79,242,.12);
+      border: 1px solid rgba(156,79,242,.25);
+      color: #d8c1ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
     label {
       display: block;
       margin-top: 14px;
@@ -60,7 +80,8 @@
       color: var(--muted);
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       padding: 12px;
       border-radius: 12px;
@@ -71,9 +92,15 @@
       outline: none;
     }
 
-    input:focus {
+    input:focus,
+    select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 4px rgba(59,130,246,.18);
+    }
+
+    select {
+      appearance: none;
+      cursor: pointer;
     }
 
     button {
@@ -82,10 +109,11 @@
       padding: 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.15);
-      background: rgba(255,255,255,.1);
+      background: linear-gradient(135deg, #9c4ff2, #225cda);
       color: var(--text);
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
+      font-size: 14px;
     }
 
     button:disabled {
@@ -102,41 +130,129 @@
       background: rgba(239,68,68,.08);
       color: #ffd4d4;
       font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .login-link {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 12px;
+      color: #a7a7a7;
+    }
+
+    .login-link a {
+      color: #ffffff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,.48);
+      line-height: 1.45;
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>Backstage Events</h1>
-    <p>Create a host account to publish events.</p>
+    <div class="badge">Backstage Fast Lane</div>
+
+    <h1>Create your bar dashboard</h1>
+    <p>
+      Set up your venue profile, add drinks, connect payouts, and start accepting drink orders.
+    </p>
 
     <div class="card">
       <form id="signupForm">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="you@venue.com" required />
+        <label for="managerName">Manager name</label>
+        <input 
+          id="managerName" 
+          type="text" 
+          placeholder="Jay Cabatana" 
+          required 
+        />
 
-        <label>Password</label>
-        <input id="password" type="password" placeholder="••••••••" minlength="8" required />
+        <label for="email">Email</label>
+        <input 
+          id="email" 
+          type="email" 
+          placeholder="you@venue.com" 
+          required 
+        />
+
+        <label for="phone">Phone number</label>
+        <input 
+          id="phone" 
+          type="tel" 
+          placeholder="904 555 1234" 
+          required 
+        />
+
+        <label for="password">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          placeholder="••••••••" 
+          minlength="8" 
+          required 
+        />
+
+        <label for="venueName">Venue name</label>
+        <input 
+          id="venueName" 
+          type="text" 
+          placeholder="Surfer The Bar" 
+          required 
+        />
+
+        <label for="venueAddress">Venue address</label>
+        <input 
+          id="venueAddress" 
+          type="text" 
+          placeholder="200 1st St N, Jacksonville Beach, FL" 
+          required 
+        />
+
+        <label for="venueType">Venue type</label>
+        <select id="venueType" required>
+          <option value="">Choose one</option>
+          <option value="bar">Bar</option>
+          <option value="club">Club</option>
+          <option value="lounge">Lounge</option>
+          <option value="restaurant_bar">Restaurant Bar</option>
+          <option value="event_venue">Event Venue</option>
+        </select>
 
         <button id="submitBtn" type="submit">Create account</button>
 
         <div class="error" id="errorBox"></div>
+
+        <div class="note">
+          Your venue will not appear in the app until your setup checklist is complete.
+        </div>
       </form>
     </div>
-  <div style="margin-top:14px;text-align:center;font-size:12px;color:#a7a7a7;">
-  Already hosting?
-  <a href="/login.html" style="color:#ffffff;text-decoration:underline;cursor:pointer;">
-    Log in
-  </a>
-</div>
 
+    <div class="login-link">
+      Already hosting?
+      <a href="/login.html">Log in</a>
+    </div>
+  </div>
 
   <script type="module">
     import { auth, db } from "/js/firebase.js";
-    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { 
+      createUserWithEmailAndPassword 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import { 
+      doc, 
+      setDoc, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const form = document.getElementById("signupForm");
     const btn = document.getElementById("submitBtn");
@@ -156,11 +272,16 @@
       e.preventDefault();
       clearError();
 
+      const managerName = document.getElementById("managerName").value.trim();
       const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
       const password = document.getElementById("password").value;
+      const venueName = document.getElementById("venueName").value.trim();
+      const venueAddress = document.getElementById("venueAddress").value.trim();
+      const venueType = document.getElementById("venueType").value;
 
-      if (!email || !password) {
-        showError("Email and password are required.");
+      if (!managerName || !email || !phone || !password || !venueName || !venueAddress || !venueType) {
+        showError("All fields are required.");
         return;
       }
 
@@ -179,13 +300,66 @@
         await setDoc(doc(db, "businessUsers", user.uid), {
           uid: user.uid,
           email: user.email,
-          role: "host",
+          phone: phone,
+          managerName: managerName,
+
+          role: "bar_owner",
+          accountType: "venue",
+
           stripeAccountId: null,
+
           payouts: {
-  connected: false,
-  last4: null
-},
-          createdAt: serverTimestamp()
+            connected: false,
+            last4: null,
+            status: "not_started"
+          },
+
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        await setDoc(doc(db, "venues", user.uid), {
+          id: user.uid,
+          ownerUid: user.uid,
+
+          venueName: venueName,
+          venueAddress: venueAddress,
+          venueType: venueType,
+
+          venuePhotoUrl: "",
+          shortDescription: "",
+          pickupInstructions: "",
+
+          address: {
+            full: venueAddress,
+            latitude: null,
+            longitude: null,
+            geohash: null
+          },
+
+          contact: {
+            managerName: managerName,
+            email: user.email,
+            phone: phone
+          },
+
+          fastLaneEnabled: false,
+          acceptingOrders: false,
+
+          setup: {
+            profileComplete: false,
+            payoutsReady: false,
+            menuReady: false,
+            pickupReady: false
+          },
+
+          stats: {
+            drinksCount: 0,
+            totalOrders: 0
+          },
+
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
         });
 
         window.location.href = "/dashboard.html";

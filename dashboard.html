@@ -3,723 +3,971 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Backstage Events • Host Dashboard</title>
-  <link rel="stylesheet" href="/css/my-events.css">
-
-  <style>
-    :root{
-      --bg:#07070a;
-      --card:#0b0b10;
-      --card2:#0e0e16;
-      --border: rgba(255,255,255,.10);
-      --border2: rgba(255,255,255,.16);
-      --text:#ffffff;
-      --muted: rgba(255,255,255,.68);
-      --muted2: rgba(255,255,255,.50);
-      --accent:#7c3aed;
-      --accent2:#3b82f6;
-      --ok:#22c55e;
-      --warn:#ef4444;
-      --shadow: 0 30px 90px rgba(0,0,0,.60);
-      --radius: 18px;
-    }
-
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; }
-
-    body{
-      margin:0;
-      background:
-        radial-gradient(1200px 600px at 15% 10%, rgba(124,58,237,.22), transparent 55%),
-        radial-gradient(900px 500px at 85% 20%, rgba(59,130,246,.18), transparent 55%),
-        radial-gradient(1000px 700px at 40% 100%, rgba(255,255,255,.05), transparent 60%),
-        var(--bg);
-      color:var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-
-    .wrap{
-      width:100%;
-      max-width: 640px;
-    }
-
-    .shell{
-      border-radius: 26px;
-      padding: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      padding: 8px 10px 14px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-
-    .brand-text{
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .brand-title{
-      font-weight: 800;
-      letter-spacing: .2px;
-      font-size: 14px;
-      line-height: 1.1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .brand-sub{
-      font-size: 12px;
-      color: var(--muted2);
-      line-height: 1.1;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .nav{
-      display:flex;
-      gap:8px;
-      padding: 0 10px 12px;
-      flex-wrap: wrap;
-    }
-
-    .nav-btn{
-      flex:1;
-      min-width: 120px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      transition: transform .06s ease, background .15s ease, border-color .15s ease, color .15s ease;
-    }
-
-    .nav-btn:hover{
-      background: rgba(255,255,255,.06);
-      border-color: var(--border2);
-    }
-
-    .nav-btn:active{
-      transform: translateY(1px);
-    }
-
-    .nav-btn.active{
-      background: linear-gradient(180deg, rgba(124,58,237,.22), rgba(59,130,246,.16));
-      border-color: rgba(124,58,237,.35);
-      color: var(--text);
-    }
-
-    .card{
-      border-radius: var(--radius);
-      padding: 18px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border: 1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-      position: relative;
-    }
-
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background:
-        radial-gradient(700px 300px at 20% 0%, rgba(124,58,237,.22), transparent 60%),
-        radial-gradient(700px 300px at 90% 10%, rgba(59,130,246,.18), transparent 60%);
-      pointer-events:none;
-      opacity:.85;
-    }
-
-    .card > *{
-      position: relative;
-      z-index: 1;
-    }
-
-    .row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      border: 1px solid;
-      letter-spacing: .2px;
-      user-select:none;
-    }
-
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background: currentColor;
-      opacity:.9;
-    }
-
-    .badge.warn{
-      background: rgba(239,68,68,.12);
-      border-color: rgba(239,68,68,.35);
-      color: #fecaca;
-    }
-
-    .badge.ok{
-      background: rgba(34,197,94,.12);
-      border-color: rgba(34,197,94,.35);
-      color: #bbf7d0;
-    }
-
-    h1{
-      margin: 6px 0 6px;
-      font-size: 24px;
-      letter-spacing: -0.2px;
-    }
-
-    p{
-      margin: 0 0 16px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .section{
-      margin-top: 14px;
-      border-top: 1px solid rgba(255,255,255,.08);
-      padding-top: 14px;
-    }
-
-    .actions{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top: 10px;
-    }
-
-    .btn{
-      position: relative;
-      width: 100%;
-      padding: 13px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      transition: transform .06s ease, background .15s ease, border-color .15s ease;
-    }
-
-    .btn:hover{
-      background: rgba(255,255,255,.09);
-      border-color: rgba(255,255,255,.20);
-    }
-
-    .btn:active{
-      transform: translateY(1px);
-    }
-
-    .btn.primary{
-      border-color: rgba(124,58,237,.38);
-      background: linear-gradient(180deg, rgba(124,58,237,.28), rgba(59,130,246,.18));
-    }
-
-    .btn.primary:hover{
-      border-color: rgba(124,58,237,.55);
-      background: linear-gradient(180deg, rgba(124,58,237,.34), rgba(59,130,246,.22));
-    }
-
-    .btn:disabled{
-      opacity: .62;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn .btn-text{
-      display:inline-block;
-      white-space: nowrap;
-    }
-
-    .spinner{
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,.30);
-      border-top: 2px solid rgba(255,255,255,.95);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      display:none;
-    }
-
-    @keyframes spin { to{ transform: rotate(360deg); } }
-
-    .hint{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.22);
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      margin-top: 12px;
-    }
-
-    .hint .icon{
-      width: 28px;
-      height: 28px;
-      border-radius: 10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      flex: 0 0 auto;
-    }
-
-    .footer{
-      text-align:center;
-      color: rgba(255,255,255,.38);
-      font-size: 12px;
-      margin-top: 10px;
-      padding: 10px 6px 2px;
-    }
-
-    .section-page{
-  display:none;
-  animation: fadeSlide .25s ease;
-}
-
-.section-page.active{
-  display:block;
-}
-
-.analytics-grid{
-  margin-top:16px;
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
-  gap:12px;
-}
-
-.stat-card{
-  padding:14px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.04);
-}
-
-.stat-label{
-  font-size:12px;
-  color: var(--muted);
-  margin-bottom:6px;
-}
-
-.stat-value{
-  font-size:20px;
-  font-weight:800;
-}
-
-@keyframes fadeSlide{
-  from{
-    opacity:0;
-    transform: translateY(8px);
-  }
-  to{
-    opacity:1;
-    transform: translateY(0);
-  }
-}
-  </style>
+  <title>Backstage Fast Lane</title>
+  <link rel="stylesheet" href="/css/dashboard.css" />
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="shell">
-      <div class="topbar">
-        <div class="brand">
-          <div class="brand-text">
-            <div class="brand-title">Backstage Events</div>
-            <div class="brand-sub">Host dashboard</div>
+  <main class="page">
+    <header class="top">
+      <div>
+        <div class="kicker">Backstage Fast Lane</div>
+        <h1 id="venueName">Loading...</h1>
+        <p id="venueAddress">Bar drink ordering dashboard</p>
+      </div>
+
+      <button id="logoutBtn" class="textBtn">Log out</button>
+    </header>
+
+    <section class="statusLine">
+      <div id="livePill" class="pill off">Offline</div>
+      <div id="setupText" class="setupText">Finish setup to start accepting orders.</div>
+    </section>
+
+<nav class="tabs">
+  <button class="tab active" data-view="setup">Setup</button>
+  <button class="tab" data-view="menu">Menu</button>
+  <button class="tab" data-view="orders">Orders</button>
+  <button class="tab" data-view="history">History</button>
+  <button class="tab" data-view="payouts">Payouts</button>
+</nav>
+
+    <section id="setupView" class="view active">
+      <div class="split">
+        <div>
+          <h2>Setup checklist</h2>
+
+          <div class="checklist">
+            <div id="profileCheck" class="check">
+              <span>Venue profile</span>
+              <strong>Needed</strong>
+            </div>
+
+            <div id="pickupCheck" class="check">
+              <span>Pickup instructions</span>
+              <strong>Needed</strong>
+            </div>
+
+            <div id="menuCheck" class="check">
+              <span>At least 3 drinks</span>
+              <strong>Needed</strong>
+            </div>
+
+            <div id="payoutsCheck" class="check">
+              <span>Payouts</span>
+              <strong>Needed</strong>
+            </div>
           </div>
+
+          <button id="goLiveBtn" class="mainBtn" disabled>Start accepting orders</button>
+          <button id="pauseBtn" class="quietBtn">Pause orders</button>
+
+          <p id="setupMessage" class="message"></p>
+        </div>
+
+        <div>
+          <h2>Venue profile</h2>
+
+          <label>Photo URL</label>
+          <input id="photoUrl" placeholder="https://..." />
+
+          <label>Short description</label>
+          <textarea id="description" rows="4" placeholder="Short description of the bar"></textarea>
+
+          <label>Pickup instructions</label>
+          <textarea id="pickup" rows="4" placeholder="Example: Pick up at the left side of the main bar."></textarea>
+
+          <button id="saveProfileBtn" class="mainBtn">Save profile</button>
+          <p id="profileMessage" class="message"></p>
         </div>
       </div>
+    </section>
 
-<div class="nav">
-  <button class="nav-btn active" data-page="dashboard">Bank</button>
-  <button class="nav-btn" data-page="events">My Events</button>
-  <button class="nav-btn" data-page="profile">Profile</button>
-  <button class="nav-btn" data-page="host">Host Event</button>
-  <button class="nav-btn" data-page="analytics">Analytics</button>
+    <section id="menuView" class="view">
+      <div class="split">
+        <div>
+          <h2>Add drink</h2>
+
+          <label>Drink name</label>
+          <input id="drinkName" placeholder="Vodka Red Bull" />
+
+          <label>Category</label>
+          <select id="drinkCategory">
+            <option value="cocktails">Cocktails</option>
+            <option value="shots">Shots</option>
+            <option value="beer">Beer</option>
+            <option value="seltzers">Seltzers</option>
+            <option value="wine">Wine</option>
+            <option value="non_alcoholic">Non alcoholic</option>
+          </select>
+
+          <label>Price</label>
+          <input id="drinkPrice" type="number" min="0" step="0.01" placeholder="8.00" />
+
+<button id="addDrinkBtn" class="mainBtn">Add drink</button>
+<button id="seedMenuBtn" class="quietBtn">Seed starter menu</button>
+<p id="menuMessage" class="message"></p>
+        </div>
+
+<div>
+  <h2>Current menu</h2>
+
+  <div class="drinkCategoryTabs">
+    <button class="drinkCategoryTab active" data-category="all">All</button>
+    <button class="drinkCategoryTab" data-category="cocktails">Cocktails</button>
+    <button class="drinkCategoryTab" data-category="shots">Shots</button>
+    <button class="drinkCategoryTab" data-category="beer">Beer</button>
+    <button class="drinkCategoryTab" data-category="seltzers">Seltzers</button>
+    <button class="drinkCategoryTab" data-category="non_alcoholic">Non alcoholic</button>
+  </div>
+
+  <div id="drinkList" class="list"></div>
 </div>
-
-    <div class="card">
-
-  <!-- BANK SECTION -->
-  <div class="section-page active" id="bankSection">
-
-    <div class="row">
-      <div id="statusBadge" class="badge warn">
-        <span class="dot"></span>
-        Payouts not set up
       </div>
+    </section>
+
+    <section id="ordersView" class="view">
+      <h2>Orders</h2>
+      <p class="muted">Incoming drink orders will show here live.</p>
+      <div id="ordersList" class="list"></div>
+    </section>
+
+<section id="historyView" class="view">
+  <h2>Order History</h2>
+  <p class="muted">Completed drink orders will show here.</p>
+
+  <div class="historySummary">
+    <div>
+      <span>Total Revenue</span>
+      <strong id="historyRevenue">$0.00</strong>
     </div>
 
-    <h1 id="headline">Connect your bank account</h1>
-    <p>
-      Connect a bank account to receive ticket payouts. You can update it anytime.
-    </p>
-
-    <div class="actions">
-      <button class="btn primary" id="connectBtn">
-        <span class="btn-text">Connect bank account</span>
-        <span class="spinner" id="connectSpinner"></span>
-      </button>
-
-      <button class="btn" id="hostBtn">
-        Host Event
-      </button>
-    </div>
-
-  </div>
-
-  <!-- MY EVENTS SECTION -->
-<div class="section-page" id="eventsSection">
-  <h1>My Events</h1>
-  <p>Your hosted events.</p>
-
-  <div id="myEventsContainer" class="my-events-list">
-    <p style="color: var(--muted2); font-size:13px;">
-      Loading events...
-    </p>
-  </div>
-</div>
-
-
-
-  <!-- PROFILE SECTION -->
-  <div class="section-page" id="profileSection">
-    <h1>Business Profile</h1>
-    <p>Update your business name, photo, and payout details.</p>
-
-    <div class="actions">
-      <button class="btn">Edit Business Name</button>
-      <button class="btn">Change Profile Photo</button>
+    <div>
+      <span>Completed Orders</span>
+      <strong id="historyOrderCount">0</strong>
     </div>
   </div>
 
+  <div id="historyList" class="ordersListFix"></div>
+</section>
 
-  <!-- HOST SECTION -->
-  <div class="section-page" id="hostSection">
-    <h1>Host a New Event</h1>
-    <p>Create and publish a new event in seconds.</p>
+    <section id="payoutsView" class="view">
+      <h2>Payouts</h2>
+      <p id="payoutsText" class="muted">Connect Stripe so your bar can receive drink order payouts.</p>
 
-    <div class="actions">
-      <button class="btn primary">Create Event</button>
-    </div>
-  </div>
+      <button id="connectStripeBtn" class="mainBtn">Connect payouts</button>
+      <button id="testPayoutsBtn" class="quietBtn">Mark payouts ready for testing</button>
 
-  <!-- ANALYTICS SECTION -->
-<div class="section-page" id="analyticsSection">
-  <h1>Analytics</h1>
-  <p>View performance insights for your events.</p>
-
-  <div class="analytics-grid">
-
-    <div class="stat-card">
-      <div class="stat-label">Total Tickets Sold</div>
-      <div class="stat-value">0</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">Total Revenue</div>
-      <div class="stat-value">$0</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">Conversion Rate</div>
-      <div class="stat-value">0%</div>
-    </div>
-
-  </div>
-</div>
-
-</div>
-    </div>
-  </div>
+      <p id="payoutsMessage" class="message"></p>
+    </section>
+  </main>
 
   <script type="module">
     import { auth, db, functions } from "/js/firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
     import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
   doc,
-  onSnapshot,
   collection,
-  query,
-  where,
+  addDoc,
   getDocs,
+  onSnapshot,
+  updateDoc,
+  deleteDoc,
+  writeBatch,
+  serverTimestamp,
+  query,
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-    const connectBtn = document.getElementById("connectBtn");
-    const connectSpinner = document.getElementById("connectSpinner");
-    const connectBtnText = connectBtn.querySelector(".btn-text");
-    const statusBadge = document.getElementById("statusBadge");
-    let payoutsEnabled = false;
-    const headline = document.getElementById("headline");
+    import {
+      httpsCallable
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-    onAuthStateChanged(auth, async (user) => {
-      const myEventsContainer = document.getElementById("myEventsContainer");
+    let userId = null;
+    let venueRef = null;
+    let businessRef = null;
+    let venue = null;
+    let business = null;
+    let drinkCount = 0;
+    let allDrinks = [];
+    let selectedDrinkCategory = "all";
 
-async function loadMyEvents(businessId) {
-  const q = query(
-    collection(db, "parties"),
-    where("hostUid", "==", businessId),
-    orderBy("createdAt", "desc")
-  );
+    const venueName = document.getElementById("venueName");
+    const venueAddress = document.getElementById("venueAddress");
+    const livePill = document.getElementById("livePill");
+    const setupText = document.getElementById("setupText");
 
-  const snap = await getDocs(q);
+    const profileCheck = document.getElementById("profileCheck");
+    const pickupCheck = document.getElementById("pickupCheck");
+    const menuCheck = document.getElementById("menuCheck");
+    const payoutsCheck = document.getElementById("payoutsCheck");
 
-  if (snap.empty) {
-    myEventsContainer.innerHTML = `
-      <p style="color: var(--muted2); font-size:13px;">
-        No events yet.
-      </p>
-    `;
+    const goLiveBtn = document.getElementById("goLiveBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const setupMessage = document.getElementById("setupMessage");
+
+    const photoUrl = document.getElementById("photoUrl");
+    const description = document.getElementById("description");
+    const pickup = document.getElementById("pickup");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const profileMessage = document.getElementById("profileMessage");
+
+    const drinkName = document.getElementById("drinkName");
+    const drinkCategory = document.getElementById("drinkCategory");
+    const drinkPrice = document.getElementById("drinkPrice");
+    const addDrinkBtn = document.getElementById("addDrinkBtn");
+    const seedMenuBtn = document.getElementById("seedMenuBtn");
+    const drinkList = document.getElementById("drinkList");
+    const menuMessage = document.getElementById("menuMessage");
+
+    const ordersList = document.getElementById("ordersList");
+    const historyList = document.getElementById("historyList");
+    const historyRevenue = document.getElementById("historyRevenue");
+    const historyOrderCount = document.getElementById("historyOrderCount");
+
+    const payoutsText = document.getElementById("payoutsText");
+    const connectStripeBtn = document.getElementById("connectStripeBtn");
+    const testPayoutsBtn = document.getElementById("testPayoutsBtn");
+    const payoutsMessage = document.getElementById("payoutsMessage");
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+
+        button.classList.add("active");
+        document.getElementById(`${button.dataset.view}View`).classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".drinkCategoryTab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".drinkCategoryTab").forEach(tab => {
+      tab.classList.remove("active");
+    });
+
+    button.classList.add("active");
+    selectedDrinkCategory = button.dataset.category;
+
+    renderDrinkList();
+  });
+});
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        window.location.href = "/login.html";
+        return;
+      }
+
+      userId = user.uid;
+      venueRef = doc(db, "venues", user.uid);
+      businessRef = doc(db, "businessUsers", user.uid);
+
+      watchVenue();
+      watchBusiness();
+      watchOrders();
+      watchHistory();
+      await loadDrinks();
+      syncStripe();
+    });
+
+    function watchVenue() {
+      onSnapshot(venueRef, snap => {
+        if (!snap.exists()) {
+          alert("Venue profile not found.");
+          return;
+        }
+
+        venue = snap.data();
+
+        venueName.textContent = venue.venueName || "Unnamed venue";
+        venueAddress.textContent = venue.venueAddress || "No address saved";
+
+        photoUrl.value = venue.venuePhotoUrl || "";
+        description.value = venue.shortDescription || "";
+        pickup.value = venue.pickupInstructions || "";
+
+        render();
+      });
+    }
+
+    function watchBusiness() {
+      onSnapshot(businessRef, snap => {
+        business = snap.exists() ? snap.data() : null;
+        render();
+      });
+    }
+
+    function render() {
+      if (!venue) return;
+
+      const payouts = business?.payouts || {};
+
+      const profileDone =
+        Boolean(venue.venuePhotoUrl) &&
+        Boolean(venue.shortDescription) &&
+        Boolean(venue.venueAddress);
+
+      const pickupDone = Boolean(venue.pickupInstructions);
+      const menuDone = drinkCount >= 3;
+
+      const payoutsDone =
+        payouts.connected === true ||
+        venue?.setup?.payoutsReady === true ||
+        business?.payoutsEnabled === true;
+
+      const isLive = venue.acceptingOrders === true;
+      const canGoLive = profileDone && pickupDone && menuDone && payoutsDone;
+
+      setCheck(profileCheck, profileDone);
+      setCheck(pickupCheck, pickupDone);
+      setCheck(menuCheck, menuDone);
+      setCheck(payoutsCheck, payoutsDone);
+
+      livePill.textContent = isLive ? "Live" : "Offline";
+      livePill.className = isLive ? "pill on" : "pill off";
+
+      setupText.textContent = isLive
+        ? "Your bar is accepting drink orders."
+        : canGoLive
+          ? "Setup complete. You can go live."
+          : "Finish setup to start accepting orders.";
+
+      goLiveBtn.disabled = !canGoLive;
+
+      payoutsText.textContent = payoutsDone
+        ? "Payouts are ready."
+        : "Connect Stripe so your bar can receive drink order payouts.";
+
+      connectStripeBtn.textContent = payoutsDone ? "Edit payouts" : "Connect payouts";
+
+      saveSetup(profileDone, pickupDone, menuDone, payoutsDone);
+    }
+
+    function setCheck(element, done) {
+      element.classList.toggle("done", done);
+      element.querySelector("strong").textContent = done ? "Done" : "Needed";
+    }
+
+    async function saveSetup(profileDone, pickupDone, menuDone, payoutsDone) {
+      if (!venueRef || !venue) return;
+
+      const setup = venue.setup || {};
+      const stats = venue.stats || {};
+
+      if (
+        setup.profileComplete === profileDone &&
+        setup.pickupReady === pickupDone &&
+        setup.menuReady === menuDone &&
+        setup.payoutsReady === payoutsDone &&
+        stats.drinksCount === drinkCount
+      ) {
+        return;
+      }
+
+      await updateDoc(venueRef, {
+        "setup.profileComplete": profileDone,
+        "setup.pickupReady": pickupDone,
+        "setup.menuReady": menuDone,
+        "setup.payoutsReady": payoutsDone,
+        "stats.drinksCount": drinkCount,
+        updatedAt: serverTimestamp()
+      });
+    }
+
+    saveProfileBtn.addEventListener("click", async () => {
+      profileMessage.textContent = "Saving...";
+
+      try {
+        await updateDoc(venueRef, {
+          venuePhotoUrl: photoUrl.value.trim(),
+          shortDescription: description.value.trim(),
+          pickupInstructions: pickup.value.trim(),
+          updatedAt: serverTimestamp()
+        });
+
+        profileMessage.textContent = "Saved.";
+      } catch (err) {
+        profileMessage.textContent = err.message || "Could not save.";
+      }
+    });
+
+const starterDrinks = [
+  { name: "Vodka Red Bull", category: "cocktails", price: 8 },
+  { name: "Vodka Soda", category: "cocktails", price: 7 },
+  { name: "Vodka Cranberry", category: "cocktails", price: 7 },
+  { name: "Jack and Coke", category: "cocktails", price: 8 },
+  { name: "Rum and Coke", category: "cocktails", price: 8 },
+  { name: "Tequila Pineapple", category: "cocktails", price: 7 },
+  { name: "Tequila Soda", category: "cocktails", price: 7 },
+  { name: "Moscow Mule", category: "cocktails", price: 10 },
+  { name: "Espresso Martini", category: "cocktails", price: 14 },
+  { name: "Dirty Shirley", category: "cocktails", price: 10 },
+  { name: "Margarita", category: "cocktails", price: 12 },
+  { name: "Mojito", category: "cocktails", price: 11 },
+  { name: "Pina Colada", category: "cocktails", price: 12 },
+  { name: "Whiskey Sour", category: "cocktails", price: 11 },
+  { name: "Gin & Tonic", category: "cocktails", price: 10 },
+  { name: "Long Island", category: "cocktails", price: 13 },
+  { name: "AMF (Adios MotherF****)", category: "cocktails", price: 14 },
+
+
+  { name: "Lemon Drop", category: "shots", price: 4 },
+  { name: "Tequila Shot", category: "shots", price: 5 },
+  { name: "Green Tea Shot", category: "shots", price: 6 },
+  { name: "Fireball Shot", category: "shots", price: 5 },
+  { name: "Vegas Bomb", category: "shots", price: 7 },
+  { name: "Jager Bomb", category: "shots", price: 8 },
+  { name: "Kamikaze Shot", category: "shots", price: 6 },
+  { name: "White Tea Shot", category: "shots", price: 6 },
+
+  { name: "Casamigos Shot", category: "shots", price: 12 },
+  { name: "Don Julio Shot", category: "shots", price: 13 },
+  { name: "Patron Shot", category: "shots", price: 11 },
+
+  { name: "Bud Light", category: "beer", price: 5 },
+  { name: "Michelob Ultra", category: "beer", price: 5 },
+  { name: "Corona", category: "beer", price: 6 },
+  { name: "Miller Lite", category: "beer", price: 5 },
+
+  { name: "High Noon", category: "seltzers", price: 7 },
+  { name: "White Claw", category: "seltzers", price: 6 },
+  { name: "Truly", category: "seltzers", price: 6 },
+  { name: "Happy Dad", category: "seltzers", price: 7 },
+  { name: "Surfside", category: "seltzers", price: 7 },
+  { name: "Nutrl", category: "seltzers", price: 7 },
+  { name: "Sun Cruiser", category: "seltzers", price: 7 },
+
+  { name: "Red Bull", category: "non_alcoholic", price: 4 },
+  { name: "Celsius", category: "non_alcoholic", price: 4 },
+  { name: "Sprite", category: "non_alcoholic", price: 3 },
+  { name: "Coke", category: "non_alcoholic", price: 3 },
+  { name: "Water", category: "non_alcoholic", price: 2 }
+];
+
+seedMenuBtn.addEventListener("click", async () => {
+  const confirmed = confirm("Seed starter menu? This will add preset drinks to your current menu.");
+
+  if (!confirmed) return;
+
+  menuMessage.textContent = "Seeding starter menu...";
+
+  try {
+    const drinksRef = collection(db, "venues", userId, "drinks");
+    const batch = writeBatch(db);
+
+const existingSnap = await getDocs(drinksRef);
+
+const existingDrinkNames = existingSnap.docs.map(doc =>
+  (doc.data().name || "").trim().toLowerCase()
+);
+
+starterDrinks.forEach(drink => {
+  const normalizedName = drink.name.trim().toLowerCase();
+
+  if (existingDrinkNames.includes(normalizedName)) {
     return;
   }
 
-  myEventsContainer.innerHTML = "";
+  const newDrinkRef = doc(drinksRef);
+
+  batch.set(newDrinkRef, {
+    name: drink.name,
+    category: drink.category,
+    price: drink.price,
+    isAvailable: true,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+});
+
+    await batch.commit();
+
+    await loadDrinks();
+
+    menuMessage.textContent = "Starter menu added.";
+  } catch (err) {
+    console.error("Seed menu failed:", err);
+    menuMessage.textContent = err.message || "Could not seed menu.";
+  }
+});
+
+    addDrinkBtn.addEventListener("click", async () => {
+      const name = drinkName.value.trim();
+      const category = drinkCategory.value;
+      const price = Number(drinkPrice.value);
+
+      if (!name || !category || !price || price <= 0) {
+        menuMessage.textContent = "Add a valid drink name, category, and price.";
+        return;
+      }
+
+      menuMessage.textContent = "Adding...";
+
+      try {
+        await addDoc(collection(db, "venues", userId, "drinks"), {
+          name,
+          category,
+          price,
+          isAvailable: true,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        drinkName.value = "";
+        drinkPrice.value = "";
+
+        await loadDrinks();
+        menuMessage.textContent = "Drink added.";
+      } catch (err) {
+        menuMessage.textContent = err.message || "Could not add drink.";
+      }
+    });
+
+async function loadDrinks() {
+  if (!userId) return;
+
+  const snap = await getDocs(collection(db, "venues", userId, "drinks"));
+
+  drinkCount = 0;
+  allDrinks = [];
 
   snap.forEach(docSnap => {
-    const e = docSnap.data();
+    drinkCount += 1;
 
-const card = document.createElement("div");
-card.className = "event-card";
-    card.style.cursor = "pointer";
+    allDrinks.push({
+      id: docSnap.id,
+      data: docSnap.data()
+    });
+  });
 
-const now = Date.now();
-const isLive = e.startsAt?.seconds * 1000 <= now && e.endsAt?.seconds * 1000 >= now;
+  renderDrinkList();
+  render();
+}
 
-card.innerHTML = `
-  <div class="event-header">
-    <div class="event-title">${e.title || "Untitled Event"}</div>
-    ${isLive ? `<div class="event-status">LIVE</div>` : ``}
-  </div>
+function renderDrinkList() {
+  drinkList.innerHTML = "";
 
-  <div class="event-location">${e.location || ""}</div>
+const visibleDrinks = allDrinks
+  .filter(entry => {
+    const drink = entry.data;
 
-  <div class="event-grid">
-    <div class="event-stat">
-      <div class="event-stat-label">Starts</div>
-      <div class="event-stat-value">
-        ${new Date(e.startsAt.seconds * 1000).toLocaleString()}
+    if (selectedDrinkCategory === "all") {
+      return true;
+    }
+
+    return drink.category === selectedDrinkCategory;
+  })
+  .sort((a, b) => {
+    const aName = (a.data.name || "").toLowerCase();
+    const bName = (b.data.name || "").toLowerCase();
+
+    return aName.localeCompare(bName);
+  });
+
+  if (visibleDrinks.length === 0) {
+    drinkList.innerHTML = `<div class="empty">No drinks in this category.</div>`;
+    return;
+  }
+
+  visibleDrinks.forEach(entry => {
+    const docSnapId = entry.id;
+    const drink = entry.data;
+    const isAvailable = drink.isAvailable !== false;
+
+    const item = document.createElement("div");
+    item.className = "drinkItem";
+
+    item.innerHTML = `
+      <div class="drinkMain">
+        <div>
+          <strong>${clean(drink.name)}</strong>
+          <span>${clean(formatDrinkCategory(drink.category))} · ${isAvailable ? "Available" : "Unavailable"}</span>
+        </div>
+
+        <b>$${Number(drink.price || 0).toFixed(2)}</b>
       </div>
-    </div>
 
-    <div class="event-stat">
-      <div class="event-stat-label">Admission</div>
-      <div class="event-stat-value">$${e.admissionPrice ?? 0}</div>
-    </div>
+      <div class="drinkActions">
+        ${
+          isAvailable
+            ? `<button class="smallBtn unavailableBtn">Mark unavailable</button>`
+            : `<button class="smallBtn availableBtn">Mark available</button>`
+        }
 
-    <div class="event-stat">
-      <div class="event-stat-label">Sold</div>
-      <div class="event-stat-value">${e.soldCount ?? 0}</div>
-    </div>
-
-    <div class="event-stat">
-      <div class="event-stat-label">Door Men</div>
-      <div class="event-stat-value">$${e.doorPriceMen ?? 0}</div>
-    </div>
-
-    <div class="event-stat">
-      <div class="event-stat-label">Door Women</div>
-      <div class="event-stat-value">$${e.doorPriceWomen ?? 0}</div>
-    </div>
-
-    <div class="event-stat">
-      <div class="event-stat-label">Free Tickets</div>
-      <div class="event-stat-value">
-        ${e.freeMaleClaimed ?? 0}/${e.freeMaleTotal ?? 0} M ·
-        ${e.freeFemaleClaimed ?? 0}/${e.freeFemaleTotal ?? 0} F
+        <button class="smallBtn editPriceBtn">Edit price</button>
+        <button class="smallBtn deleteDrinkBtn">Delete</button>
       </div>
-    </div>
-  </div>
+    `;
 
-  <div class="event-footer">
-    <div class="door-code">
-      Door Code: ${e.doorCode?.code ?? "—"}
+    const drinkRef = doc(db, "venues", userId, "drinks", docSnapId);
+
+    const unavailableBtn = item.querySelector(".unavailableBtn");
+    const availableBtn = item.querySelector(".availableBtn");
+    const editPriceBtn = item.querySelector(".editPriceBtn");
+    const deleteDrinkBtn = item.querySelector(".deleteDrinkBtn");
+
+    if (unavailableBtn) {
+      unavailableBtn.addEventListener("click", async () => {
+        try {
+          await updateDoc(drinkRef, {
+            isAvailable: false,
+            updatedAt: serverTimestamp()
+          });
+
+          await loadDrinks();
+        } catch (err) {
+          console.error("Unavailable failed:", err);
+          alert(err.message || "Could not mark unavailable.");
+        }
+      });
+    }
+
+    if (availableBtn) {
+      availableBtn.addEventListener("click", async () => {
+        try {
+          await updateDoc(drinkRef, {
+            isAvailable: true,
+            updatedAt: serverTimestamp()
+          });
+
+          await loadDrinks();
+        } catch (err) {
+          console.error("Available failed:", err);
+          alert(err.message || "Could not mark available.");
+        }
+      });
+    }
+
+    if (editPriceBtn) {
+  editPriceBtn.addEventListener("click", async () => {
+    const newPriceText = prompt("New price?", Number(drink.price || 0).toFixed(2));
+
+    if (newPriceText === null) return;
+
+    const newPrice = Number(newPriceText);
+
+    if (!newPrice || newPrice <= 0) {
+      alert("Enter a valid price.");
+      return;
+    }
+
+    try {
+      await updateDoc(drinkRef, {
+        price: newPrice,
+        updatedAt: serverTimestamp()
+      });
+
+      await loadDrinks();
+    } catch (err) {
+      console.error("Price update failed:", err);
+      alert(err.message || "Could not update price.");
+    }
+  });
+}
+
+    if (deleteDrinkBtn) {
+      deleteDrinkBtn.addEventListener("click", async () => {
+        const confirmed = confirm("Delete this drink?");
+
+        if (!confirmed) return;
+
+        try {
+          await deleteDoc(drinkRef);
+          await loadDrinks();
+        } catch (err) {
+          console.error("Delete failed:", err);
+          alert(err.message || "Could not delete drink.");
+        }
+      });
+    }
+
+    drinkList.appendChild(item);
+  });
+}
+
+function watchOrders() {
+  const q = query(
+    collection(db, "venues", userId, "orders"),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, snap => {
+    ordersList.innerHTML = "";
+
+    if (snap.empty) {
+      ordersList.innerHTML = `<div class="empty">No orders yet.</div>`;
+      return;
+    }
+
+const activeOrders = snap.docs
+  .map(docSnap => {
+    const order = docSnap.data();
+    const status = order.status || "pending";
+
+    return {
+      docSnap,
+      order,
+      status
+    };
+  })
+  .filter(entry => entry.status !== "picked_up" && entry.status !== "cancelled")
+.sort((a, b) => {
+  const aTime = a.order.createdAt?.seconds || 0;
+  const bTime = b.order.createdAt?.seconds || 0;
+
+  return bTime - aTime;
+});
+
+activeOrders.forEach(({ docSnap, order, status }) => {
+
+      const item = document.createElement("div");
+      item.className = `order ${status}`;
+
+      const itemsText = Array.isArray(order.items)
+        ? order.items.map(drink => {
+            const quantity = drink.quantity || 1;
+            const name = drink.name || "Drink";
+            return `${quantity}x ${name}`;
+          }).join(", ")
+        : "No items listed";
+
+        const orderNotes = order.notes || "";
+
+        const createdSeconds = order.createdAt?.seconds || null;
+const ageText = createdSeconds ? formatOrderAge(createdSeconds) : "Just now";
+
+        const itemsHtml = Array.isArray(order.items)
+  ? order.items.map(drink => {
+      const quantity = drink.quantity || 1;
+      const name = drink.name || "Drink";
+      const lineTotal = Number(
+        drink.lineTotal ?? ((drink.price || 0) * quantity)
+      ).toFixed(2);
+
+      return `
+        <div class="orderItemRow">
+          <span>${quantity}x ${clean(name)}</span>
+          <span>$${lineTotal}</span>
+        </div>
+      `;
+    }).join("")
+  : `<div class="orderEmpty">No items listed</div>`;
+
+item.innerHTML = `
+  <div class="orderCard ${clean(status)}">
+    <div class="orderHeader">
+      <div>
+        <div class="orderCode">
+  #${clean(order.orderCode || docSnap.id)}
+  ${status === "pending" ? `<span class="newTag">NEW</span>` : ""}
+</div>
+        <div class="orderStatusPill ${clean(status)}">${clean(status)}</div>
+<div class="orderAge">${clean(ageText)}</div>
+      </div>
+
+      <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
     </div>
 
-    <div class="event-actions">
-      <button class="event-btn">Edit</button>
-      <button class="event-btn">View</button>
+    <div class="orderItemsCard">
+      ${itemsHtml}
+    </div>
+
+    ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
+
+    <div class="orderFooter">
+      <div class="orderMetaText">
+        ${Array.isArray(order.items) ? order.items.length : 0} item types
+      </div>
+
+      <div class="orderActions">
+        ${status === "pending" ? `<button class="smallBtn acceptBtn">Accept</button>` : ""}
+        ${status === "accepted" ? `<button class="smallBtn readyBtn">Ready</button>` : ""}
+        ${status === "ready" ? `<button class="smallBtn pickedUpBtn">Picked up</button>` : ""}
+        ${status === "picked_up" ? `<span class="readyText">Completed</span>` : ""}
+      </div>
     </div>
   </div>
 `;
 
-    card.onclick = () => {
-      window.location.href = "/eventDetail.html?id=${docSnap.id}";
-    };
+      const orderRef = doc(db, "venues", userId, "orders", docSnap.id);
 
-    myEventsContainer.appendChild(card);
-  });
-}
-      if (!user) {
-        window.location.href = "/signup.html";
-        return;
+      const acceptBtn = item.querySelector(".acceptBtn");
+      const readyBtn = item.querySelector(".readyBtn");
+      const pickedUpBtn = item.querySelector(".pickedUpBtn");
+
+      if (acceptBtn) {
+        acceptBtn.addEventListener("click", async (event) => {
+          event.stopPropagation();
+
+          try {
+            await updateDoc(orderRef, {
+              status: "accepted",
+              acceptedAt: serverTimestamp()
+            });
+          } catch (err) {
+            console.error("Accept failed:", err);
+            alert(err.message || "Could not accept order.");
+          }
+        });
       }
 
-      // 🔄 Force Stripe → Firestore sync on dashboard load
+      if (readyBtn) {
+        readyBtn.addEventListener("click", async (event) => {
+          event.stopPropagation();
+
+          try {
+            await updateDoc(orderRef, {
+              status: "ready",
+              readyAt: serverTimestamp()
+            });
+          } catch (err) {
+            console.error("Ready failed:", err);
+            alert(err.message || "Could not mark order ready.");
+          }
+        });
+      }
+
+      if (pickedUpBtn) {
+        pickedUpBtn.addEventListener("click", async (event) => {
+          event.stopPropagation();
+
+          try {
+            await updateDoc(orderRef, {
+              status: "picked_up",
+              pickedUpAt: serverTimestamp()
+            });
+          } catch (err) {
+            console.error("Picked up failed:", err);
+            alert(err.message || "Could not complete order.");
+          }
+        });
+      }
+
+      ordersList.appendChild(item);
+    });
+  });
+}
+
+function watchHistory() {
+  const q = query(
+    collection(db, "venues", userId, "orders"),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, snap => {
+    historyList.innerHTML = "";
+
+    const completedOrders = snap.docs
+      .map(docSnap => {
+        const order = docSnap.data();
+        const status = order.status || "pending";
+
+        return {
+          docSnap,
+          order,
+          status
+        };
+      })
+      .filter(entry => entry.status === "picked_up")
+      .sort((a, b) => {
+        const aTime = a.order.pickedUpAt?.seconds || a.order.createdAt?.seconds || 0;
+        const bTime = b.order.pickedUpAt?.seconds || b.order.createdAt?.seconds || 0;
+
+        return bTime - aTime;
+      });
+
+const totalRevenue = completedOrders.reduce((sum, entry) => {
+  return sum + Number(entry.order.total || 0);
+}, 0);
+
+historyRevenue.textContent = `$${totalRevenue.toFixed(2)}`;
+historyOrderCount.textContent = completedOrders.length;
+
+if (completedOrders.length === 0) {
+  historyList.innerHTML = `<div class="empty">No completed orders yet.</div>`;
+  return;
+}
+
+    completedOrders.forEach(({ docSnap, order, status }) => {
+      const item = document.createElement("div");
+      item.className = `order ${status}`;
+
+      const completedSeconds = order.pickedUpAt?.seconds || order.createdAt?.seconds || null;
+      const completedText = completedSeconds ? formatOrderAge(completedSeconds) : "Completed";
+
+      const itemsHtml = Array.isArray(order.items)
+        ? order.items.map(drink => {
+            const quantity = drink.quantity || 1;
+            const name = drink.name || "Drink";
+            const lineTotal = Number(
+              drink.lineTotal ?? ((drink.price || 0) * quantity)
+            ).toFixed(2);
+
+            return `
+              <div class="orderItemRow">
+                <span>${quantity}x ${clean(name)}</span>
+                <span>$${lineTotal}</span>
+              </div>
+            `;
+          }).join("")
+        : `<div class="orderEmpty">No items listed</div>`;
+
+      const orderNotes = order.notes || "";
+
+      item.innerHTML = `
+        <div class="orderCard picked_up">
+          <div class="orderHeader">
+            <div>
+              <div class="orderCode">#${clean(order.orderCode || docSnap.id)}</div>
+              <div class="orderStatusPill picked_up">completed</div>
+              <div class="orderAge">${clean(completedText)}</div>
+            </div>
+
+            <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
+          </div>
+
+          <div class="orderItemsCard">
+            ${itemsHtml}
+          </div>
+
+          ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
+
+          <div class="orderFooter">
+            <div class="orderMetaText">
+              ${Array.isArray(order.items) ? order.items.length : 0} item types
+            </div>
+
+            <span class="readyText">Completed</span>
+          </div>
+        </div>
+      `;
+
+      historyList.appendChild(item);
+    });
+  });
+}
+
+    async function syncStripe() {
       try {
-        const syncFn = httpsCallable(
+        const fn = httpsCallable(
           functions,
           "businessStripeOnboarding-checkBusinessStripeAccountStatus"
         );
 
-        await syncFn();
+        await fn();
       } catch (err) {
-        console.error("Stripe sync failed:", err);
+        console.error(err);
       }
+    }
 
-      const ref = doc(db, "businessUsers", user.uid);
-
-      loadMyEvents(user.uid);
-
-      
-
-  
-
-      onSnapshot(ref, (snap) => {
-        if (!snap.exists()) {
-          alert("Business profile not found.");
-          return;
-        }
-
-        const data = snap.data();
-
-        const payouts = data.payouts || {};
-        const last4 = payouts.last4 || data.bankLast4 || null;
-
-        payoutsEnabled =
-          data.payoutsEnabled === true ||
-          payouts.connected === true;
-
-        const stripeStatus =
-          data.stripeStatus ||
-          (payoutsEnabled ? "enabled" : "incomplete");
-
-        if (stripeStatus === "enabled") {
-          statusBadge.innerHTML = `<span class="dot" aria-hidden="true"></span> Payouts enabled`;
-          statusBadge.className = "badge ok";
-
-          headline.textContent = last4
-            ? `Bank account •••• ${last4}`
-            : "Bank account connected";
-
-          connectBtnText.textContent = "Edit bank account";
-          connectBtn.disabled = false;
-        }
-
-        if (stripeStatus === "incomplete") {
-          statusBadge.innerHTML = `<span class="dot" aria-hidden="true"></span> Payouts not set up`;
-          statusBadge.className = "badge warn";
-
-          headline.textContent = "Connect your bank account";
-          connectBtnText.textContent = "Connect bank account";
-          connectBtn.disabled = false;
-        }
-      });
-    });
-
-    connectBtn.addEventListener("click", async () => {
-      connectBtn.disabled = true;
-      connectSpinner.style.display = "inline-block";
-      connectBtnText.textContent = "Connecting...";
-
-      // Force repaint so spinner appears before async call
-      await new Promise(resolve => setTimeout(resolve, 50));
-      try {
-        const fn = httpsCallable(
-          functions,
-          "businessStripeOnboarding-createBusinessStripeOnboardingLink"
-        );
-
-        const res = await fn();
-        window.location.href = res.data.url;
-
-      } catch (err) {
-        alert("Unable to start Stripe setup.");
-        connectBtn.disabled = false;
-        connectSpinner.style.display = "none";
-        connectBtnText.textContent = "Connect bank account";
-      }
-    });
-
-const sections = {
-  dashboard: document.getElementById("bankSection"),
-  events: document.getElementById("eventsSection"),
-  profile: document.getElementById("profileSection"),
-  host: document.getElementById("hostSection"),
-  analytics: document.getElementById("analyticsSection")
-};
-
-document.querySelectorAll(".nav-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const page = btn.dataset.page;
-
-    Object.values(sections).forEach(sec => sec.classList.remove("active"));
-    sections[page].classList.add("active");
-
-  });
-});
-
-    const hostBtn = document.getElementById("hostBtn");
-
-    hostBtn.addEventListener("click", async () => {
-      if (payoutsEnabled) {
-        window.location.href = "/hostEvent.html";
-        return;
-      }
+    connectStripeBtn.addEventListener("click", async () => {
+      payoutsMessage.textContent = "Opening Stripe...";
 
       try {
         const fn = httpsCallable(
@@ -729,11 +977,119 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
 
         const res = await fn();
         window.location.href = res.data.url;
-
       } catch (err) {
-        alert("Unable to start Stripe setup.");
+        payoutsMessage.textContent = "Unable to open Stripe.";
       }
     });
+
+    testPayoutsBtn.addEventListener("click", async () => {
+      payoutsMessage.textContent = "Updating...";
+
+      try {
+        await updateDoc(venueRef, {
+          "setup.payoutsReady": true,
+          updatedAt: serverTimestamp()
+        });
+
+        await updateDoc(businessRef, {
+          "payouts.connected": true,
+          "payouts.status": "test_ready",
+          updatedAt: serverTimestamp()
+        });
+
+        payoutsMessage.textContent = "Payouts marked ready.";
+      } catch (err) {
+        payoutsMessage.textContent = err.message || "Could not update payouts.";
+      }
+    });
+
+    goLiveBtn.addEventListener("click", async () => {
+      setupMessage.textContent = "Starting...";
+
+      try {
+        await updateDoc(venueRef, {
+          fastLaneEnabled: true,
+          acceptingOrders: true,
+          updatedAt: serverTimestamp()
+        });
+
+        setupMessage.textContent = "You are live.";
+      } catch (err) {
+        setupMessage.textContent = err.message || "Could not go live.";
+      }
+    });
+
+    pauseBtn.addEventListener("click", async () => {
+      setupMessage.textContent = "Pausing...";
+
+      try {
+        await updateDoc(venueRef, {
+          acceptingOrders: false,
+          updatedAt: serverTimestamp()
+        });
+
+        setupMessage.textContent = "Orders paused.";
+      } catch (err) {
+        setupMessage.textContent = err.message || "Could not pause orders.";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "/login.html";
+    });
+
+    function formatOrderAge(createdSeconds) {
+  const createdMs = createdSeconds * 1000;
+  const nowMs = Date.now();
+  const diffMs = nowMs - createdMs;
+
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+
+  if (diffSeconds < 45) {
+    return "Just now";
+  }
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes} min ago`;
+  }
+
+  if (diffHours === 1) {
+    return "1 hour ago";
+  }
+
+  return `${diffHours} hours ago`;
+}
+
+function formatDrinkCategory(category) {
+  switch (category) {
+    case "cocktails":
+      return "Cocktails";
+    case "shots":
+      return "Shots";
+    case "beer":
+      return "Beer";
+    case "seltzers":
+      return "Seltzers";
+    case "wine":
+      return "Wine";
+    case "non_alcoholic":
+      return "Non alcoholic";
+    default:
+      return category || "Drink";
+  }
+}
+
+    function clean(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
   </script>
 </body>
 </html>
