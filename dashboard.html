@@ -68,6 +68,119 @@
     color: rgba(255,255,255,0.72);
   }
 </style>
+
+<style>
+  .orderCustomerName {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.78);
+  }
+</style>
+
+<style>
+  .pushPreviewCard {
+    margin: 16px 0;
+    padding: 16px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+    max-width: 420px;
+  }
+
+  .pushPreviewTop {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.48);
+  }
+
+  .pushPreviewCard strong {
+    display: block;
+    font-size: 15px;
+    color: white;
+    margin-bottom: 6px;
+  }
+
+  .pushPreviewCard p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.35;
+    color: rgba(255,255,255,0.72);
+  }
+</style>
+
+<style>
+  #ordersList,
+  #historyList {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+
+  #ordersList .order,
+  #historyList .order,
+  #historyList .orderCard {
+    width: 100%;
+  }
+
+  #ordersList .orderCard,
+  #historyList .orderCard {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  #ordersList .orderHeader,
+  #historyList .orderHeader {
+    gap: 10px;
+  }
+
+  #ordersList .orderCode,
+  #historyList .orderCode {
+    font-size: 18px;
+    line-height: 1.1;
+  }
+
+  #ordersList .orderTotal,
+  #historyList .orderTotal {
+    font-size: 17px;
+  }
+
+  #ordersList .orderItemsCard,
+  #historyList .orderItemsCard {
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  #ordersList .orderItemRow,
+  #historyList .orderItemRow {
+    font-size: 13px;
+    padding: 6px 0;
+  }
+
+  #ordersList .orderFooter,
+  #historyList .orderFooter {
+    margin-top: 10px;
+    gap: 8px;
+  }
+
+  #ordersList .smallBtn,
+  #historyList .smallBtn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  @media (max-width: 760px) {
+    #ordersList,
+    #historyList {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 </head>
 
 <body>
@@ -92,6 +205,7 @@
   <button class="tab" data-view="menu">Menu</button>
   <button class="tab" data-view="orders">Orders</button>
   <button class="tab" data-view="history">History</button>
+  <button class="tab" data-view="audience">Audience</button>
   <button class="tab" data-view="payouts">Payouts</button>
 </nav>
 
@@ -199,19 +313,63 @@
   <h2>Order History</h2>
   <p class="muted">Completed drink orders will show here.</p>
 
+<div class="historySummary">
+  <div>
+    <span>Tonight Revenue</span>
+    <strong id="historyRevenue">$0.00</strong>
+  </div>
+
+  <div>
+    <span>Tips</span>
+    <strong id="historyTips">$0.00</strong>
+  </div>
+
+  <div>
+    <span>Completed Orders</span>
+    <strong id="historyOrderCount">0</strong>
+  </div>
+</div>
+
+  <div id="historyList" class="ordersListFix"></div>
+</section>
+
+<section id="audienceView" class="view">
+  <h2>Audience</h2>
+  <p class="muted">Send an in app update to customers who have ordered from your bar before.</p>
+
   <div class="historySummary">
     <div>
-      <span>Total Revenue</span>
-      <strong id="historyRevenue">$0.00</strong>
+      <span>Customer Audience</span>
+      <strong id="audienceCount">0</strong>
     </div>
 
     <div>
-      <span>Completed Orders</span>
-      <strong id="historyOrderCount">0</strong>
+      <span>Last Blast Sent</span>
+      <strong id="lastAudienceBlast">None</strong>
     </div>
   </div>
 
-  <div id="historyList" class="ordersListFix"></div>
+  <label>Notification title</label>
+  <input id="audienceTitle" maxlength="60" placeholder="Deals tonight" />
+
+  <label>Message</label>
+<textarea id="audienceMessage" maxlength="160" rows="4" placeholder="Example: $5 High Noons until midnight. Tap to order Fast Lane."></textarea>
+
+<div class="pushPreviewCard">
+  <div class="pushPreviewTop">
+    <span>Backstage</span>
+    <span>now</span>
+  </div>
+
+  <strong id="pushPreviewTitle">Notification preview</strong>
+  <p id="pushPreviewBody">Your message will show here.</p>
+</div>
+
+<button id="sendAudienceBtn" class="mainBtn">Send to past customers</button>
+
+  <p id="audienceMessageText" class="message"></p>
+
+  <div id="audienceBlastList" class="list"></div>
 </section>
 
 <section id="payoutsView" class="view">
@@ -245,6 +403,7 @@ import {
   doc,
   collection,
   addDoc,
+  getDoc,
   getDocs,
   onSnapshot,
   updateDoc,
@@ -267,6 +426,7 @@ import {
     let drinkCount = 0;
     let allDrinks = [];
     let selectedDrinkCategory = "all";
+    const customerNameCache = {};
 
     const venueName = document.getElementById("venueName");
     const venueAddress = document.getElementById("venueAddress");
@@ -299,7 +459,18 @@ import {
     const ordersList = document.getElementById("ordersList");
     const historyList = document.getElementById("historyList");
     const historyRevenue = document.getElementById("historyRevenue");
+    const historyTips = document.getElementById("historyTips");
     const historyOrderCount = document.getElementById("historyOrderCount");
+
+    const audienceCount = document.getElementById("audienceCount");
+    const lastAudienceBlast = document.getElementById("lastAudienceBlast");
+    const audienceTitle = document.getElementById("audienceTitle");
+    const audienceMessage = document.getElementById("audienceMessage");
+    const sendAudienceBtn = document.getElementById("sendAudienceBtn");
+    const audienceMessageText = document.getElementById("audienceMessageText");
+    const audienceBlastList = document.getElementById("audienceBlastList");
+    const pushPreviewTitle = document.getElementById("pushPreviewTitle");
+    const pushPreviewBody = document.getElementById("pushPreviewBody");
 
     const payoutsStatusCard = document.getElementById("payoutsStatusCard");
     const payoutsStatusTitle = document.getElementById("payoutsStatusTitle");
@@ -344,6 +515,8 @@ import {
       watchBusiness();
       watchOrders();
       watchHistory();
+      watchAudience();
+      watchAudienceBlasts();
       await loadDrinks();
       syncStripe();
     });
@@ -365,6 +538,7 @@ import {
         pickup.value = venue.pickupInstructions || "";
 
         render();
+        updatePushPreview();
       });
     }
 
@@ -421,7 +595,7 @@ payoutsStatusTitle.textContent = payoutsDone
   : "Payouts not connected";
 
 payoutsText.textContent = payoutsDone
-  ? "Your bar is connected to Stripe and can receive Fast Lane payouts."
+  ? "Your bank is connected to Stripe and can receive bar payouts."
   : "Connect Stripe so your bar can receive drink order payouts.";
 
 const last4 =
@@ -784,13 +958,72 @@ const visibleDrinks = allDrinks
   });
 }
 
+async function getCustomerName(order) {
+  const directName = [
+    order.userFirstName,
+    order.userLastName
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  if (directName) {
+    return directName;
+  }
+
+  if (order.customerName) {
+    return order.customerName;
+  }
+
+  if (!order.userId) {
+    return "Guest";
+  }
+
+  if (customerNameCache[order.userId]) {
+    return customerNameCache[order.userId];
+  }
+
+  try {
+    const userSnap = await getDoc(doc(db, "users", order.userId));
+
+    if (!userSnap.exists()) {
+      customerNameCache[order.userId] = "Guest";
+      return "Guest";
+    }
+
+    const user = userSnap.data() || {};
+
+    const name = [
+      user.firstName,
+      user.lastName
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+
+    const finalName =
+      name ||
+      user.displayName ||
+      user.username ||
+      user.email ||
+      "Guest";
+
+    customerNameCache[order.userId] = finalName;
+
+    return finalName;
+  } catch (err) {
+    console.error("Could not load customer name:", err);
+    return "Guest";
+  }
+}
+
 function watchOrders() {
   const q = query(
     collection(db, "venues", userId, "orders"),
     orderBy("createdAt", "desc")
   );
 
-  onSnapshot(q, snap => {
+  onSnapshot(q, async snap => {
     ordersList.innerHTML = "";
 
     if (snap.empty) {
@@ -817,7 +1050,7 @@ const activeOrders = snap.docs
   return bTime - aTime;
 });
 
-activeOrders.forEach(({ docSnap, order, status }) => {
+for (const { docSnap, order, status } of activeOrders) {
 
       const item = document.createElement("div");
       item.className = `order ${status}`;
@@ -834,6 +1067,8 @@ activeOrders.forEach(({ docSnap, order, status }) => {
 
         const createdSeconds = order.createdAt?.seconds || null;
 const ageText = createdSeconds ? formatOrderAge(createdSeconds) : "Just now";
+
+const customerName = await getCustomerName(order);
 
         const itemsHtml = Array.isArray(order.items)
   ? order.items.map(drink => {
@@ -860,8 +1095,9 @@ item.innerHTML = `
   #${clean(order.orderCode || docSnap.id)}
   ${status === "pending" ? `<span class="newTag">NEW</span>` : ""}
 </div>
-        <div class="orderStatusPill ${clean(status)}">${clean(status)}</div>
-<div class="orderAge">${clean(ageText)}</div>
+    <div class="orderStatusPill ${clean(status)}">${clean(status)}</div>
+    <div class="orderCustomerName">${clean(customerName)}</div>
+    <div class="orderAge">${clean(ageText)}</div>
       </div>
 
       <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
@@ -943,6 +1179,77 @@ item.innerHTML = `
       }
 
       ordersList.appendChild(item);
+    }
+  });
+}
+
+function getTonightStartSeconds() {
+  const now = new Date();
+  const start = new Date(now);
+
+  if (now.getHours() < 6) {
+    start.setDate(start.getDate() - 1);
+  }
+
+  start.setHours(18, 0, 0, 0);
+
+  return Math.floor(start.getTime() / 1000);
+}
+
+function watchAudience() {
+  if (!userId) return;
+
+  const customersRef = collection(db, "venues", userId, "customers");
+
+  onSnapshot(customersRef, snap => {
+    audienceCount.textContent = snap.size;
+  });
+}
+
+function watchAudienceBlasts() {
+  if (!userId) return;
+
+  const q = query(
+    collection(db, "venues", userId, "audienceBlasts"),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, snap => {
+    audienceBlastList.innerHTML = "";
+
+    if (snap.empty) {
+      lastAudienceBlast.textContent = "None";
+      audienceBlastList.innerHTML = `<div class="empty">No audience messages sent yet.</div>`;
+      return;
+    }
+
+    const latest = snap.docs[0].data() || {};
+    lastAudienceBlast.textContent = latest.sent
+      ? `${latest.sent} sent`
+      : "Sent";
+
+    snap.docs.slice(0, 10).forEach(docSnap => {
+      const blast = docSnap.data() || {};
+
+      const item = document.createElement("div");
+      item.className = "orderCard";
+
+      item.innerHTML = `
+        <div class="orderHeader">
+          <div>
+            <div class="orderCode">${clean(blast.title || "Audience blast")}</div>
+            <div class="orderAge">${clean(blast.message || "")}</div>
+          </div>
+
+          <div class="orderTotal">${Number(blast.sent || 0)} sent</div>
+        </div>
+
+        <div class="orderMetaText">
+          Audience ${Number(blast.audienceSize || 0)} · Failed ${Number(blast.failed || 0)}
+        </div>
+      `;
+
+      audienceBlastList.appendChild(item);
     });
   });
 }
@@ -956,18 +1263,28 @@ function watchHistory() {
   onSnapshot(q, snap => {
     historyList.innerHTML = "";
 
-    const completedOrders = snap.docs
-      .map(docSnap => {
-        const order = docSnap.data();
-        const status = order.status || "pending";
+const tonightStartSeconds = getTonightStartSeconds();
 
-        return {
-          docSnap,
-          order,
-          status
-        };
-      })
-      .filter(entry => entry.status === "picked_up")
+const completedOrders = snap.docs
+  .map(docSnap => {
+    const order = docSnap.data();
+    const status = order.status || "pending";
+    const completedSeconds =
+      order.pickedUpAt?.seconds ||
+      order.createdAt?.seconds ||
+      0;
+
+    return {
+      docSnap,
+      order,
+      status,
+      completedSeconds
+    };
+  })
+  .filter(entry =>
+    entry.status === "picked_up" &&
+    entry.completedSeconds >= tonightStartSeconds
+  )
       .sort((a, b) => {
         const aTime = a.order.pickedUpAt?.seconds || a.order.createdAt?.seconds || 0;
         const bTime = b.order.pickedUpAt?.seconds || b.order.createdAt?.seconds || 0;
@@ -979,7 +1296,12 @@ const totalRevenue = completedOrders.reduce((sum, entry) => {
   return sum + Number(entry.order.total || 0);
 }, 0);
 
+const totalTips = completedOrders.reduce((sum, entry) => {
+  return sum + Number(entry.order.tip || 0);
+}, 0);
+
 historyRevenue.textContent = `$${totalRevenue.toFixed(2)}`;
+historyTips.textContent = `$${totalTips.toFixed(2)}`;
 historyOrderCount.textContent = completedOrders.length;
 
 if (completedOrders.length === 0) {
@@ -1025,9 +1347,14 @@ if (completedOrders.length === 0) {
             <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
           </div>
 
-          <div class="orderItemsCard">
-            ${itemsHtml}
-          </div>
+<div class="orderItemsCard">
+  ${itemsHtml}
+
+  <div class="orderItemRow">
+    <span>Tip</span>
+    <span>$${Number(order.tip || 0).toFixed(2)}</span>
+  </div>
+</div>
 
           ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
 
@@ -1105,6 +1432,60 @@ if (completedOrders.length === 0) {
         setupMessage.textContent = err.message || "Could not pause orders.";
       }
     });
+
+    function updatePushPreview() {
+  const title = audienceTitle.value.trim();
+  const message = audienceMessage.value.trim();
+  const name = venue?.venueName || "Your venue";
+
+  pushPreviewTitle.textContent = title
+    ? `${name}: ${title}`
+    : `${name}: Notification preview`;
+
+  pushPreviewBody.textContent = message || "Your message will show here.";
+}
+
+audienceTitle.addEventListener("input", updatePushPreview);
+audienceMessage.addEventListener("input", updatePushPreview);
+
+    sendAudienceBtn.addEventListener("click", async () => {
+  const title = audienceTitle.value.trim();
+  const message = audienceMessage.value.trim();
+
+  if (!title || !message) {
+    audienceMessageText.textContent = "Add a title and message.";
+    return;
+  }
+
+  audienceMessageText.textContent = "Sending...";
+  sendAudienceBtn.disabled = true;
+
+  try {
+    const sendBlast = httpsCallable(
+      functions,
+      "venueAudience-sendVenueAudienceNotification"
+    );
+
+    const result = await sendBlast({
+      title,
+      message
+    });
+
+    const data = result.data || {};
+
+    audienceMessageText.textContent =
+      `Sent to ${data.sent || 0} customers.`;
+
+    audienceTitle.value = "";
+    audienceMessage.value = "";
+  } catch (err) {
+    console.error("Audience blast failed:", err);
+    audienceMessageText.textContent =
+      err.message || "Could not send notification.";
+  } finally {
+    sendAudienceBtn.disabled = false;
+  }
+});
 
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
