@@ -114,6 +114,77 @@
 </style>
 
 <style>
+  .photoUploadBox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .uploadPhotoBtn {
+    border: none;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-weight: 900;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(135deg, #9C4FF2, #225CDA);
+    box-shadow: 0 12px 28px rgba(156,79,242,0.25);
+  }
+
+  .uploadPhotoBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 34px rgba(156,79,242,0.35);
+  }
+
+  .uploadFileName {
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.62);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .venuePhotoPreviewWrap {
+    margin-top: 14px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  }
+
+  .venuePhotoPreviewWrap img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+  }
+
+  @media (max-width: 520px) {
+    .photoUploadBox {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .uploadPhotoBtn {
+      width: 100%;
+    }
+
+    .uploadFileName {
+      text-align: center;
+    }
+  }
+</style>
+
+<style>
   #ordersList,
   #historyList {
     display: grid;
@@ -245,14 +316,30 @@
         <div>
           <h2>Venue profile</h2>
 
-          <label>Photo URL</label>
-          <input id="photoUrl" placeholder="https://..." />
+<label>Venue photo</label>
 
-          <label>Short description</label>
-          <textarea id="description" rows="4" placeholder="Short description of the bar"></textarea>
+<div class="photoUploadBox">
+  <input id="venuePhotoFile" type="file" accept="image/*" hidden />
 
-          <label>Pickup instructions</label>
-          <textarea id="pickup" rows="4" placeholder="Example: Pick up at the left side of the main bar."></textarea>
+  <button id="chooseVenuePhotoBtn" type="button" class="uploadPhotoBtn">
+    Choose venue photo
+  </button>
+
+  <span id="venuePhotoFileName" class="uploadFileName">
+    No photo selected
+  </span>
+</div>
+
+<div id="venuePhotoPreviewWrap" class="venuePhotoPreviewWrap" style="display:none;">
+  <img
+    id="venuePhotoPreview"
+    src=""
+    alt="Venue photo preview"
+  />
+</div>
+
+<label>Pickup instructions</label>
+<textarea id="pickup" rows="4" placeholder="Example: Pick up at the left side of the main bar."></textarea>
 
           <button id="saveProfileBtn" class="mainBtn">Save profile</button>
           <p id="profileMessage" class="message"></p>
@@ -392,12 +479,14 @@
   </main>
 
   <script type="module">
-    import { auth, db, functions } from "/js/firebase.js";
+    import { auth, db, functions, storage } from "/js/firebase.js";
 
     import {
       onAuthStateChanged,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  
 
 import {
   doc,
@@ -417,6 +506,12 @@ import {
     import {
       httpsCallable
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
+
+    import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     let userId = null;
     let venueRef = null;
@@ -441,9 +536,11 @@ import {
     const goLiveBtn = document.getElementById("goLiveBtn");
     const pauseBtn = document.getElementById("pauseBtn");
     const setupMessage = document.getElementById("setupMessage");
-
-    const photoUrl = document.getElementById("photoUrl");
-    const description = document.getElementById("description");
+    const venuePhotoFile = document.getElementById("venuePhotoFile");
+    const chooseVenuePhotoBtn = document.getElementById("chooseVenuePhotoBtn");
+    const venuePhotoFileName = document.getElementById("venuePhotoFileName");
+    const venuePhotoPreviewWrap = document.getElementById("venuePhotoPreviewWrap");
+    const venuePhotoPreview = document.getElementById("venuePhotoPreview");
     const pickup = document.getElementById("pickup");
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const profileMessage = document.getElementById("profileMessage");
@@ -533,9 +630,15 @@ import {
         venueName.textContent = venue.venueName || "Unnamed venue";
         venueAddress.textContent = venue.venueAddress || "No address saved";
 
-        photoUrl.value = venue.venuePhotoUrl || "";
-        description.value = venue.shortDescription || "";
-        pickup.value = venue.pickupInstructions || "";
+if (venue.venuePhotoUrl) {
+  venuePhotoPreview.src = venue.venuePhotoUrl;
+  venuePhotoPreviewWrap.style.display = "block";
+} else {
+  venuePhotoPreview.src = "";
+  venuePhotoPreviewWrap.style.display = "none";
+}
+
+pickup.value = venue.pickupInstructions || "";
 
         render();
         updatePushPreview();
@@ -554,10 +657,9 @@ import {
 
       const payouts = business?.payouts || {};
 
-      const profileDone =
-        Boolean(venue.venuePhotoUrl) &&
-        Boolean(venue.shortDescription) &&
-        Boolean(venue.venueAddress);
+const profileDone =
+  Boolean(venue.venuePhotoUrl) &&
+  Boolean(venue.venueAddress);
 
       const pickupDone = Boolean(venue.pickupInstructions);
       const menuDone = drinkCount >= 3;
@@ -647,22 +749,59 @@ connectStripeBtn.textContent = payoutsDone ? "Manage payouts" : "Connect payouts
       });
     }
 
-    saveProfileBtn.addEventListener("click", async () => {
-      profileMessage.textContent = "Saving...";
+chooseVenuePhotoBtn.addEventListener("click", () => {
+  venuePhotoFile.click();
+});
 
-      try {
-        await updateDoc(venueRef, {
-          venuePhotoUrl: photoUrl.value.trim(),
-          shortDescription: description.value.trim(),
-          pickupInstructions: pickup.value.trim(),
-          updatedAt: serverTimestamp()
-        });
+venuePhotoFile.addEventListener("change", () => {
+  const selectedFile = venuePhotoFile.files[0];
 
-        profileMessage.textContent = "Saved.";
-      } catch (err) {
-        profileMessage.textContent = err.message || "Could not save.";
-      }
-    });
+  if (!selectedFile) return;
+
+  venuePhotoFileName.textContent = selectedFile.name;
+
+  const previewUrl = URL.createObjectURL(selectedFile);
+
+  venuePhotoPreview.src = previewUrl;
+  venuePhotoPreviewWrap.style.display = "block";
+});
+
+saveProfileBtn.addEventListener("click", async () => {
+  profileMessage.textContent = "Saving...";
+  saveProfileBtn.disabled = true;
+
+  try {
+    const updates = {
+      pickupInstructions: pickup.value.trim(),
+      updatedAt: serverTimestamp()
+    };
+
+    const selectedFile = venuePhotoFile.files[0];
+
+    if (selectedFile) {
+      const safeFileName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filePath = `venuePhotos/${userId}/${Date.now()}-${safeFileName}`;
+      const imageRef = ref(storage, filePath);
+
+      await uploadBytes(imageRef, selectedFile);
+
+      const downloadUrl = await getDownloadURL(imageRef);
+
+      updates.venuePhotoUrl = downloadUrl;
+    }
+
+    await updateDoc(venueRef, updates);
+
+venuePhotoFile.value = "";
+venuePhotoFileName.textContent = "No photo selected";
+profileMessage.textContent = "Saved.";
+  } catch (err) {
+    console.error("Profile save failed:", err);
+    profileMessage.textContent = err.message || "Could not save.";
+  } finally {
+    saveProfileBtn.disabled = false;
+  }
+});
 
 const starterDrinks = [
   { name: "Vodka Red Bull", category: "cocktails", price: 8 },
@@ -1281,10 +1420,9 @@ const completedOrders = snap.docs
       completedSeconds
     };
   })
-  .filter(entry =>
-    entry.status === "picked_up" &&
-    entry.completedSeconds >= tonightStartSeconds
-  )
+.filter(entry =>
+  entry.status === "picked_up"
+)
       .sort((a, b) => {
         const aTime = a.order.pickedUpAt?.seconds || a.order.createdAt?.seconds || 0;
         const bTime = b.order.pickedUpAt?.seconds || b.order.createdAt?.seconds || 0;
