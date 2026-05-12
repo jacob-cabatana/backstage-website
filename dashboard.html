@@ -71,10 +71,10 @@
 
 <style>
   .orderCustomerName {
-    margin-top: 6px;
-    font-size: 13px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.78);
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.86);
   }
 </style>
 
@@ -201,8 +201,9 @@
 
   #ordersList .orderCard,
   #historyList .orderCard {
-    padding: 14px;
-    border-radius: 18px;
+    padding: 22px;
+    border-radius: 24px;
+    min-height: 260px;
   }
 
   #ordersList .orderHeader,
@@ -212,37 +213,43 @@
 
   #ordersList .orderCode,
   #historyList .orderCode {
-    font-size: 18px;
-    line-height: 1.1;
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: 0.5px;
   }
 
   #ordersList .orderTotal,
   #historyList .orderTotal {
-    font-size: 17px;
+    font-size: 26px;
+    font-weight: 950;
   }
 
   #ordersList .orderItemsCard,
   #historyList .orderItemsCard {
-    padding: 10px;
-    margin-top: 10px;
+    padding: 16px;
+    margin-top: 18px;
+    border-radius: 18px;
   }
 
   #ordersList .orderItemRow,
   #historyList .orderItemRow {
-    font-size: 13px;
-    padding: 6px 0;
+    font-size: 19px;
+    padding: 10px 0;
+    font-weight: 850;
   }
 
   #ordersList .orderFooter,
   #historyList .orderFooter {
-    margin-top: 10px;
-    gap: 8px;
+    margin-top: 18px;
+    gap: 12px;
   }
-
   #ordersList .smallBtn,
   #historyList .smallBtn {
-    padding: 8px 10px;
-    font-size: 12px;
+    padding: 14px 18px;
+    font-size: 16px;
+    font-weight: 900;
+    border-radius: 14px;
   }
 
   @media (max-width: 760px) {
@@ -363,6 +370,7 @@
             <option value="seltzers">Seltzers</option>
             <option value="wine">Wine</option>
             <option value="non_alcoholic">Non alcoholic</option>
+            <option value="specials">Specials</option>
           </select>
 
           <label>Price</label>
@@ -382,7 +390,7 @@
     <button class="drinkCategoryTab" data-category="shots">Shots</button>
     <button class="drinkCategoryTab" data-category="beer">Beer</button>
     <button class="drinkCategoryTab" data-category="seltzers">Seltzers</button>
-    <button class="drinkCategoryTab" data-category="non_alcoholic">Non alcoholic</button>
+    <button class="drinkCategoryTab" data-category="specials">Specials</button>
   </div>
 
   <div id="drinkList" class="list"></div>
@@ -853,7 +861,12 @@ const starterDrinks = [
   { name: "Celsius", category: "non_alcoholic", price: 4 },
   { name: "Sprite", category: "non_alcoholic", price: 3 },
   { name: "Coke", category: "non_alcoholic", price: 3 },
-  { name: "Water", category: "non_alcoholic", price: 2 }
+  { name: "Water", category: "non_alcoholic", price: 2 },
+
+{ name: "$5 Vodka Red Bull", category: "specials", price: 5 },
+{ name: "$4 Green Tea Shot", category: "specials", price: 4 },
+{ name: "$6 High Noon", category: "specials", price: 6 }
+  
 ];
 
 seedMenuBtn.addEventListener("click", async () => {
@@ -1198,7 +1211,7 @@ for (const { docSnap, order, status } of activeOrders) {
         ? order.items.map(drink => {
             const quantity = drink.quantity || 1;
             const name = drink.name || "Drink";
-            return `${quantity}x ${name}`;
+            return `x${quantity} ${name}`;
           }).join(", ")
         : "No items listed";
 
@@ -1219,7 +1232,7 @@ const customerName = await getCustomerName(order);
 
       return `
         <div class="orderItemRow">
-          <span>${quantity}x ${clean(name)}</span>
+          <span>x${quantity} ${clean(name)}</span>
           <span>$${lineTotal}</span>
         </div>
       `;
@@ -1668,6 +1681,8 @@ function formatDrinkCategory(category) {
       return "Wine";
     case "non_alcoholic":
       return "Non alcoholic";
+    case "specials":
+      return "Specials";
     default:
       return category || "Drink";
   }
