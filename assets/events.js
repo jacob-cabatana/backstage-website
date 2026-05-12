@@ -48,10 +48,27 @@ Check back later.
   return;
 }
 
-    snapshot.forEach((doc) => {
-      const event = doc.data();
-      renderEventCard(event, doc.id);
-    });
+const events = [];
+
+snapshot.forEach((doc) => {
+  const event = doc.data();
+
+  const startDate = event.startsAt?.seconds
+    ? new Date(event.startsAt.seconds * 1000)
+    : new Date(8640000000000000);
+
+  events.push({
+    id: doc.id,
+    data: event,
+    startDate
+  });
+});
+
+events.sort((a, b) => a.startDate - b.startDate);
+
+events.forEach((event) => {
+  renderEventCard(event.data, event.id);
+});
   } catch (error) {
     console.error("Error loading events:", error);
   }

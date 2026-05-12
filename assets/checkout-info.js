@@ -303,3 +303,115 @@ discountRow.textContent = `Promo Discount Applied (${Math.round(promoDiscountPer
   applyButton.classList.remove("loading");
   applyButton.disabled = false;
 });
+
+const uiPanels = document.querySelectorAll(".step-panel");
+const uiBackButton = document.getElementById("ui-back-button");
+const uiNextButton = document.getElementById("ui-next-button");
+const finalPayButton = document.getElementById("final-pay-button");
+
+const stepTitle = document.getElementById("step-title");
+const stepPill = document.getElementById("step-pill");
+const stepSubtitle = document.getElementById("step-subtitle");
+const progressFill = document.getElementById("progress-fill");
+
+const reviewName = document.getElementById("review-name");
+const reviewEmail = document.getElementById("review-email");
+const reviewPromo = document.getElementById("review-promo");
+
+let checkoutUiStep = 0;
+
+const checkoutSteps = [
+  {
+    title: "Send your ticket",
+    pill: "Step 2 of 4",
+    subtitle: "Add your info so your ticket code can be tied to you.",
+    progress: "50%"
+  },
+  {
+    title: "Add a code",
+    pill: "Step 3 of 4",
+    subtitle: "Use a promoter code, or keep moving without one.",
+    progress: "75%"
+  },
+  {
+    title: "Final check",
+    pill: "Step 4 of 4",
+    subtitle: "Review your info before secure checkout.",
+    progress: "100%"
+  }
+];
+
+function currentPromoCode() {
+  return Array.from(promoDigits)
+    .map(d => d.value.trim())
+    .join("")
+    .toUpperCase();
+}
+
+function refreshReview() {
+  const fullName = `${firstName.value.trim()} ${lastName.value.trim()}`.trim();
+  const promoCode = currentPromoCode();
+
+  reviewName.textContent = fullName || "Missing";
+  reviewEmail.textContent = email.value.trim() || "Missing";
+  reviewPromo.textContent = promoCode || "None";
+}
+
+function canMovePastBuyerInfo() {
+  return (
+    firstName.value.trim().length > 0 &&
+    lastName.value.trim().length > 0 &&
+    isValidEmail(email.value.trim()) &&
+    profilePhotoFile
+  );
+}
+
+function setCheckoutUiStep(nextStep) {
+  checkoutUiStep = Math.max(0, Math.min(nextStep, checkoutSteps.length - 1));
+
+  uiPanels.forEach(panel => {
+    panel.classList.toggle(
+      "active",
+      Number(panel.dataset.step) === checkoutUiStep
+    );
+  });
+
+  const meta = checkoutSteps[checkoutUiStep];
+
+  stepTitle.textContent = meta.title;
+  stepPill.textContent = meta.pill;
+  stepSubtitle.textContent = meta.subtitle;
+  progressFill.style.width = meta.progress;
+
+  uiBackButton.classList.toggle("hidden", checkoutUiStep === 0);
+  uiNextButton.classList.toggle("hidden", checkoutUiStep === checkoutSteps.length - 1);
+  finalPayButton.classList.toggle("hidden", checkoutUiStep !== checkoutSteps.length - 1);
+
+  if (checkoutUiStep === checkoutSteps.length - 1) {
+    refreshReview();
+    validate();
+  }
+}
+
+uiNextButton.addEventListener("click", () => {
+  if (checkoutUiStep === 0 && !canMovePastBuyerInfo()) {
+    alert("Add your photo, name, and a valid email first.");
+    return;
+  }
+
+  setCheckoutUiStep(checkoutUiStep + 1);
+});
+
+uiBackButton.addEventListener("click", () => {
+  setCheckoutUiStep(checkoutUiStep - 1);
+});
+
+[firstName, lastName, email].forEach(input => {
+  input.addEventListener("input", refreshReview);
+});
+
+promoDigits.forEach(input => {
+  input.addEventListener("input", refreshReview);
+});
+
+setCheckoutUiStep(0);

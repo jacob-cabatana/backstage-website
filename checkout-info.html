@@ -302,21 +302,176 @@
       font-size: 12px;
       color: rgba(255,255,255,0.5);
     }
+
+    .step-header {
+  margin-bottom: 22px;
+}
+
+.step-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.step-pill {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.78);
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.progress-track {
+  height: 9px;
+  width: 100%;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 50%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff2fb3, #6f1eff, #00d4ff);
+  box-shadow: 0 0 22px rgba(156,79,242,0.45);
+  transition: width 0.25s ease;
+}
+
+.step-panel {
+  display: none;
+}
+
+.step-panel.active {
+  display: block;
+}
+
+.panel-card {
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.075);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.panel-title {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.panel-copy {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.66);
+  font-weight: 600;
+}
+
+.nav-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.nav-btn {
+  height: 54px;
+  border-radius: 18px;
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nav-btn.back {
+  width: 56px;
+  color: white;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.nav-btn.next {
+  flex: 1;
+  color: white;
+  background: linear-gradient(90deg, #ff2fb3, #6f1eff, #00d4ff);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.review-box {
+  padding: 15px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.review-row:last-child {
+  border-bottom: none;
+}
+
+.review-row span:first-child {
+  color: rgba(255,255,255,0.62);
+}
+
+.review-row span:last-child {
+  color: white;
+  text-align: right;
+}
+
+#discount-row {
+  display: none;
+  color: #28c76f;
+  font-weight: 800;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(40,199,111,0.10);
+  border: 1px solid rgba(40,199,111,0.24);
+  margin-bottom: 12px;
+}
   </style>
 </head>
 
 <body>
 
   <div class="checkout-container">
-    <h1>Complete Your Purchase</h1>
-    <p class="subtitle">You’ll be redirected to secure checkout</p>
-
-    <div id="price-summary" style="margin-bottom: 24px; font-size: 14px; color: rgba(255,255,255,0.75);">
-  <div id="discount-row" style="display:none; color:#28c76f; font-weight:600;">
-    Promo Discount Applied (10% Off)
+<div class="step-header">
+  <div class="step-topline">
+    <h1 id="step-title">Send your ticket</h1>
+    <div id="step-pill" class="step-pill">Step 2 of 4</div>
   </div>
+
+  <div class="progress-track">
+    <div id="progress-fill" class="progress-fill"></div>
+  </div>
+
+  <p id="step-subtitle" class="subtitle">
+    Add your info so your ticket code can be tied to you.
+  </p>
 </div>
 
+
+
+
+    <div class="step-panel active" data-step="0">
+  <div class="panel-card">
+    <h2 class="panel-title">Buyer info</h2>
+    <p class="panel-copy">Use the same name you want attached to the ticket.</p>
 
     <div class="buyer-form">
       <div class="photo-picker">
@@ -338,36 +493,87 @@
       <div class="email-row">
   <input id="email" type="email" placeholder="Email Address" />
 </div>
-<p class="promo-label">Enter Promo Code</p>
-<div class="promo-code-group" id="promo-code-group">
-  <input class="promo-digit" maxlength="1" />
-  <input class="promo-digit" maxlength="1" />
-  <input class="promo-digit" maxlength="1" />
-  <input class="promo-digit" maxlength="1" />
-  <input class="promo-digit" maxlength="1" />
-  <input class="promo-digit" maxlength="1" />
-</div>
-
-<div class="promo-wrapper">
-<button id="apply-promo" class="promo-apply">
-  <span class="apply-text">Apply</span>
-  <span class="apply-spinner"></span>
-  <span class="apply-success">Code Applied ✓</span>
-</button>
-
-
-  <p id="promo-feedback" class="promo-feedback"></p>
-</div>
-
 
     </div>
+  </div>
+</div>
 
-    <button id="final-pay-button" disabled>
+<div class="step-panel" data-step="1">
+  <div class="panel-card">
+    <h2 class="panel-title">Promo code</h2>
+    <p class="panel-copy">Got a promoter code? Add it here. No code is fine too.</p>
+
+    <p class="promo-label">Enter Promo Code</p>
+    <div class="promo-code-group" id="promo-code-group">
+      <input class="promo-digit" maxlength="1" />
+      <input class="promo-digit" maxlength="1" />
+      <input class="promo-digit" maxlength="1" />
+      <input class="promo-digit" maxlength="1" />
+      <input class="promo-digit" maxlength="1" />
+      <input class="promo-digit" maxlength="1" />
+    </div>
+
+    <div class="promo-wrapper">
+      <button id="apply-promo" class="promo-apply">
+        <span class="apply-text">Apply Code</span>
+        <span class="apply-spinner"></span>
+        <span class="apply-success">Code Applied ✓</span>
+      </button>
+
+      <p id="promo-feedback" class="promo-feedback"></p>
+    </div>
+  </div>
+</div>
+
+<div class="step-panel" data-step="2">
+  <div class="panel-card">
+    <h2 class="panel-title">Final check</h2>
+    <p class="panel-copy">One last look before secure checkout.</p>
+
+    <div id="price-summary">
+      <div id="discount-row">
+        Promo Discount Applied
+      </div>
+    </div>
+
+    <div class="review-box">
+      <div class="review-row">
+        <span>Name</span>
+        <span id="review-name">Missing</span>
+      </div>
+
+      <div class="review-row">
+        <span>Email</span>
+        <span id="review-email">Missing</span>
+      </div>
+
+      <div class="review-row">
+        <span>Promo</span>
+        <span id="review-promo">None</span>
+      </div>
+
+      <div class="review-row">
+        <span>Payment</span>
+        <span>Stripe secure checkout</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-row">
+  <button id="ui-back-button" class="nav-btn back hidden">‹</button>
+
+  <button id="ui-next-button" class="nav-btn next">
+    Next
+  </button>
+
+  <button id="final-pay-button" class="hidden" disabled>
       <span class="btn-text">Go to Checkout</span>
       <span class="btn-spinner"></span>
     </button>
+</div>
 
-    <p class="secure-note">Powered by Stripe • Secure payment</p>
+<p class="secure-note">Powered by Stripe • Secure payment</p>
   </div>
 
   <script type="module" src="assets/checkout-info.js"></script>

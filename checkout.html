@@ -43,64 +43,82 @@ body {
       color: rgba(255,255,255,0.65);
     }
 
-    .checkout-card {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+.checkout-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+}
 
-    .price-card {
-      background: rgba(255,255,255,0.06);
-      border-radius: 18px;
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
+.price-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
 
-    .price-card h3 {
-      margin: 0 0 6px;
-      font-size: 16px;
-      font-weight: 600;
-    }
+.price-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
 
-    .price-label {
-      margin: 0 0 12px;
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-    }
+.price-label {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.66);
+}
 
 
-    .quantity-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
+.quantity-controls {
+  display: grid;
+  grid-template-columns: 52px 1fr 52px;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
 
-    .quantity-controls button {
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
-      border: none;
-      background: rgba(255,255,255,0.12);
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-    }
+.quantity-controls button {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.10);
+  color: white;
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
 
-    .quantity {
-      font-size: 16px;
-      min-width: 24px;
-      text-align: center;
-    }
+.quantity-controls button:hover {
+  background: rgba(255,255,255,0.16);
+  transform: translateY(-1px);
+}
 
-    .global-total {
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.08);
-      text-align: center;
-      font-weight: 600;
-    }
+.quantity {
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.global-total {
+  margin-top: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.09), rgba(255,255,255,0.06));
+  border: 1px solid rgba(255,255,255,0.10);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
 
     #checkout-button {
       margin-top: 24px;
@@ -153,11 +171,135 @@ body {
   cursor: not-allowed;
 }
 
+.event-header {
+  margin-bottom: 4px;
+}
+
+.event-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: white;
+}
+
+.event-subhead {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+}
+
+.free-ticket .claim-free,
+.free-ticket button.claim-free {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(90deg, #9c4ff2, #7b3ff0);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(156,79,242,0.28);
+}
+
+.free-ticket .claim-free:hover,
+.free-ticket button.claim-free:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(156,79,242,0.36);
+}
+
 .free-disclaimer{
   margin-top:10px;
   font-size:12px;
-  color:#ff3b30;
-  font-weight:600;
+  line-height:1.4;
+  color:#ff5f57;
+  font-weight:700;
+}
+
+.gender-prompt {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  text-align: center;
+}
+
+.gender-prompt h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.gender-prompt p {
+  margin: 8px 0 18px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.62);
+  font-weight: 600;
+}
+
+.gender-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gender-choice {
+  height: 54px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.gender-choice:hover {
+  background: linear-gradient(90deg, #9c4ff2, #225cda);
+}
+
+.checkout-hidden {
+  display: none;
+}
+
+.step-header {
+  margin-bottom: 22px;
+}
+
+.step-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.step-pill {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.78);
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.progress-track {
+  height: 9px;
+  width: 100%;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 25%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff2fb3, #6f1eff, #00d4ff);
+  box-shadow: 0 0 22px rgba(156,79,242,0.45);
 }
   </style>
 </head>
@@ -165,14 +307,36 @@ body {
 <body>
 
   <div class="checkout-container">
-    <h1>Secure Tickets</h1>
-    <p class="checkout-subtitle">All pricing shown is all-in</p>
+<div class="step-header">
+  <div class="step-topline">
+    <h1>Pick your tickets</h1>
+    <div class="step-pill">Step 1 of 4</div>
+  </div>
 
-    <div id="checkout-event"></div>
+  <div class="progress-track">
+    <div class="progress-fill"></div>
+  </div>
 
-    <button id="checkout-button">
-      Continue
-    </button>
+  <p class="checkout-subtitle">
+    Lock in your ticket type and quantity. You’ll review everything before payment.
+  </p>
+</div>
+
+   <div id="gender-prompt" class="gender-prompt">
+  <h2>Who is this ticket for?</h2>
+  <p>Choose one to see available tickets.</p>
+
+  <div class="gender-actions">
+    <button class="gender-choice" data-gender="men">Male</button>
+    <button class="gender-choice" data-gender="women">Female</button>
+  </div>
+</div>
+
+<div id="checkout-event" class="checkout-hidden"></div>
+
+<button id="checkout-button">
+  Next
+</button>
 
     <p class="secure-note">Powered by Stripe • Secure payment</p>
   </div>
