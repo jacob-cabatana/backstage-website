@@ -7,17 +7,47 @@
 
   <style>
     :root {
-      --bg:#000;
-      --card:#0b0b0b;
-      --border:#1f1f1f;
-      --text:#fff;
-      --muted:#a7a7a7;
-      --accent:#3b82f6;
-      --purple:#9c4ff2;
+      --bg: #000000;
+      --card: #0b0b0f;
+      --card2: #111118;
+      --border: #23232b;
+      --text: #ffffff;
+      --muted: #9b9ba5;
+      --muted2: #686873;
+      --purple: #9c4ff2;
+      --blue: #225cda;
+      --pink: #ff2fb3;
+      --error: #ff6b6b;
     }
 
-    * { 
-      box-sizing: border-box; 
+    .card {
+  transition: transform .18s ease;
+}
+
+input,
+select,
+button {
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, opacity .16s ease;
+}
+
+.step.active {
+  animation: stepFade .22s ease both;
+}
+
+@keyframes stepFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -32,44 +62,120 @@
       padding: 24px;
     }
 
+.gradient-title {
+  background: linear-gradient(
+    135deg,
+    #c084fc 0%,
+    #9c4ff2 35%,
+    #6f1eff 65%,
+    #c084fc 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
     .wrap {
       width: 100%;
       max-width: 460px;
-    }
-
-    h1 {
-      margin: 0 0 6px;
-      font-size: 28px;
-      letter-spacing: -0.02em;
-    }
-
-    p {
-      margin: 0 0 18px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       padding: 7px 10px;
       border-radius: 999px;
-      background: rgba(156,79,242,.12);
+      background: rgba(156,79,242,.10);
       border: 1px solid rgba(156,79,242,.25);
       color: #d8c1ff;
       font-size: 12px;
       font-weight: 700;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+    }
+
+    h1 {
+      margin: 0 0 7px;
+      font-size: 30px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .sub {
+      margin: 0 0 20px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .step-count {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .progress {
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: #1a1a22;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 25%;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      transition: width .25s ease;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .step-copy {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
     }
 
     label {
@@ -78,156 +184,306 @@
       margin-bottom: 6px;
       font-size: 12px;
       color: var(--muted);
+      font-weight: 700;
     }
 
     input,
     select {
       width: 100%;
-      padding: 12px;
+      height: 46px;
+      padding: 0 12px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      background: var(--card);
+      background: var(--card2);
       color: var(--text);
       font-size: 14px;
       outline: none;
     }
 
+    input::placeholder {
+      color: var(--muted2);
+    }
+
     input:focus,
     select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(59,130,246,.18);
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(156,79,242,.16);
     }
 
     select {
-      appearance: none;
       cursor: pointer;
     }
 
-    button {
-      width: 100%;
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: linear-gradient(135deg, #9c4ff2, #225cda);
-      color: var(--text);
+    .review {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+    }
+
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 13px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .review-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .review-label {
+      color: var(--muted);
       font-weight: 700;
+    }
+
+    .review-value {
+      color: var(--text);
+      text-align: right;
+      font-weight: 700;
+      max-width: 62%;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      font-weight: 800;
       cursor: pointer;
       font-size: 14px;
     }
 
+    .back-btn {
+      display: none;
+      width: 54px;
+      background: #15151d;
+    }
+
+    .next-btn {
+      flex: 1;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+    }
+
     button:disabled {
-      opacity: .6;
+      opacity: .65;
       cursor: not-allowed;
     }
 
     .error {
       display: none;
-      margin-top: 12px;
-      padding: 10px 12px;
+      margin-top: 14px;
+      padding: 11px 12px;
       border-radius: 12px;
-      border: 1px solid rgba(239,68,68,.35);
-      background: rgba(239,68,68,.08);
-      color: #ffd4d4;
+      border: 1px solid rgba(255,107,107,.35);
+      background: rgba(255,107,107,.08);
+      color: #ffd6d6;
       font-size: 13px;
       line-height: 1.4;
+    }
+
+    .note {
+      margin-top: 14px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: center;
     }
 
     .login-link {
       margin-top: 14px;
       text-align: center;
       font-size: 12px;
-      color: #a7a7a7;
+      color: var(--muted);
     }
 
     .login-link a {
-      color: #ffffff;
+      color: var(--text);
       text-decoration: underline;
       cursor: pointer;
     }
 
-    .note {
-      margin-top: 12px;
-      font-size: 12px;
-      color: rgba(255,255,255,.48);
-      line-height: 1.45;
-    }
+    .back-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.back-home-btn:hover {
+  background: #171720;
+  border-color: #343443;
+  transform: translateY(-1px);
+}
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="badge">Backstage Fast Lane</div>
+<a href="/index.html" class="back-home-btn">
+  ← Back to Backstage
+</a>
 
-    <h1>Create your bar dashboard</h1>
-    <p>
+    <h1 class="gradient-title">Create your bar dashboard</h1>
+    <p class="sub">
       Set up your venue profile, add drinks, connect payouts, and start accepting drink orders.
     </p>
 
     <div class="card">
+      <div class="top">
+        <h2 class="step-title" id="stepTitle">Account</h2>
+        <div class="step-count" id="stepCount">Step 1 of 4</div>
+      </div>
+
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
       <form id="signupForm">
-        <label for="managerName">Manager name</label>
-        <input 
-          id="managerName" 
-          type="text" 
-          placeholder="Jay Cabatana" 
-          required 
-        />
+        <div class="step active" data-step="0">
+          <p class="step-copy">
+            First, create the login for your dashboard.
+          </p>
 
-        <label for="email">Email</label>
-        <input 
-          id="email" 
-          type="email" 
-          placeholder="you@venue.com" 
-          required 
-        />
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@venue.com"
+            required
+          />
 
-        <label for="phone">Phone number</label>
-        <input 
-          id="phone" 
-          type="tel" 
-          placeholder="904 555 1234" 
-          required 
-        />
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Minimum 8 characters"
+            minlength="8"
+            required
+          />
+        </div>
 
-        <label for="password">Password</label>
-        <input 
-          id="password" 
-          type="password" 
-          placeholder="••••••••" 
-          minlength="8" 
-          required 
-        />
+        <div class="step" data-step="1">
+          <p class="step-copy">
+            Add the person managing the venue account.
+          </p>
 
-        <label for="venueName">Venue name</label>
-        <input 
-          id="venueName" 
-          type="text" 
-          placeholder="Surfer The Bar" 
-          required 
-        />
+          <label for="managerName">Manager name</label>
+          <input
+            id="managerName"
+            type="text"
+            placeholder="Jay Cabatana"
+            required
+          />
 
-        <label for="venueAddress">Venue address</label>
-        <input 
-          id="venueAddress" 
-          type="text" 
-          placeholder="200 1st St N, Jacksonville Beach, FL" 
-          required 
-        />
+          <label for="phone">Phone number</label>
+<input
+  id="phone"
+  type="tel"
+  placeholder="(904) 555-1234"
+  maxlength="14"
+  inputmode="numeric"
+  autocomplete="tel"
+  required
+/>
+        </div>
 
-        <label for="venueType">Venue type</label>
-        <select id="venueType" required>
-          <option value="">Choose one</option>
-          <option value="bar">Bar</option>
-          <option value="club">Club</option>
-          <option value="lounge">Lounge</option>
-          <option value="restaurant_bar">Restaurant Bar</option>
-          <option value="event_venue">Event Venue</option>
-        </select>
+        <div class="step" data-step="2">
+          <p class="step-copy">
+            Add the venue basics. You can finish the full profile later.
+          </p>
 
-        <button id="submitBtn" type="submit">Create account</button>
+          <label for="venueName">Venue name</label>
+          <input
+            id="venueName"
+            type="text"
+            placeholder="Surfer The Bar"
+            required
+          />
+
+          <label for="venueAddress">Venue address</label>
+          <input
+            id="venueAddress"
+            type="text"
+            placeholder="200 1st St N, Jacksonville Beach, FL"
+            required
+          />
+
+          <label for="venueType">Venue type</label>
+          <select id="venueType" required>
+            <option value="">Choose one</option>
+            <option value="bar">Bar</option>
+            <option value="club">Club</option>
+            <option value="lounge">Lounge</option>
+            <option value="restaurant_bar">Restaurant Bar</option>
+            <option value="event_venue">Event Venue</option>
+          </select>
+        </div>
+
+        <div class="step" data-step="3">
+          <p class="step-copy">
+            Review everything before creating the account.
+          </p>
+
+          <div class="review">
+            <div class="review-row">
+              <span class="review-label">Manager</span>
+              <span class="review-value" id="reviewManager">Missing</span>
+            </div>
+
+            <div class="review-row">
+              <span class="review-label">Email</span>
+              <span class="review-value" id="reviewEmail">Missing</span>
+            </div>
+
+            <div class="review-row">
+              <span class="review-label">Phone</span>
+              <span class="review-value" id="reviewPhone">Missing</span>
+            </div>
+
+            <div class="review-row">
+              <span class="review-label">Venue</span>
+              <span class="review-value" id="reviewVenue">Missing</span>
+            </div>
+
+            <div class="review-row">
+              <span class="review-label">Address</span>
+              <span class="review-value" id="reviewAddress">Missing</span>
+            </div>
+
+            <div class="review-row">
+              <span class="review-label">Type</span>
+              <span class="review-value" id="reviewType">Missing</span>
+            </div>
+          </div>
+        </div>
 
         <div class="error" id="errorBox"></div>
+
+        <div class="actions">
+          <button class="back-btn" id="backBtn" type="button">‹</button>
+          <button class="next-btn" id="nextBtn" type="button">Next</button>
+        </div>
 
         <div class="note">
           Your venue will not appear in the app until your setup checklist is complete.
@@ -244,19 +500,60 @@
   <script type="module">
     import { auth, db } from "/js/firebase.js";
 
-    import { 
-      createUserWithEmailAndPassword 
+    import {
+      createUserWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    import { 
-      doc, 
-      setDoc, 
-      serverTimestamp 
+    import {
+      doc,
+      setDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    const steps = [
+      {
+        title: "Account",
+        count: "Step 1 of 4"
+      },
+      {
+        title: "Contact",
+        count: "Step 2 of 4"
+      },
+      {
+        title: "Venue",
+        count: "Step 3 of 4"
+      },
+      {
+        title: "Review",
+        count: "Step 4 of 4"
+      }
+    ];
+
+    let currentStep = 0;
+    let isSubmitting = false;
+
     const form = document.getElementById("signupForm");
-    const btn = document.getElementById("submitBtn");
+    const btn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
     const errorBox = document.getElementById("errorBox");
+    const stepTitle = document.getElementById("stepTitle");
+    const stepCount = document.getElementById("stepCount");
+    const progressFill = document.getElementById("progressFill");
+
+    const managerNameInput = document.getElementById("managerName");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const passwordInput = document.getElementById("password");
+    const venueNameInput = document.getElementById("venueName");
+    const venueAddressInput = document.getElementById("venueAddress");
+    const venueTypeInput = document.getElementById("venueType");
+
+    const reviewManager = document.getElementById("reviewManager");
+    const reviewEmail = document.getElementById("reviewEmail");
+    const reviewPhone = document.getElementById("reviewPhone");
+    const reviewVenue = document.getElementById("reviewVenue");
+    const reviewAddress = document.getElementById("reviewAddress");
+    const reviewType = document.getElementById("reviewType");
 
     function showError(msg) {
       errorBox.textContent = msg;
@@ -268,30 +565,122 @@
       errorBox.style.display = "none";
     }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    function value(input) {
+      return input.value.trim();
+    }
+
+    function validEmail(email) {
+      return email.includes("@") && email.includes(".");
+    }
+
+    function venueTypeLabel(value) {
+      if (value === "bar") return "Bar";
+      if (value === "club") return "Club";
+      if (value === "lounge") return "Lounge";
+      if (value === "restaurant_bar") return "Restaurant Bar";
+      if (value === "event_venue") return "Event Venue";
+      return "Missing";
+    }
+
+    function updateReview() {
+      reviewManager.textContent = value(managerNameInput) || "Missing";
+      reviewEmail.textContent = value(emailInput) || "Missing";
+      reviewPhone.textContent = value(phoneInput) || "Missing";
+      reviewVenue.textContent = value(venueNameInput) || "Missing";
+      reviewAddress.textContent = value(venueAddressInput) || "Missing";
+      reviewType.textContent = venueTypeLabel(venueTypeInput.value);
+    }
+
+    function renderStep() {
+      document.querySelectorAll(".step").forEach((step) => {
+        step.classList.remove("active");
+      });
+
+      document.querySelector(`[data-step="${currentStep}"]`).classList.add("active");
+
+      stepTitle.textContent = steps[currentStep].title;
+      stepCount.textContent = steps[currentStep].count;
+
+      progressFill.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+
+      backBtn.style.display = currentStep === 0 ? "none" : "block";
+      btn.textContent = currentStep === steps.length - 1 ? "Create account" : "Next";
+
+      updateReview();
       clearError();
+    }
 
-      const managerName = document.getElementById("managerName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const password = document.getElementById("password").value;
-      const venueName = document.getElementById("venueName").value.trim();
-      const venueAddress = document.getElementById("venueAddress").value.trim();
-      const venueType = document.getElementById("venueType").value;
+    function validateStep() {
+      if (currentStep === 0) {
+        if (!value(emailInput)) {
+          showError("Email is required.");
+          return false;
+        }
 
-      if (!managerName || !email || !phone || !password || !venueName || !venueAddress || !venueType) {
-        showError("All fields are required.");
-        return;
+        if (!validEmail(value(emailInput))) {
+          showError("Enter a valid email.");
+          return false;
+        }
+
+        if (!passwordInput.value) {
+          showError("Password is required.");
+          return false;
+        }
+
+        if (passwordInput.value.length < 8) {
+          showError("Password must be at least 8 characters.");
+          return false;
+        }
       }
 
-      if (password.length < 8) {
-        showError("Password must be at least 8 characters.");
-        return;
+      if (currentStep === 1) {
+        if (!value(managerNameInput)) {
+          showError("Manager name is required.");
+          return false;
+        }
+
+        if (!value(phoneInput)) {
+          showError("Phone number is required.");
+          return false;
+        }
       }
 
+      if (currentStep === 2) {
+        if (!value(venueNameInput)) {
+          showError("Venue name is required.");
+          return false;
+        }
+
+        if (!value(venueAddressInput)) {
+          showError("Venue address is required.");
+          return false;
+        }
+
+        if (!venueTypeInput.value) {
+          showError("Venue type is required.");
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    async function submitSignup() {
+      if (isSubmitting) return;
+
+      clearError();
+      isSubmitting = true;
       btn.disabled = true;
       btn.textContent = "Creating...";
+
+      const managerName = value(managerNameInput);
+      const email = value(emailInput);
+      const phone = value(phoneInput);
+      const phoneDigits = phone.replace(/\D/g, "");
+      const password = passwordInput.value;
+      const venueName = value(venueNameInput);
+      const venueAddress = value(venueAddressInput);
+      const venueType = venueTypeInput.value;
 
       try {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
@@ -301,6 +690,7 @@
           uid: user.uid,
           email: user.email,
           phone: phone,
+          phoneDigits: phoneDigits,
           managerName: managerName,
 
           role: "bar_owner",
@@ -340,7 +730,8 @@
           contact: {
             managerName: managerName,
             email: user.email,
-            phone: phone
+            phone: phone,
+            phoneDigits: phoneDigits
           },
 
           fastLaneEnabled: false,
@@ -367,10 +758,82 @@
       } catch (err) {
         showError(err.message || "Signup failed.");
       } finally {
+        isSubmitting = false;
         btn.disabled = false;
         btn.textContent = "Create account";
       }
+    }
+
+    btn.addEventListener("click", async () => {
+      clearError();
+
+      if (!validateStep()) return;
+
+      if (currentStep < steps.length - 1) {
+        currentStep += 1;
+        renderStep();
+        return;
+      }
+
+      await submitSignup();
     });
+
+    backBtn.addEventListener("click", () => {
+      if (currentStep === 0) return;
+
+      currentStep -= 1;
+      renderStep();
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!validateStep()) return;
+
+      if (currentStep < steps.length - 1) {
+        currentStep += 1;
+        renderStep();
+        return;
+      }
+
+      await submitSignup();
+    });
+
+function formatPhoneNumber(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 10);
+
+  if (digits.length <= 3) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  }
+
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+phoneInput.addEventListener("input", () => {
+  phoneInput.value = formatPhoneNumber(phoneInput.value);
+  updateReview();
+});
+
+[
+  managerNameInput,
+  emailInput,
+  passwordInput,
+  venueNameInput,
+  venueAddressInput,
+  venueTypeInput
+].forEach((input) => {
+  input.addEventListener("input", updateReview);
+  input.addEventListener("change", updateReview);
+});
+
+phoneInput.addEventListener("change", updateReview);
+
+    renderStep();
   </script>
 </body>
+<script src="/assets/signup-animations.js"></script>
 </html>
