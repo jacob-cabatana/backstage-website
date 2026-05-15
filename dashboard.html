@@ -1169,6 +1169,29 @@ async function getCustomerName(order) {
   }
 }
 
+async function printOrderReceipt(order) {
+  try {
+    const response = await fetch("http://localhost:3001/print-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(order)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Print failed");
+    }
+
+    console.log("Receipt printed:", result.message);
+  } catch (err) {
+    console.error("Print failed:", err);
+    alert("Could not print receipt. Make sure the Backstage Printer Server is running.");
+  }
+}
+
 function watchOrders() {
   const q = query(
     collection(db, "venues", userId, "orders"),
@@ -1266,21 +1289,34 @@ item.innerHTML = `
         ${Array.isArray(order.items) ? order.items.length : 0} item types
       </div>
 
-      <div class="orderActions">
-        ${status === "pending" ? `<button class="smallBtn acceptBtn">Accept</button>` : ""}
-        ${status === "accepted" ? `<button class="smallBtn readyBtn">Ready</button>` : ""}
-        ${status === "ready" ? `<button class="smallBtn pickedUpBtn">Picked up</button>` : ""}
-        ${status === "picked_up" ? `<span class="readyText">Completed</span>` : ""}
-      </div>
+<div class="orderActions">
+  <button class="smallBtn printBtn">Print</button>
+  ${status === "pending" ? `<button class="smallBtn acceptBtn">Accept</button>` : ""}
+  ${status === "accepted" ? `<button class="smallBtn readyBtn">Ready</button>` : ""}
+  ${status === "ready" ? `<button class="smallBtn pickedUpBtn">Picked up</button>` : ""}
+  ${status === "picked_up" ? `<span class="readyText">Completed</span>` : ""}
+</div>
     </div>
   </div>
 `;
 
       const orderRef = doc(db, "venues", userId, "orders", docSnap.id);
+const printBtn = item.querySelector(".printBtn");
+const acceptBtn = item.querySelector(".acceptBtn");
+const readyBtn = item.querySelector(".readyBtn");
+const pickedUpBtn = item.querySelector(".pickedUpBtn");
 
-      const acceptBtn = item.querySelector(".acceptBtn");
-      const readyBtn = item.querySelector(".readyBtn");
-      const pickedUpBtn = item.querySelector(".pickedUpBtn");
+if (printBtn) {
+  printBtn.addEventListener("click", async (event) => {
+    event.stopPropagation();
+
+    await printOrderReceipt({
+      ...order,
+      orderId: docSnap.id,
+      venueName: venue?.venueName || order.venueName || "Backstage"
+    });
+  });
+}
 
       if (acceptBtn) {
         acceptBtn.addEventListener("click", async (event) => {
@@ -1509,15 +1545,32 @@ if (completedOrders.length === 0) {
 
           ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
 
-          <div class="orderFooter">
-            <div class="orderMetaText">
-              ${Array.isArray(order.items) ? order.items.length : 0} item types
-            </div>
+ <div class="orderFooter">
+  <div class="orderMetaText">
+    ${Array.isArray(order.items) ? order.items.length : 0} item types
+  </div>
 
-            <span class="readyText">Completed</span>
-          </div>
+  <div class="orderActions">
+    <button class="smallBtn historyPrintBtn">Print</button>
+    <span class="readyText">Completed</span>
+  </div>
+</div>
         </div>
       `;
+
+      const historyPrintBtn = item.querySelector(".historyPrintBtn");
+
+if (historyPrintBtn) {
+  historyPrintBtn.addEventListener("click", async (event) => {
+    event.stopPropagation();
+
+    await printOrderReceipt({
+      ...order,
+      orderId: docSnap.id,
+      venueName: venue?.venueName || order.venueName || "Backstage"
+    });
+  });
+}
 
       historyList.appendChild(item);
     });
