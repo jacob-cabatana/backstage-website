@@ -39,6 +39,19 @@
     background: rgba(255,255,255,0.14);
   }
 
+  .pickupStatsHeader {
+  margin-top: 26px;
+  margin-bottom: 12px;
+}
+
+#pickupSpotStatsList {
+  margin-bottom: 24px;
+}
+
+#pickupSpotStatsList div {
+  min-width: 160px;
+}
+
   .payoutsStatusCard.on .payoutsStatusIcon {
     background: #22c55e;
   }
@@ -452,7 +465,19 @@
   </div>
 </div>
 
-  <div id="historyList" class="ordersListFix"></div>
+<h2 style="margin-top: 24px;">Pickup Spot Breakdown</h2>
+<p class="muted">See where customers are choosing to pick up their orders.</p>
+
+<div id="pickupSpotStatsList" class="historySummary"></div>
+
+<div class="pickupStatsHeader">
+  <h2>Pickup Spot Breakdown</h2>
+  <p class="muted">See which pickup spots customers are choosing most.</p>
+</div>
+
+<div id="pickupSpotStatsList" class="historySummary"></div>
+
+<div id="historyList" class="ordersListFix"></div>
 </section>
 
 <section id="audienceView" class="view">
@@ -603,6 +628,7 @@ import {
     const historyRevenue = document.getElementById("historyRevenue");
     const historyTips = document.getElementById("historyTips");
     const historyOrderCount = document.getElementById("historyOrderCount");
+    const pickupSpotStatsList = document.getElementById("pickupSpotStatsList");
 
     const audienceCount = document.getElementById("audienceCount");
     const lastAudienceBlast = document.getElementById("lastAudienceBlast");
@@ -1406,7 +1432,7 @@ async function getCustomerName(order) {
 
 async function printOrderReceipt(order) {
   try {
-    const response = await fetch("http://localhost:3001/print-order", {
+    const response = await fetch("http://10.0.0.34:3001/print-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -1720,6 +1746,69 @@ function watchAudienceBlasts() {
   });
 }
 
+function renderPickupSpotStats(completedOrders) {
+  pickupSpotStatsList.innerHTML = "";
+
+  const stats = {};
+
+  completedOrders.forEach(({ order }) => {
+    const spotName =
+      order.pickupSpotName ||
+      order.pickupStationName ||
+      "Unassigned";
+
+    if (!stats[spotName]) {
+      stats[spotName] = {
+        name: spotName,
+        count: 0,
+        revenue: 0,
+        tips: 0
+      };
+    }
+
+    stats[spotName].count += 1;
+    stats[spotName].revenue += Number(order.total || 0);
+    stats[spotName].tips += Number(order.tip || 0);
+  });
+
+  const rows = Object.values(stats).sort((a, b) => {
+    if (b.count !== a.count) {
+      return b.count - a.count;
+    }
+
+    return b.revenue - a.revenue;
+  });
+
+  if (rows.length === 0) {
+    pickupSpotStatsList.innerHTML = `
+      <div>
+        <span>No pickup data yet</span>
+        <strong>0</strong>
+      </div>
+    `;
+    return;
+  }
+
+  rows.forEach(row => {
+    const percent =
+      completedOrders.length > 0
+        ? Math.round((row.count / completedOrders.length) * 100)
+        : 0;
+
+    const card = document.createElement("div");
+
+    card.innerHTML = `
+      <span>${clean(row.name)}</span>
+      <strong>${row.count}</strong>
+      <small style="display:block;margin-top:6px;color:rgba(255,255,255,0.55);font-weight:800;">
+        ${percent}% · $${row.revenue.toFixed(2)} · Tips $${row.tips.toFixed(2)}
+      </small>
+    `;
+
+    pickupSpotStatsList.appendChild(card);
+  });
+}
+
 function watchHistory() {
   const q = query(
     collection(db, "venues", userId, "orders"),
@@ -1768,6 +1857,7 @@ const totalTips = completedOrders.reduce((sum, entry) => {
 historyRevenue.textContent = `$${totalRevenue.toFixed(2)}`;
 historyTips.textContent = `$${totalTips.toFixed(2)}`;
 historyOrderCount.textContent = completedOrders.length;
+renderPickupSpotStats(completedOrders);
 
 if (completedOrders.length === 0) {
   historyList.innerHTML = `<div class="empty">No completed orders yet.</div>`;
