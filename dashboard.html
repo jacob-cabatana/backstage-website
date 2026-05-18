@@ -105,6 +105,14 @@
     margin-bottom: 6px;
   }
 
+  .pickupSpotHelperText {
+  margin-bottom: 14px;
+}
+
+.pickupSpotFilterTabs {
+  margin-top: 10px;
+}
+
   .pushPreviewCard p {
     margin: 0;
     font-size: 14px;
@@ -298,10 +306,10 @@
               <strong>Needed</strong>
             </div>
 
-            <div id="pickupCheck" class="check">
-              <span>Pickup instructions</span>
-              <strong>Needed</strong>
-            </div>
+       <div id="pickupCheck" class="check">
+  <span>Pickup spots</span>
+  <strong>Needed</strong>
+</div>
 
             <div id="menuCheck" class="check">
               <span>At least 3 drinks</span>
@@ -345,11 +353,27 @@
   />
 </div>
 
-<label>Pickup instructions</label>
-<textarea id="pickup" rows="4" placeholder="Example: Pick up at the left side of the main bar."></textarea>
+<label>Default pickup instructions</label>
+<textarea id="pickup" rows="4" placeholder="Example: Show your order code at the bar."></textarea>
 
-          <button id="saveProfileBtn" class="mainBtn">Save profile</button>
-          <p id="profileMessage" class="message"></p>
+<button id="saveProfileBtn" class="mainBtn">Save profile</button>
+<p id="profileMessage" class="message"></p>
+
+<div style="height: 22px;"></div>
+
+<h2>Pickup spots</h2>
+<p class="muted">Add the exact pickup areas your bar uses. Bartenders can choose one of these on the Orders screen.</p>
+
+<label>Spot name</label>
+<input id="pickupSpotName" placeholder="Example: Upstairs Bar" />
+
+<label>Spot instructions</label>
+<textarea id="pickupSpotInstructions" rows="3" placeholder="Example: Pick up near the upstairs register."></textarea>
+
+<button id="addPickupSpotBtn" class="mainBtn">Add pickup spot</button>
+<p id="pickupSpotMessage" class="message"></p>
+
+<div id="pickupSpotList" class="list"></div>
         </div>
       </div>
     </section>
@@ -398,11 +422,14 @@
       </div>
     </section>
 
-    <section id="ordersView" class="view">
-      <h2>Orders</h2>
-      <p class="muted">Incoming drink orders will show here live.</p>
-      <div id="ordersList" class="list"></div>
-    </section>
+<section id="ordersView" class="view">
+  <h2>Orders</h2>
+<p class="muted pickupSpotHelperText">Choose which pickup spot this screen is working tonight.</p>
+
+<div id="pickupSpotFilterTabs" class="drinkCategoryTabs pickupSpotFilterTabs"></div>
+
+  <div id="ordersList" class="list"></div>
+</section>
 
 <section id="historyView" class="view">
   <h2>Order History</h2>
@@ -528,7 +555,10 @@ import {
     let business = null;
     let drinkCount = 0;
     let allDrinks = [];
+    let allPickupSpots = [];
     let selectedDrinkCategory = "all";
+    let selectedPickupSpotId = localStorage.getItem("selectedPickupSpotId") || "all";
+    let latestOrdersSnapshot = null;
     const customerNameCache = {};
 
     const venueName = document.getElementById("venueName");
@@ -552,6 +582,13 @@ import {
     const pickup = document.getElementById("pickup");
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const profileMessage = document.getElementById("profileMessage");
+
+    const pickupSpotName = document.getElementById("pickupSpotName");
+    const pickupSpotInstructions = document.getElementById("pickupSpotInstructions");
+    const addPickupSpotBtn = document.getElementById("addPickupSpotBtn");
+    const pickupSpotMessage = document.getElementById("pickupSpotMessage");
+    const pickupSpotList = document.getElementById("pickupSpotList");
+    const pickupSpotFilterTabs = document.getElementById("pickupSpotFilterTabs");
 
     const drinkName = document.getElementById("drinkName");
     const drinkCategory = document.getElementById("drinkCategory");
@@ -593,10 +630,14 @@ import {
       });
     });
 
-    document.querySelectorAll(".drinkCategoryTab").forEach(button => {
+document.querySelectorAll(".drinkCategoryTab").forEach(button => {
   button.addEventListener("click", () => {
+    if (!button.dataset.category) return;
+
     document.querySelectorAll(".drinkCategoryTab").forEach(tab => {
-      tab.classList.remove("active");
+      if (tab.dataset.category) {
+        tab.classList.remove("active");
+      }
     });
 
     button.classList.add("active");
@@ -616,14 +657,15 @@ import {
       venueRef = doc(db, "venues", user.uid);
       businessRef = doc(db, "businessUsers", user.uid);
 
-      watchVenue();
-      watchBusiness();
-      watchOrders();
-      watchHistory();
-      watchAudience();
-      watchAudienceBlasts();
-      await loadDrinks();
-      syncStripe();
+    watchVenue();
+watchBusiness();
+watchPickupSpots();
+watchOrders();
+watchHistory();
+watchAudience();
+watchAudienceBlasts();
+await loadDrinks();
+syncStripe();
     });
 
     function watchVenue() {
@@ -669,7 +711,9 @@ const profileDone =
   Boolean(venue.venuePhotoUrl) &&
   Boolean(venue.venueAddress);
 
-      const pickupDone = Boolean(venue.pickupInstructions);
+      const pickupDone =
+  Boolean(venue.pickupInstructions) ||
+  allPickupSpots.some(spot => spot.isActive !== false);
       const menuDone = drinkCount >= 3;
 
       const payoutsDone =
@@ -772,6 +816,197 @@ venuePhotoFile.addEventListener("change", () => {
 
   venuePhotoPreview.src = previewUrl;
   venuePhotoPreviewWrap.style.display = "block";
+});
+
+function watchPickupSpots() {
+  if (!userId) return;
+
+  const pickupSpotsRef = collection(db, "venues", userId, "pickupSpots");
+
+  onSnapshot(pickupSpotsRef, snap => {
+    allPickupSpots = snap.docs
+      .map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }))
+      .sort((a, b) => {
+        const aOrder = Number(a.sortOrder || 0);
+        const bOrder = Number(b.sortOrder || 0);
+
+        if (aOrder !== bOrder) {
+          return aOrder - bOrder;
+        }
+
+        return String(a.name || "").localeCompare(String(b.name || ""));
+      });
+
+    renderPickupSpotList();
+    renderPickupSpotFilterTabs();
+    render();
+
+    if (latestOrdersSnapshot) {
+      renderOrdersFromSnapshot(latestOrdersSnapshot);
+    }
+  });
+}
+
+function renderPickupSpotList() {
+  pickupSpotList.innerHTML = "";
+
+  if (allPickupSpots.length === 0) {
+    pickupSpotList.innerHTML = `<div class="empty">No pickup spots yet.</div>`;
+    return;
+  }
+
+  allPickupSpots.forEach(spot => {
+    const item = document.createElement("div");
+    item.className = "drinkItem";
+
+    item.innerHTML = `
+      <div class="drinkMain">
+        <div>
+          <strong>${clean(spot.name || "Pickup spot")}</strong>
+          <span>${clean(spot.instructions || "No instructions saved.")}</span>
+        </div>
+
+        <b>${spot.isActive === false ? "Off" : "On"}</b>
+      </div>
+
+      <div class="drinkActions">
+        ${
+          spot.isActive === false
+            ? `<button class="smallBtn activatePickupSpotBtn">Activate</button>`
+            : `<button class="smallBtn deactivatePickupSpotBtn">Deactivate</button>`
+        }
+
+        <button class="smallBtn deletePickupSpotBtn">Delete</button>
+      </div>
+    `;
+
+    const spotRef = doc(db, "venues", userId, "pickupSpots", spot.id);
+
+    const activateBtn = item.querySelector(".activatePickupSpotBtn");
+    const deactivateBtn = item.querySelector(".deactivatePickupSpotBtn");
+    const deleteBtn = item.querySelector(".deletePickupSpotBtn");
+
+    if (activateBtn) {
+      activateBtn.addEventListener("click", async () => {
+        await updateDoc(spotRef, {
+          isActive: true,
+          updatedAt: serverTimestamp()
+        });
+      });
+    }
+
+    if (deactivateBtn) {
+      deactivateBtn.addEventListener("click", async () => {
+        await updateDoc(spotRef, {
+          isActive: false,
+          updatedAt: serverTimestamp()
+        });
+      });
+    }
+
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", async () => {
+        const confirmed = confirm("Delete this pickup spot?");
+
+        if (!confirmed) return;
+
+        await deleteDoc(spotRef);
+
+        if (selectedPickupSpotId === spot.id) {
+          selectedPickupSpotId = "all";
+          localStorage.setItem("selectedPickupSpotId", selectedPickupSpotId);
+        }
+      });
+    }
+
+    pickupSpotList.appendChild(item);
+  });
+}
+
+function renderPickupSpotFilterTabs() {
+  pickupSpotFilterTabs.innerHTML = "";
+
+  const tabs = [
+    {
+      id: "all",
+      name: "All Orders"
+    },
+    ...allPickupSpots
+      .filter(spot => spot.isActive !== false)
+      .map(spot => ({
+        id: spot.id,
+        name: spot.name || "Pickup spot"
+      })),
+    {
+      id: "unassigned",
+      name: "Unassigned"
+    }
+  ];
+
+  if (
+    selectedPickupSpotId !== "all" &&
+    selectedPickupSpotId !== "unassigned" &&
+    tabs.some(tab => tab.id === selectedPickupSpotId) === false
+  ) {
+    selectedPickupSpotId = "all";
+    localStorage.setItem("selectedPickupSpotId", selectedPickupSpotId);
+  }
+
+  tabs.forEach(tab => {
+    const button = document.createElement("button");
+    button.className = selectedPickupSpotId === tab.id
+      ? "drinkCategoryTab active"
+      : "drinkCategoryTab";
+
+    button.textContent = tab.name;
+    button.dataset.pickupSpotId = tab.id;
+
+    button.addEventListener("click", () => {
+      selectedPickupSpotId = tab.id;
+      localStorage.setItem("selectedPickupSpotId", selectedPickupSpotId);
+
+      renderPickupSpotFilterTabs();
+
+      if (latestOrdersSnapshot) {
+        renderOrdersFromSnapshot(latestOrdersSnapshot);
+      }
+    });
+
+    pickupSpotFilterTabs.appendChild(button);
+  });
+}
+
+addPickupSpotBtn.addEventListener("click", async () => {
+  const name = pickupSpotName.value.trim();
+  const instructions = pickupSpotInstructions.value.trim();
+
+  if (!name) {
+    pickupSpotMessage.textContent = "Add a pickup spot name.";
+    return;
+  }
+
+  pickupSpotMessage.textContent = "Adding...";
+
+  try {
+    await addDoc(collection(db, "venues", userId, "pickupSpots"), {
+      name,
+      instructions,
+      isActive: true,
+      sortOrder: allPickupSpots.length + 1,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+
+    pickupSpotName.value = "";
+    pickupSpotInstructions.value = "";
+    pickupSpotMessage.textContent = "Pickup spot added.";
+  } catch (err) {
+    console.error("Pickup spot add failed:", err);
+    pickupSpotMessage.textContent = err.message || "Could not add pickup spot.";
+  }
 });
 
 saveProfileBtn.addEventListener("click", async () => {
@@ -1199,176 +1434,219 @@ function watchOrders() {
   );
 
   onSnapshot(q, async snap => {
-    ordersList.innerHTML = "";
-
-    if (snap.empty) {
-      ordersList.innerHTML = `<div class="empty">No orders yet.</div>`;
-      return;
-    }
-
-const activeOrders = snap.docs
-  .map(docSnap => {
-    const order = docSnap.data();
-    const status = order.status || "pending";
-
-    return {
-      docSnap,
-      order,
-      status
-    };
-  })
-  .filter(entry => entry.status !== "picked_up" && entry.status !== "cancelled")
-.sort((a, b) => {
-  const aTime = a.order.createdAt?.seconds || 0;
-  const bTime = b.order.createdAt?.seconds || 0;
-
-  return bTime - aTime;
-});
-
-for (const { docSnap, order, status } of activeOrders) {
-
-      const item = document.createElement("div");
-      item.className = `order ${status}`;
-
-      const itemsText = Array.isArray(order.items)
-        ? order.items.map(drink => {
-            const quantity = drink.quantity || 1;
-            const name = drink.name || "Drink";
-            return `x${quantity} ${name}`;
-          }).join(", ")
-        : "No items listed";
-
-        const orderNotes = order.notes || "";
-
-        const createdSeconds = order.createdAt?.seconds || null;
-const ageText = createdSeconds ? formatOrderAge(createdSeconds) : "Just now";
-
-const customerName = await getCustomerName(order);
-
-        const itemsHtml = Array.isArray(order.items)
-  ? order.items.map(drink => {
-      const quantity = drink.quantity || 1;
-      const name = drink.name || "Drink";
-      const lineTotal = Number(
-        drink.lineTotal ?? ((drink.price || 0) * quantity)
-      ).toFixed(2);
-
-      return `
-        <div class="orderItemRow">
-          <span>x${quantity} ${clean(name)}</span>
-          <span>$${lineTotal}</span>
-        </div>
-      `;
-    }).join("")
-  : `<div class="orderEmpty">No items listed</div>`;
-
-item.innerHTML = `
-  <div class="orderCard ${clean(status)}">
-    <div class="orderHeader">
-      <div>
-        <div class="orderCode">
-  #${clean(order.orderCode || docSnap.id)}
-  ${status === "pending" ? `<span class="newTag">NEW</span>` : ""}
-</div>
-    <div class="orderStatusPill ${clean(status)}">${clean(status)}</div>
-    <div class="orderCustomerName">${clean(customerName)}</div>
-    <div class="orderAge">${clean(ageText)}</div>
-      </div>
-
-      <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
-    </div>
-
-    <div class="orderItemsCard">
-      ${itemsHtml}
-    </div>
-
-    ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
-
-    <div class="orderFooter">
-      <div class="orderMetaText">
-        ${Array.isArray(order.items) ? order.items.length : 0} item types
-      </div>
-
-<div class="orderActions">
-  <button class="smallBtn printBtn">Print</button>
-  ${status === "pending" ? `<button class="smallBtn acceptBtn">Accept</button>` : ""}
-  ${status === "accepted" ? `<button class="smallBtn readyBtn">Ready</button>` : ""}
-  ${status === "ready" ? `<button class="smallBtn pickedUpBtn">Picked up</button>` : ""}
-  ${status === "picked_up" ? `<span class="readyText">Completed</span>` : ""}
-</div>
-    </div>
-  </div>
-`;
-
-      const orderRef = doc(db, "venues", userId, "orders", docSnap.id);
-const printBtn = item.querySelector(".printBtn");
-const acceptBtn = item.querySelector(".acceptBtn");
-const readyBtn = item.querySelector(".readyBtn");
-const pickedUpBtn = item.querySelector(".pickedUpBtn");
-
-if (printBtn) {
-  printBtn.addEventListener("click", async (event) => {
-    event.stopPropagation();
-
-    await printOrderReceipt({
-      ...order,
-      orderId: docSnap.id,
-      venueName: venue?.venueName || order.venueName || "Backstage"
-    });
+    latestOrdersSnapshot = snap;
+    await renderOrdersFromSnapshot(snap);
   });
 }
 
-      if (acceptBtn) {
-        acceptBtn.addEventListener("click", async (event) => {
-          event.stopPropagation();
+async function renderOrdersFromSnapshot(snap) {
+  ordersList.innerHTML = "";
 
-          try {
-            await updateDoc(orderRef, {
-              status: "accepted",
-              acceptedAt: serverTimestamp()
-            });
-          } catch (err) {
-            console.error("Accept failed:", err);
-            alert(err.message || "Could not accept order.");
-          }
-        });
+  if (snap.empty) {
+    ordersList.innerHTML = `<div class="empty">No orders yet.</div>`;
+    return;
+  }
+
+  const activeOrders = snap.docs
+    .map(docSnap => {
+      const order = docSnap.data();
+      const status = order.status || "pending";
+
+      return {
+        docSnap,
+        order,
+        status
+      };
+    })
+    .filter(entry => {
+      if (entry.status === "picked_up" || entry.status === "cancelled") {
+        return false;
       }
 
-      if (readyBtn) {
-        readyBtn.addEventListener("click", async (event) => {
-          event.stopPropagation();
-
-          try {
-            await updateDoc(orderRef, {
-              status: "ready",
-              readyAt: serverTimestamp()
-            });
-          } catch (err) {
-            console.error("Ready failed:", err);
-            alert(err.message || "Could not mark order ready.");
-          }
-        });
+      if (selectedPickupSpotId === "all") {
+        return true;
       }
 
-      if (pickedUpBtn) {
-        pickedUpBtn.addEventListener("click", async (event) => {
-          event.stopPropagation();
-
-          try {
-            await updateDoc(orderRef, {
-              status: "picked_up",
-              pickedUpAt: serverTimestamp()
-            });
-          } catch (err) {
-            console.error("Picked up failed:", err);
-            alert(err.message || "Could not complete order.");
-          }
-        });
+      if (selectedPickupSpotId === "unassigned") {
+        return !entry.order.pickupSpotId && !entry.order.pickupStationId;
       }
 
-      ordersList.appendChild(item);
+      return (
+        entry.order.pickupSpotId === selectedPickupSpotId ||
+        entry.order.pickupStationId === selectedPickupSpotId
+      );
+    })
+    .sort((a, b) => {
+      const aTime = a.order.createdAt?.seconds || 0;
+      const bTime = b.order.createdAt?.seconds || 0;
+
+      return bTime - aTime;
+    });
+
+  if (activeOrders.length === 0) {
+    ordersList.innerHTML = `<div class="empty">No orders for this pickup spot.</div>`;
+    return;
+  }
+
+  for (const { docSnap, order, status } of activeOrders) {
+    const customerName = await getCustomerName(order);
+
+    const item = document.createElement("div");
+    item.className = `order ${status}`;
+
+    const orderRef = doc(db, "venues", userId, "orders", docSnap.id);
+    const createdSeconds = order.createdAt?.seconds || null;
+    const ageText = createdSeconds ? formatOrderAge(createdSeconds) : "Just now";
+    const orderNotes = order.notes || "";
+    const pickupSpotName =
+      order.pickupSpotName ||
+      order.pickupStationName ||
+      "Unassigned";
+
+    const itemsHtml = Array.isArray(order.items)
+      ? order.items.map(drink => {
+          const quantity = drink.quantity || 1;
+          const name = drink.name || "Drink";
+          const lineTotal = Number(
+            drink.lineTotal ?? ((drink.price || 0) * quantity)
+          ).toFixed(2);
+
+          return `
+            <div class="orderItemRow">
+              <span>${quantity}x ${clean(name)}</span>
+              <span>$${lineTotal}</span>
+            </div>
+          `;
+        }).join("")
+      : `<div class="orderEmpty">No items listed</div>`;
+
+    item.innerHTML = `
+      <div class="orderCard ${clean(status)}">
+        <div class="orderHeader">
+          <div>
+            <div class="orderCode">#${clean(order.orderCode || docSnap.id)}</div>
+            <div class="orderStatusPill ${clean(status)}">${clean(status)}</div>
+            <div class="orderStatusPill">${clean(pickupSpotName)}</div>
+            <div class="orderAge">${clean(ageText)}</div>
+            <div class="orderCustomerName">${clean(customerName)}</div>
+          </div>
+
+          <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
+        </div>
+
+        <div class="orderItemsCard">
+          ${itemsHtml}
+
+          <div class="orderItemRow">
+            <span>Tip</span>
+            <span>$${Number(order.tip || 0).toFixed(2)}</span>
+          </div>
+        </div>
+
+        ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
+
+        ${
+          order.pickupInstructions
+            ? `<div class="orderNoteCard">Pickup: ${clean(order.pickupInstructions)}</div>`
+            : ""
+        }
+
+        <div class="orderFooter">
+          <div class="orderMetaText">
+            ${Array.isArray(order.items) ? order.items.length : 0} item types
+          </div>
+
+          <div class="drinkActions">
+            <button class="smallBtn printBtn">Print</button>
+
+            ${
+              status === "pending"
+                ? `<button class="smallBtn acceptBtn">Accept</button>`
+                : ""
+            }
+
+            ${
+              status === "accepted"
+                ? `<button class="smallBtn readyBtn">Ready</button>`
+                : ""
+            }
+
+            ${
+              status === "ready"
+                ? `<button class="smallBtn pickedUpBtn">Picked up</button>`
+                : ""
+            }
+          </div>
+        </div>
+      </div>
+    `;
+
+    const printBtn = item.querySelector(".printBtn");
+    const acceptBtn = item.querySelector(".acceptBtn");
+    const readyBtn = item.querySelector(".readyBtn");
+    const pickedUpBtn = item.querySelector(".pickedUpBtn");
+
+    if (printBtn) {
+      printBtn.addEventListener("click", async event => {
+        event.stopPropagation();
+
+        await printOrderReceipt({
+          ...order,
+          pickupSpotName
+        });
+      });
     }
-  });
+
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", async event => {
+        event.stopPropagation();
+
+        try {
+          await updateDoc(orderRef, {
+            status: "accepted",
+            acceptedAt: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Accept failed:", err);
+          alert(err.message || "Could not accept order.");
+        }
+      });
+    }
+
+    if (readyBtn) {
+      readyBtn.addEventListener("click", async event => {
+        event.stopPropagation();
+
+        try {
+          await updateDoc(orderRef, {
+            status: "ready",
+            readyAt: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Ready failed:", err);
+          alert(err.message || "Could not mark order ready.");
+        }
+      });
+    }
+
+    if (pickedUpBtn) {
+      pickedUpBtn.addEventListener("click", async event => {
+        event.stopPropagation();
+
+        try {
+          await updateDoc(orderRef, {
+            status: "picked_up",
+            pickedUpAt: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Picked up failed:", err);
+          alert(err.message || "Could not complete order.");
+        }
+      });
+    }
+
+    ordersList.appendChild(item);
+  }
 }
 
 function getTonightStartSeconds() {
