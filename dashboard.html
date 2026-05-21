@@ -6,6 +6,25 @@
   <title>Backstage Fast Lane</title>
   <link rel="stylesheet" href="/css/dashboard.css" />
   <style>
+    .ordersBadge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: #ff2d2d;
+  color: white;
+  font-size: 12px;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow: 0 0 14px rgba(255, 45, 45, 0.55);
+}
+
+.ordersBadge[hidden] {
+  display: none;
+}
   .payoutsStatusCard {
     display: flex;
     gap: 14px;
@@ -83,12 +102,45 @@
 </style>
 
 <style>
-  .orderCustomerName {
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: 900;
-    color: rgba(255,255,255,0.86);
-  }
+.orderCustomerName {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 850;
+  color: rgba(255,255,255,0.86);
+}
+
+#ordersList .orderStatusPill {
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+#ordersList .orderAge {
+  font-size: 13px;
+}
+
+#ordersList .orderItemsCard {
+  padding: 14px;
+  margin-top: 14px;
+  border-radius: 16px;
+}
+
+#ordersList .orderNoteCard {
+  font-size: 13px;
+  padding: 12px 14px;
+}
+
+#ordersList .smallBtn {
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+#ordersList .compact {
+  justify-content: flex-start;
+}
+
+#ordersList .compact span {
+  display: block;
+}
 </style>
 
 <style>
@@ -206,13 +258,62 @@
 </style>
 
 <style>
-  #ordersList,
-  #historyList {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    align-items: start;
-  }
+.ordersBoard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 28px;
+  align-items: start;
+}
+
+.ordersColumnTitle {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 950;
+  color: rgba(255,255,255,0.82);
+}
+
+#ordersList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+#historyList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+#readyOrdersList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+}
+
+#readyOrdersList .orderCard {
+  min-height: auto;
+}
+
+#readyOrdersList .orderCode {
+  font-size: 28px;
+}
+
+#readyOrdersList .orderItemRow {
+  font-size: 16px;
+}
+
+#readyOrdersList .smallBtn {
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.readyColumn {
+  position: sticky;
+  top: 18px;
+}
 
   #ordersList .order,
   #historyList .order,
@@ -220,31 +321,33 @@
     width: 100%;
   }
 
-  #ordersList .orderCard,
-  #historyList .orderCard {
-    padding: 22px;
-    border-radius: 24px;
-    min-height: 260px;
-  }
+#ordersList .orderCard,
+#historyList .orderCard {
+  padding: 18px;
+  border-radius: 22px;
+  min-height: 0;
+}
 
   #ordersList .orderHeader,
   #historyList .orderHeader {
     gap: 10px;
   }
 
-  #ordersList .orderCode,
-  #historyList .orderCode {
-    font-size: 34px;
-    line-height: 1;
-    font-weight: 950;
-    letter-spacing: 0.5px;
-  }
+#ordersList .orderCode,
+#historyList .orderCode {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.3px;
+}
 
-  #ordersList .orderTotal,
-  #historyList .orderTotal {
-    font-size: 26px;
-    font-weight: 950;
-  }
+#ordersList .orderTotal,
+#historyList .orderTotal {
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.72);
+  white-space: nowrap;
+}
 
   #ordersList .orderItemsCard,
   #historyList .orderItemsCard {
@@ -253,12 +356,12 @@
     border-radius: 18px;
   }
 
-  #ordersList .orderItemRow,
-  #historyList .orderItemRow {
-    font-size: 19px;
-    padding: 10px 0;
-    font-weight: 850;
-  }
+#ordersList .orderItemRow,
+#historyList .orderItemRow {
+  font-size: 16px;
+  padding: 8px 0;
+  font-weight: 800;
+}
 
   #ordersList .orderFooter,
   #historyList .orderFooter {
@@ -273,12 +376,20 @@
     border-radius: 14px;
   }
 
-  @media (max-width: 760px) {
-    #ordersList,
-    #historyList {
-      grid-template-columns: 1fr;
-    }
+@media (max-width: 900px) {
+  .ordersBoard {
+    grid-template-columns: 1fr;
   }
+
+  .readyColumn {
+    position: static;
+  }
+
+  #ordersList,
+  #historyList {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -302,7 +413,10 @@
 <nav class="tabs">
   <button class="tab active" data-view="setup">Setup</button>
   <button class="tab" data-view="menu">Menu</button>
-  <button class="tab" data-view="orders">Orders</button>
+  <button class="tab" data-view="orders">
+  Orders
+  <span id="ordersBadge" class="ordersBadge" hidden>0</span>
+</button>
   <button class="tab" data-view="history">History</button>
   <button class="tab" data-view="audience">Audience</button>
   <button class="tab" data-view="payouts">Payouts</button>
@@ -441,7 +555,17 @@
 
 <div id="pickupSpotFilterTabs" class="drinkCategoryTabs pickupSpotFilterTabs"></div>
 
-  <div id="ordersList" class="list"></div>
+  <div class="ordersBoard">
+  <div>
+    <h3 class="ordersColumnTitle">Queue</h3>
+    <div id="ordersList" class="list"></div>
+  </div>
+
+  <div class="readyColumn">
+    <h3 class="ordersColumnTitle">Ready</h3>
+    <div id="readyOrdersList" class="list"></div>
+  </div>
+</div>
 </section>
 
 <section id="historyView" class="view">
@@ -584,6 +708,10 @@ import {
     let selectedDrinkCategory = "all";
     let selectedPickupSpotId = localStorage.getItem("selectedPickupSpotId") || "all";
     let latestOrdersSnapshot = null;
+    let activeView = "setup";
+    let unseenOrdersCount = 0;
+    let knownActiveOrderIds = new Set();
+    let hasLoadedOrdersOnce = false;
     const customerNameCache = {};
 
     const venueName = document.getElementById("venueName");
@@ -624,6 +752,8 @@ import {
     const menuMessage = document.getElementById("menuMessage");
 
     const ordersList = document.getElementById("ordersList");
+    const readyOrdersList = document.getElementById("readyOrdersList");
+    const ordersBadge = document.getElementById("ordersBadge");
     const historyList = document.getElementById("historyList");
     const historyRevenue = document.getElementById("historyRevenue");
     const historyTips = document.getElementById("historyTips");
@@ -646,15 +776,22 @@ import {
     const payoutsBankText = document.getElementById("payoutsBankText");
     const connectStripeBtn = document.getElementById("connectStripeBtn");
     const payoutsMessage = document.getElementById("payoutsMessage");
-    document.querySelectorAll(".tab").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
 
-        button.classList.add("active");
-        document.getElementById(`${button.dataset.view}View`).classList.add("active");
-      });
-    });
+    button.classList.add("active");
+    document.getElementById(`${button.dataset.view}View`).classList.add("active");
+
+    activeView = button.dataset.view;
+
+    if (activeView === "orders") {
+      unseenOrdersCount = 0;
+      renderOrdersBadge();
+    }
+  });
+});
 
 document.querySelectorAll(".drinkCategoryTab").forEach(button => {
   button.addEventListener("click", () => {
@@ -1453,6 +1590,34 @@ async function printOrderReceipt(order) {
   }
 }
 
+function orderMatchesSelectedPickupSpot(order) {
+  if (selectedPickupSpotId === "all") {
+    return true;
+  }
+
+  if (selectedPickupSpotId === "unassigned") {
+    return !order.pickupSpotId && !order.pickupStationId;
+  }
+
+  return (
+    order.pickupSpotId === selectedPickupSpotId ||
+    order.pickupStationId === selectedPickupSpotId
+  );
+}
+
+function renderOrdersBadge() {
+  if (!ordersBadge) return;
+
+  if (unseenOrdersCount <= 0) {
+    ordersBadge.hidden = true;
+    ordersBadge.textContent = "0";
+    return;
+  }
+
+  ordersBadge.hidden = false;
+  ordersBadge.textContent = unseenOrdersCount > 99 ? "99+" : String(unseenOrdersCount);
+}
+
 function watchOrders() {
   const q = query(
     collection(db, "venues", userId, "orders"),
@@ -1461,17 +1626,50 @@ function watchOrders() {
 
   onSnapshot(q, async snap => {
     latestOrdersSnapshot = snap;
+
+    const activeOrderIds = new Set();
+
+    snap.docs.forEach(docSnap => {
+      const order = docSnap.data();
+      const status = order.status || "pending";
+
+if (status === "picked_up" || status === "cancelled") {
+  return;
+}
+
+if (!orderMatchesSelectedPickupSpot(order)) {
+  return;
+}
+
+activeOrderIds.add(docSnap.id);
+    });
+
+    if (hasLoadedOrdersOnce && activeView !== "orders") {
+      activeOrderIds.forEach(orderId => {
+        if (!knownActiveOrderIds.has(orderId)) {
+          unseenOrdersCount += 1;
+        }
+      });
+
+      renderOrdersBadge();
+    }
+
+    knownActiveOrderIds = activeOrderIds;
+    hasLoadedOrdersOnce = true;
+
     await renderOrdersFromSnapshot(snap);
   });
 }
 
 async function renderOrdersFromSnapshot(snap) {
   ordersList.innerHTML = "";
+readyOrdersList.innerHTML = "";
 
-  if (snap.empty) {
-    ordersList.innerHTML = `<div class="empty">No orders yet.</div>`;
-    return;
-  }
+if (snap.empty) {
+  ordersList.innerHTML = `<div class="empty">No queue orders yet.</div>`;
+  readyOrdersList.innerHTML = `<div class="empty">No ready orders yet.</div>`;
+  return;
+}
 
   const activeOrders = snap.docs
     .map(docSnap => {
@@ -1502,12 +1700,12 @@ async function renderOrdersFromSnapshot(snap) {
         entry.order.pickupStationId === selectedPickupSpotId
       );
     })
-    .sort((a, b) => {
-      const aTime = a.order.createdAt?.seconds || 0;
-      const bTime = b.order.createdAt?.seconds || 0;
+.sort((a, b) => {
+  const aTime = a.order.createdAt?.seconds || 0;
+  const bTime = b.order.createdAt?.seconds || 0;
 
-      return bTime - aTime;
-    });
+  return aTime - bTime;
+});
 
   if (activeOrders.length === 0) {
     ordersList.innerHTML = `<div class="empty">No orders for this pickup spot.</div>`;
@@ -1529,45 +1727,33 @@ async function renderOrdersFromSnapshot(snap) {
       order.pickupStationName ||
       "Unassigned";
 
-    const itemsHtml = Array.isArray(order.items)
-      ? order.items.map(drink => {
-          const quantity = drink.quantity || 1;
-          const name = drink.name || "Drink";
-          const lineTotal = Number(
-            drink.lineTotal ?? ((drink.price || 0) * quantity)
-          ).toFixed(2);
+const itemsHtml = Array.isArray(order.items)
+  ? order.items.map(drink => {
+      const quantity = drink.quantity || 1;
+      const name = drink.name || "Drink";
 
-          return `
-            <div class="orderItemRow">
-              <span>${quantity}x ${clean(name)}</span>
-              <span>$${lineTotal}</span>
-            </div>
-          `;
-        }).join("")
-      : `<div class="orderEmpty">No items listed</div>`;
+      return `
+        <div class="orderItemRow compact">
+          <span>${quantity}x ${clean(name)}</span>
+        </div>
+      `;
+    }).join("")
+  : `<div class="orderEmpty">No items listed</div>`;
 
     item.innerHTML = `
       <div class="orderCard ${clean(status)}">
         <div class="orderHeader">
           <div>
-            <div class="orderCode">#${clean(order.orderCode || docSnap.id)}</div>
-            <div class="orderStatusPill ${clean(status)}">${clean(status)}</div>
-            <div class="orderStatusPill">${clean(pickupSpotName)}</div>
-            <div class="orderAge">${clean(ageText)}</div>
-            <div class="orderCustomerName">${clean(customerName)}</div>
+<div class="orderCode">#${clean(order.orderCode || docSnap.id)}</div>
+<div class="orderCustomerName">${clean(customerName)}</div>
           </div>
 
-          <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
+         <div class="orderTotal">${clean(ageText)}</div>
         </div>
 
-        <div class="orderItemsCard">
-          ${itemsHtml}
-
-          <div class="orderItemRow">
-            <span>Tip</span>
-            <span>$${Number(order.tip || 0).toFixed(2)}</span>
-          </div>
-        </div>
+<div class="orderItemsCard">
+  ${itemsHtml}
+</div>
 
         ${orderNotes ? `<div class="orderNoteCard">Note: ${clean(orderNotes)}</div>` : ""}
 
@@ -1577,33 +1763,29 @@ async function renderOrdersFromSnapshot(snap) {
             : ""
         }
 
-        <div class="orderFooter">
-          <div class="orderMetaText">
-            ${Array.isArray(order.items) ? order.items.length : 0} item types
-          </div>
+   <div class="orderFooter">
+  <div class="drinkActions">
+    <button class="smallBtn printBtn">Print</button>
 
-          <div class="drinkActions">
-            <button class="smallBtn printBtn">Print</button>
+    ${
+      status === "pending"
+        ? `<button class="smallBtn acceptBtn">Accept</button>`
+        : ""
+    }
 
-            ${
-              status === "pending"
-                ? `<button class="smallBtn acceptBtn">Accept</button>`
-                : ""
-            }
+    ${
+      status === "accepted"
+        ? `<button class="smallBtn readyBtn">Ready</button>`
+        : ""
+    }
 
-            ${
-              status === "accepted"
-                ? `<button class="smallBtn readyBtn">Ready</button>`
-                : ""
-            }
-
-            ${
-              status === "ready"
-                ? `<button class="smallBtn pickedUpBtn">Picked up</button>`
-                : ""
-            }
-          </div>
-        </div>
+    ${
+      status === "ready"
+        ? `<button class="smallBtn pickedUpBtn">Picked up</button>`
+        : ""
+    }
+  </div>
+</div>
       </div>
     `;
 
@@ -1644,10 +1826,17 @@ async function renderOrdersFromSnapshot(snap) {
         event.stopPropagation();
 
         try {
-          await updateDoc(orderRef, {
-            status: "ready",
-            readyAt: serverTimestamp()
-          });
+ await updateDoc(orderRef, {
+  status: "ready",
+  readyAt: serverTimestamp()
+});
+
+await printOrderReceipt({
+  ...order,
+  orderId: docSnap.id,
+  pickupSpotName,
+  venueName: venue?.venueName || order.venueName || "Backstage"
+});
         } catch (err) {
           console.error("Ready failed:", err);
           alert(err.message || "Could not mark order ready.");
@@ -1671,8 +1860,19 @@ async function renderOrdersFromSnapshot(snap) {
       });
     }
 
-    ordersList.appendChild(item);
+   if (status === "ready") {
+  readyOrdersList.appendChild(item);
+} else {
+  ordersList.appendChild(item);
+}
   }
+  if (ordersList.children.length === 0) {
+  ordersList.innerHTML = `<div class="empty">No queue orders for this pickup spot.</div>`;
+}
+
+if (readyOrdersList.children.length === 0) {
+  readyOrdersList.innerHTML = `<div class="empty">No ready orders for this pickup spot.</div>`;
+}
 }
 
 function getTonightStartSeconds() {
