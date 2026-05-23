@@ -1,0 +1,260 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #080808;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.page {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 28px 18px 60px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: #111111;
+  border: 1px solid #252525;
+  border-radius: 14px;
+  padding: 12px 14px;
+  min-width: 125px;
+}
+
+.stat-card span {
+  display: block;
+  color: #aaa;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.stat-card strong {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.stat-button {
+  color: white;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stat-button:hover {
+  border-color: #6b4eff;
+  transform: translateY(-1px);
+}
+
+.stat-button.active {
+  border-color: #9c4ff2;
+  box-shadow: 0 0 0 1px rgba(156, 79, 242, 0.35);
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.user-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.user-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.user-section-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.user-section-header span {
+  min-width: 30px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #1a1a1a;
+  border: 1px solid #292929;
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+  gap: 14px;
+}
+
+.user-card {
+  background: #111111;
+  border: 1px solid #252525;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.user-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.user-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.user-avatar,
+.user-avatar-placeholder {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.user-avatar {
+  object-fit: cover;
+  background: #222;
+}
+
+.user-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #9c4ff2, #225cda);
+  color: white;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.user-name {
+  font-weight: 900;
+  font-size: 16px;
+  color: white;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 280px;
+  line-height: 1.2;
+}
+
+.user-email {
+  color: #aaa;
+  font-size: 12px;
+  margin-top: 4px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 300px;
+  line-height: 1.25;
+}
+
+.user-date {
+  color: #777;
+  font-size: 11px;
+  text-align: right;
+  line-height: 1.35;
+  max-width: 130px;
+  flex: 0 0 auto;
+}
+
+.user-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px 12px;
+  color: #cfcfcf;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.user-meta div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.user-meta strong {
+  color: #777;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .page {
+    max-width: 100%;
+    padding: 24px 14px 56px;
+  }
+
+  .user-section-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 20px 12px 50px;
+  }
+
+  .stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    flex: 1;
+    min-width: 130px;
+  }
+
+  .user-top {
+    flex-direction: column;
+  }
+
+  .user-date {
+    text-align: left;
+    max-width: none;
+  }
+
+  .user-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .user-name {
+    max-width: 100%;
+  }
+
+  .user-email {
+    max-width: 100%;
+  }
+}
