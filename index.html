@@ -734,10 +734,117 @@ body.menu-open #menuOverlay{
   opacity:1;
   pointer-events:auto;
 }
+
+.gateScreen{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at top, rgba(176,108,255,0.22), transparent 36%),
+    linear-gradient(135deg, #000000, #07070d 60%, #000000);
+}
+
+.gateCard{
+  width:100%;
+  max-width:420px;
+  padding:34px 28px;
+  border-radius:28px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 30px 90px rgba(0,0,0,0.65);
+  text-align:center;
+}
+
+.gateLogo{
+  height:52px;
+  margin-bottom:22px;
+}
+
+.gateKicker{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--accent2);
+  margin-bottom:12px;
+}
+
+.gateCard h1{
+  font-size:38px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+  margin-bottom:10px;
+}
+
+.gateCard p{
+  color:var(--muted);
+  font-size:16px;
+  margin-bottom:20px;
+}
+
+#gateCodeInput{
+  width:100%;
+  padding:15px 16px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.08);
+  color:white;
+  font-size:16px;
+  outline:none;
+}
+
+#gateCodeInput::placeholder{
+  color:rgba(255,255,255,0.42);
+}
+
+#gateUnlockBtn{
+  width:100%;
+  margin-top:14px;
+  padding:15px 18px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  color:white;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+
+#gateUnlockBtn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(107,78,255,0.35);
+}
+
+.gateMessage{
+  min-height:20px;
+  margin-top:14px;
+  color:#ff5a5a !important;
+  font-size:14px !important;
+  font-weight:800;
+}
   </style>
 </head>
 
 <body>
+
+  <div id="siteGate" class="gateScreen">
+    <div class="gateCard">
+      <img src="assets/LOGO-A4.png" alt="Backstage logo" class="gateLogo">
+
+      <div class="gateKicker">Private Access</div>
+      <h1>Enter code</h1>
+      <p>This page is locked.</p>
+
+      <input id="gateCodeInput" type="password" placeholder="Access code">
+      <button id="gateUnlockBtn">Unlock</button>
+
+      <p id="gateMessage" class="gateMessage"></p>
+    </div>
+  </div>
+
+  <div id="siteContent" style="display:none;">
 
   <nav class="nav">
 <div class="nav-inner">
@@ -974,7 +1081,46 @@ body.menu-open #menuOverlay{
   <a href="terms_and_conditions.html">Terms & Conditions</a> ·
   <a href="privacy.html">Privacy Policy</a>
 </footer>
+
+</div>
+
 <script>
+  const PRIVATE_ACCESS_CODE = "BCKSTGE2022";
+
+  const siteGate = document.getElementById("siteGate");
+  const siteContent = document.getElementById("siteContent");
+  const gateCodeInput = document.getElementById("gateCodeInput");
+  const gateUnlockBtn = document.getElementById("gateUnlockBtn");
+  const gateMessage = document.getElementById("gateMessage");
+
+  function unlockSite() {
+    const enteredCode = gateCodeInput.value.trim();
+
+    if (enteredCode !== PRIVATE_ACCESS_CODE) {
+      gateMessage.textContent = "Wrong code.";
+      gateCodeInput.value = "";
+      gateCodeInput.focus();
+      return;
+    }
+
+    sessionStorage.setItem("backstage_site_unlocked", "true");
+    siteGate.style.display = "none";
+    siteContent.style.display = "block";
+  }
+
+  if (sessionStorage.getItem("backstage_site_unlocked") === "true") {
+    siteGate.style.display = "none";
+    siteContent.style.display = "block";
+  }
+
+  gateUnlockBtn.addEventListener("click", unlockSite);
+
+  gateCodeInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      unlockSite();
+    }
+  });
+
   const statEl = document.getElementById("cutStat");
   let started = false;
 
