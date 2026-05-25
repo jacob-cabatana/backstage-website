@@ -1,168 +1,480 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy – Backstage</title>
-  <meta name="description" content="Privacy Policy for Backstage (Bckstge). How we collect, use, disclose, and protect information when you use our app and website." />
+
+  <title>Privacy Policy | BCKSTGE</title>
+  <meta name="description" content="Privacy Policy for BCKSTGE. Learn how BCKSTGE collects, uses, shares, and protects information when you use our app, website, ticketing, events, messaging, and Fast Lane ordering services." />
+
   <style>
-    :root{
-      --bg:#191422;
-      --accent:#785EA7;
-      --text:#ffffff;
-      --muted:#D7D0E6;
+    :root {
+      --bg: #191422;
+      --card: rgba(255, 255, 255, 0.055);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --accent: #9C4FF2;
+      --accent-2: #225CDA;
+      --text: #FFFFFF;
+      --muted: #D7D0E6;
+      --soft: rgba(255, 255, 255, 0.78);
     }
-    body{
-      background:#191422;
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      margin:40px;
-      line-height:1.65;
-      -webkit-font-smoothing:antialiased;
+
+    * {
+      box-sizing: border-box;
     }
-    h1,h2,h3{color:var(--accent); margin-top:1.6em}
-    h1{margin-top:0}
-    a{color:var(--accent); text-decoration:none}
-    a:hover{text-decoration:underline}
-    .muted{color:var(--muted)}
-    .card{
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.12);
-      border-radius:16px;
-      padding:18px 18px 4px;
-      margin:18px 0;
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(156, 79, 242, 0.28), transparent 32%),
+        radial-gradient(circle at top right, rgba(34, 92, 218, 0.22), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
     }
-    ul{padding-left:20px}
-    code{background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:6px}
-    @media (max-width: 640px){ body{margin:22px} }
+
+    main {
+      width: min(980px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 48px 0 70px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      margin: 0 0 12px;
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      color: var(--accent);
+      font-size: 1.55rem;
+      margin: 42px 0 12px;
+      letter-spacing: -0.025em;
+    }
+
+    h3 {
+      color: var(--text);
+      font-size: 1.08rem;
+      margin: 24px 0 8px;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--soft);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 8px 0;
+      color: var(--soft);
+    }
+
+    strong {
+      color: var(--text);
+    }
+
+    .hero {
+      padding: 28px;
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.045);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(156, 79, 242, 0.45);
+      border-radius: 999px;
+      background: rgba(156, 79, 242, 0.12);
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .card {
+      padding: 22px;
+      margin: 18px 0;
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      background: var(--card);
+    }
+
+    .section-note {
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px;
+      margin: 18px 0;
+      border-radius: 14px;
+      background: rgba(156, 79, 242, 0.10);
+      color: var(--muted);
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--card-border);
+      margin: 40px 0;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        width: min(100% - 28px, 980px);
+        padding: 28px 0 52px;
+      }
+
+      .hero,
+      .card {
+        padding: 18px;
+        border-radius: 20px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <h1>Privacy Policy for Backstage</h1>
-  <p><strong>Effective Date:</strong> September 19, 2025</p>
-  <p class="muted">Backstage (also referred to as “Bckstge”, “we”, “our”, or “us”) respects your privacy. This Privacy Policy explains how we collect, use, disclose, and protect information when you use our mobile application and related websites (collectively, the “Service”).</p>
+  <main>
+    <section class="hero">
+      <div class="badge">BCKSTGE Privacy Policy</div>
+      <h1>Privacy Policy for <span class="gradient-text">BCKSTGE</span></h1>
+      <p><strong>Effective Date:</strong> May 25, 2026</p>
+      <p>
+        BCKSTGE, also referred to as “Backstage,” “Bckstge,” “we,” “our,” or “us,” respects your privacy.
+        This Privacy Policy explains how we collect, use, disclose, and protect information when you use our mobile application,
+        websites, event pages, ticketing tools, messaging features, venue tools, Fast Lane ordering features, and related services
+        collectively referred to as the “Service.”
+      </p>
+      <p>
+        By using the Service, you agree to the collection and use of information described in this Privacy Policy.
+      </p>
+    </section>
 
-  <h2>1) Information We Collect</h2>
-  <div class="card">
-    <h3>Account &amp; Profile</h3>
-    <ul>
-      <li>Name, email address, display name, and other identifiers you provide when you create an account or contact support.</li>
-    </ul>
+    <h2>1. Information We Collect</h2>
 
-    <h3>Payments (Apple Pay &amp; Stripe)</h3>
-    <ul>
-      <li>We process payments using <strong>Apple Pay</strong> and <strong>Stripe</strong>. We do <em>not</em> store full payment card numbers or CVV on our servers.</li>
-      <li>Apple Pay and/or Stripe may collect payment details to complete the transaction; we receive tokenized payment confirmations and transaction metadata (e.g., success/failure, last 4 digits, card brand) necessary for receipts, refunds, and fraud prevention.</li>
-    </ul>
+    <div class="card">
+      <h3>Account and Profile Information</h3>
+      <ul>
+        <li>Name, display name, username, email address, phone number, profile photo, and other information you choose to provide.</li>
+        <li>Login, authentication, and account status information.</li>
+        <li>Optional social profile information, such as an Instagram handle, if you choose to provide it.</li>
+      </ul>
 
-    <h3>Usage &amp; Analytics</h3>
-    <ul>
-      <li>App interactions (screens viewed, features used), performance data (crash logs), and basic event metrics to improve reliability and product experience.</li>
-    </ul>
+      <h3>Guest Mode Information</h3>
+      <ul>
+        <li>You may use certain parts of the Service without creating an account.</li>
+        <li>Guest users may still generate limited device, usage, order, ticket, or transaction data when interacting with public events, checkout pages, or app features.</li>
+        <li>Some features, including ticket claiming, saved activity, event hosting, purchases, or order history, may require additional information.</li>
+      </ul>
 
-    <h3>Device &amp; Technical</h3>
-    <ul>
-      <li>Device model, operating system version, app version, language/region, IP address, and similar diagnostic data to maintain compatibility and security.</li>
-    </ul>
+      <h3>Ticketing and Event Information</h3>
+      <ul>
+        <li>Event registrations, ticket purchases, claimed tickets, free ticket claims, QR codes, acquire codes, order codes, check in status, and related event access records.</li>
+        <li>Information submitted during checkout, including name, email address, phone number, ticket type, quantity, event details, and payment status.</li>
+        <li>Host, promoter, fraternity, venue, or business information submitted through BCKSTGE hosting tools.</li>
+      </ul>
 
-    <h3>Location (Optional)</h3>
-    <ul>
-      <li>If you grant permission, we may collect approximate location to show nearby venues and events. You can disable location sharing in your device settings at any time.</li>
-    </ul>
+      <h3>Fast Lane Drink Ordering Information</h3>
+      <ul>
+        <li>Venue selected, menu items, quantities, notes, pickup spot, pickup instructions, order status, order code, subtotal, service fees, tips, taxes if applicable, and payment status.</li>
+        <li>Order lifecycle data, such as pending, accepted, ready, picked up, cancelled, refunded, or failed.</li>
+        <li>Information visible to the venue or bartender dashboard so the venue can prepare and fulfill your order.</li>
+      </ul>
 
-    <h3>Audio Recognition (ShazamKit)</h3>
-    <ul>
-      <li>To power the “Now Playing” feature, we use Apple’s <strong>ShazamKit</strong>. Audio is analyzed locally on your device. We do <em>not</em> record, store, or transmit raw audio. Only recognized track metadata (e.g., title/artist) may be displayed.</li>
-    </ul>
+      <h3>Payments and Financial Information</h3>
+      <ul>
+        <li>We use third party payment processors, including Stripe and Apple Pay, to process payments.</li>
+        <li>We do not store full credit card numbers, debit card numbers, or CVV codes on our servers.</li>
+        <li>We may receive payment metadata such as transaction ID, payment status, amount paid, card brand, last four digits, refund status, chargeback status, and receipt information.</li>
+      </ul>
 
-    <h3>Guest Mode / Explore Without Account</h3>
-    <ul>
-      <li>You may explore parts of the Service without creating an account. Guest Mode may display limited or locally cached content and does not create a persistent profile on our servers.</li>
-    </ul>
+      <h3>Messaging and Communication Information</h3>
+      <ul>
+        <li>Phone numbers and email addresses used to send ticket confirmations, acquire codes, order updates, account notices, event updates, receipts, support replies, and security messages.</li>
+        <li>SMS consent records, including opt in status, opt out status, timestamp, source of consent, and message delivery records.</li>
+        <li>Support messages, emails, forms, or other communications you send to us.</li>
+      </ul>
 
-    <h3>Cookies &amp; Local Storage</h3>
-    <ul>
-      <li>We may use cookies and local storage to remember preferences, keep you signed in, and measure site performance on our web pages.</li>
-    </ul>
-  </div>
+      <h3>Location Information</h3>
+      <ul>
+        <li>If you grant permission, we may collect approximate or precise location information to show nearby venues, events, wait time estimates, venue distance, pickup eligibility, or location based features.</li>
+        <li>You can disable location permissions through your device settings at any time.</li>
+        <li>Some features may not work properly without location access.</li>
+      </ul>
 
-  <h2>2) How We Use Information</h2>
-  <ul>
-    <li>Provide, operate, and maintain the Service (including purchases, tickets, and access to venue information).</li>
-    <li>Improve reliability, performance, and user experience; develop new features.</li>
-    <li>Process payments and prevent fraud (via Apple Pay and Stripe).</li>
-    <li>Provide support and respond to inquiries.</li>
-    <li>Enforce terms, protect the Service and our users, and comply with legal obligations.</li>
-  </ul>
+      <h3>Device, Usage, and Technical Information</h3>
+      <ul>
+        <li>Device model, operating system, app version, browser type, IP address, language, region, crash logs, diagnostics, and performance data.</li>
+        <li>Pages, screens, features, buttons, events, venues, or actions viewed or used inside the Service.</li>
+        <li>Cookies, local storage, session identifiers, and similar technologies used to remember preferences, support login sessions, improve performance, and protect the Service.</li>
+      </ul>
 
-  <h2>3) When We Share Information</h2>
-  <p>We do <strong>not</strong> sell or rent personal data. We may share information only with:</p>
-  <ul>
-    <li><strong>Service Providers</strong> acting on our behalf (e.g., Stripe for payments, Firebase services for authentication, hosting, analytics; Apple frameworks such as ShazamKit). These providers are required to use data only to perform services for us and to implement reasonable safeguards.</li>
-    <li><strong>Legal/Safety</strong> when required by law, valid legal process, or to protect rights, safety, and property.</li>
-    <li><strong>Business Transfers</strong> in connection with a merger, acquisition, reorganization, or sale of assets. Where required, you will be notified.</li>
-  </ul>
+      <h3>Camera, Photos, and Media</h3>
+      <ul>
+        <li>If you choose to use camera, photo, or media features, we may process the content you capture or upload to provide that feature.</li>
+        <li>You control whether the app has access to your camera or photo library through your device settings.</li>
+      </ul>
 
-  <h2>4) Payments &amp; Financial Data</h2>
-  <ul>
-    <li><strong>Apple Pay:</strong> Card details are handled by Apple and your card issuer. We receive tokenized confirmations necessary to complete your order and issue receipts/refunds.</li>
-    <li><strong>Stripe:</strong> Stripe securely processes payments; we do not store full card numbers or CVV. We receive transaction metadata (e.g., payment status, last 4 digits, brand) for accounting and support.</li>
-    <li>Transaction records are retained to comply with tax, accounting, and anti-fraud obligations.</li>
-  </ul>
+      <h3>Audio Recognition</h3>
+      <ul>
+        <li>If BCKSTGE offers music recognition or “Now Playing” features, we may use Apple frameworks such as ShazamKit.</li>
+        <li>Where supported, audio recognition is intended to identify music and display track metadata.</li>
+        <li>We do not use this feature to intentionally record private conversations.</li>
+      </ul>
+    </div>
 
-  <h2>5) Data Retention</h2>
-  <ul>
-    <li>Account/profile data: kept while your account is active. If you request deletion, we delete or anonymize your data except where retention is required by law (e.g., fraud prevention, accounting).</li>
-    <li>Payment/transaction records: retained for as long as legally required for bookkeeping and tax (often up to 7 years, depending on jurisdiction).</li>
-    <li>Usage/diagnostic logs: typically retained for up to 24 months to improve stability and security.</li>
-  </ul>
+    <h2>2. How We Use Information</h2>
+    <div class="card">
+      <ul>
+        <li>Provide, operate, maintain, and improve the Service.</li>
+        <li>Create and manage accounts, guest sessions, tickets, orders, event access, venue dashboards, and host tools.</li>
+        <li>Process ticket purchases, Fast Lane orders, payments, refunds, fees, receipts, and transaction records.</li>
+        <li>Send ticket confirmations, acquire codes, order updates, event updates, account notifications, support messages, and security alerts.</li>
+        <li>Show nearby venues, events, estimated crowd information, wait time guidance, timing suggestions, and location based recommendations.</li>
+        <li>Prevent fraud, abuse, unauthorized access, chargebacks, duplicate ticket claims, and security incidents.</li>
+        <li>Debug errors, analyze performance, improve product design, and develop new features.</li>
+        <li>Comply with legal, tax, accounting, payment processing, and regulatory obligations.</li>
+        <li>Enforce our terms, protect users, protect venues, protect hosts, and protect BCKSTGE.</li>
+      </ul>
+    </div>
 
-  <h2>6) Your Choices &amp; Rights</h2>
-  <ul>
-    <li><strong>Access/Update:</strong> You can access or update your account information in-app or by contacting us.</li>
-    <li><strong>Delete Account:</strong> You may request deletion by contacting support. Some information may be retained where required by law or for legitimate business purposes (e.g., chargebacks, fraud prevention, or accounting).</li>
-    <li><strong>Permissions:</strong> You can disable location or microphone permissions in device settings; related features may become unavailable.</li>
-    <li><strong>Marketing:</strong> You may opt out of marketing emails via the unsubscribe link or by contacting support.</li>
-    <li><strong>Privacy Rights:</strong> Depending on your location, you may have additional rights (e.g., to request access, correction, deletion, portability, and to object/restrict certain processing). To exercise these, contact us using the details below.</li>
-  </ul>
+    <h2>3. SMS, Email, and Notification Consent</h2>
+    <div class="card">
+      <p>
+        BCKSTGE may send you SMS messages, emails, push notifications, or similar communications related to your use of the Service.
+      </p>
 
-  <h2>7) Security</h2>
-  <p>We implement reasonable administrative, technical, and physical safeguards to protect information (e.g., encryption in transit (TLS), access controls). No method of transmission or storage is 100% secure, but we work continuously to improve our defenses.</p>
+      <h3>Transactional Messages</h3>
+      <ul>
+        <li>Ticket confirmations.</li>
+        <li>Acquire codes or claim codes.</li>
+        <li>Event access information.</li>
+        <li>Fast Lane order status updates.</li>
+        <li>Receipts, payment confirmations, refunds, or support updates.</li>
+        <li>Important account, safety, security, or service messages.</li>
+      </ul>
 
-  <h2>8) Children’s Privacy</h2>
-  <p>The Service is not intended for children under 13, and we do not knowingly collect personal information from children under 13. If you believe we have collected such information, contact us and we will delete it.</p>
+      <h3>Marketing or Promotional Messages</h3>
+      <ul>
+        <li>We may send marketing or promotional messages only where permitted by law and where appropriate consent has been collected.</li>
+        <li>You can opt out of marketing communications without affecting your ability to receive important transactional messages where allowed by law.</li>
+      </ul>
 
-  <h2>9) International Data Transfers</h2>
-  <p>We may process and store information in countries other than your own. Where applicable, we implement appropriate safeguards to protect your information in accordance with this Policy and applicable law.</p>
+      <h3>SMS Opt In</h3>
+      <p>
+        By entering your phone number and agreeing to receive messages, you consent to receive recurring automated and non automated text messages from BCKSTGE.
+        Message frequency varies. Message and data rates may apply.
+      </p>
 
-  <h2>10) Do Not Track</h2>
-  <p>Some browsers offer “Do Not Track” signals. Because there is no common industry standard, we do not currently respond to these signals. We will review and update this Policy if standards emerge.</p>
+      <h3>SMS Opt Out</h3>
+      <p>
+        You may opt out of SMS messages by replying <strong>STOP</strong>. You may request help by replying <strong>HELP</strong>.
+        After opting out, you may still receive non SMS communications or legally required notices.
+      </p>
 
-  <h2>11) Third-Party Services We Use</h2>
-  <div class="card">
-    <ul>
-      <li><strong>Apple Pay:</strong> Payment tokenization and authorization handled by Apple and your card issuer. We don’t store raw card data.</li>
-      <li><strong>Stripe:</strong> Payment processing and transaction management. Stripe may collect limited payer information to process payments and prevent fraud.</li>
-      <li><strong>Firebase (Google):</strong> Authentication, hosting, analytics, and related infrastructure services that help us operate the app reliably and securely.</li>
-      <li><strong>ShazamKit (Apple):</strong> On-device audio recognition to display currently playing track metadata in participating venues. Raw audio is not stored or transmitted.</li>
-    </ul>
-  </div>
+      <h3>Push Notifications</h3>
+      <p>
+        You can manage push notification permissions in your device settings.
+      </p>
 
-  <h2>12) Guest Mode (Non-Account Access)</h2>
-  <p>You may access certain non-account features without registration. Guest Mode is designed to allow exploration of app functionality without creating a profile. Some advanced features (e.g., purchases, saved items, follows) require an account.</p>
+      <h3>Email</h3>
+      <p>
+        You may unsubscribe from marketing emails using the unsubscribe link where provided or by contacting us.
+        We may still send transactional, legal, or account related emails.
+      </p>
+    </div>
 
-  <h2>13) Changes to This Policy</h2>
-  <p>We may update this Policy from time to time. If we make significant changes, we will provide notice through the app, by email, or on our website. The “Effective Date” above reflects the latest version.</p>
+    <h2>4. How We Share Information</h2>
+    <div class="card">
+      <p>
+        We do not sell your personal information. We may share information in the following limited circumstances:
+      </p>
 
-  <h2>14) Contact Us</h2>
-  <p>If you have questions, requests, or complaints about this Policy or our data practices, contact us:</p>
-  <ul>
-    <li><strong>Email:</strong> <a href="mailto:jacobcabatana@backstageaccess.app">jacobcabatana@backstageaccess.app</a></li>
-    <li><strong>App Name:</strong> Backstage (Bckstge)</li>
-  </ul>
+      <h3>Service Providers</h3>
+      <ul>
+        <li>Payment processors, including Stripe and Apple Pay.</li>
+        <li>Cloud, database, hosting, analytics, authentication, and infrastructure providers, including Firebase and Google Cloud services.</li>
+        <li>Email, SMS, notification, customer support, fraud prevention, and security providers.</li>
+        <li>App platform providers, including Apple, when necessary for app distribution, payments, notifications, or device functionality.</li>
+      </ul>
 
-  <hr class="card" />
+      <h3>Venues, Hosts, and Event Organizers</h3>
+      <ul>
+        <li>When you buy, claim, or use a ticket, we may share relevant ticket and attendee information with the event host or organizer.</li>
+        <li>When you place a Fast Lane order, we may share your order details, pickup information, and order code with the venue so the order can be fulfilled.</li>
+        <li>Hosts and venues are expected to use this information only for event access, order fulfillment, safety, support, and related operational purposes.</li>
+      </ul>
 
-  <p class="muted"><em>Reviewer note:</em> The app provides a Guest Mode for non-registered users. ShazamKit processing occurs locally on device; we do not store or transmit raw audio. Apple Pay and Stripe process payments; we do not store full card numbers on our servers.</p>
+      <h3>Legal, Safety, and Compliance</h3>
+      <ul>
+        <li>We may disclose information if required by law, subpoena, court order, legal process, law enforcement request, or regulatory requirement.</li>
+        <li>We may disclose information to protect the rights, safety, property, or security of BCKSTGE, users, hosts, venues, payment processors, or the public.</li>
+      </ul>
+
+      <h3>Business Transfers</h3>
+      <ul>
+        <li>If BCKSTGE is involved in a merger, acquisition, financing, restructuring, sale of assets, or similar transaction, information may be transferred as part of that transaction.</li>
+      </ul>
+    </div>
+
+    <h2>5. Payments</h2>
+    <div class="card">
+      <ul>
+        <li>Payments are processed by third party payment processors, including Stripe and Apple Pay.</li>
+        <li>BCKSTGE does not store full card numbers or CVV codes on our servers.</li>
+        <li>Payment processors may collect and process payment information according to their own privacy policies and terms.</li>
+        <li>We may store transaction records, receipt details, refund records, payout records, fee records, and chargeback information for accounting, fraud prevention, support, and legal compliance.</li>
+      </ul>
+    </div>
+
+    <h2>6. Data Retention</h2>
+    <div class="card">
+      <ul>
+        <li>Account information is generally retained while your account remains active.</li>
+        <li>Guest, ticket, order, transaction, event, and venue records may be retained as needed for access control, support, fraud prevention, dispute handling, tax, accounting, and legal compliance.</li>
+        <li>Payment and transaction records may be retained for legally required accounting and tax periods.</li>
+        <li>Diagnostic, analytics, and usage records may be retained for a reasonable period to improve reliability, security, and product performance.</li>
+        <li>If you request deletion, we will delete or anonymize eligible information unless we need to retain it for legal, safety, fraud prevention, accounting, dispute resolution, or legitimate business purposes.</li>
+      </ul>
+    </div>
+
+    <h2>7. Your Choices and Rights</h2>
+    <div class="card">
+      <ul>
+        <li><strong>Access or update information:</strong> You may access or update certain account information in the app or by contacting us.</li>
+        <li><strong>Delete account:</strong> You may request account deletion by contacting us.</li>
+        <li><strong>Location permissions:</strong> You can disable location access in your device settings.</li>
+        <li><strong>Camera, photos, and microphone permissions:</strong> You can manage these permissions in your device settings.</li>
+        <li><strong>SMS opt out:</strong> Reply STOP to opt out of SMS messages.</li>
+        <li><strong>Email opt out:</strong> Use the unsubscribe link where available or contact us.</li>
+        <li><strong>Push notifications:</strong> Disable push notifications through your device settings.</li>
+        <li><strong>Privacy rights:</strong> Depending on your location, you may have rights to request access, correction, deletion, portability, restriction, objection, or information about certain data practices.</li>
+      </ul>
+    </div>
+
+    <h2>8. California and Other State Privacy Rights</h2>
+    <div class="card">
+      <p>
+        Depending on where you live, you may have additional privacy rights under applicable state privacy laws.
+        These rights may include the right to know what personal information we collect, the right to request deletion,
+        the right to correct inaccurate information, the right to access information, and the right to opt out of certain processing.
+      </p>
+      <p>
+        BCKSTGE does not sell personal information. If our practices change, we will update this Privacy Policy and provide required choices.
+      </p>
+    </div>
+
+    <h2>9. Security</h2>
+    <div class="card">
+      <p>
+        We use reasonable administrative, technical, and organizational safeguards designed to protect information.
+        These safeguards may include access controls, encrypted transmission, authentication controls, database security rules,
+        monitoring, and limited access to sensitive systems.
+      </p>
+      <p>
+        No method of transmission, storage, or electronic processing is completely secure. We cannot guarantee absolute security,
+        but we work to protect the Service and improve our security practices over time.
+      </p>
+    </div>
+
+    <h2>10. Children’s Privacy</h2>
+    <div class="card">
+      <p>
+        The Service is not intended for children under 13. We do not knowingly collect personal information from children under 13.
+        If you believe a child under 13 has provided personal information to us, contact us and we will take appropriate steps to delete it.
+      </p>
+      <p>
+        Some events, venues, or purchases may have age restrictions set by law, the venue, the host, or the event organizer.
+        Users are responsible for complying with all event and venue rules.
+      </p>
+    </div>
+
+    <h2>11. Third Party Links and Services</h2>
+    <div class="card">
+      <p>
+        The Service may link to third party websites, apps, payment pages, social profiles, venues, ticketing partners, or other external services.
+        We are not responsible for the privacy practices, content, or security of third party services.
+        You should review their privacy policies before providing information to them.
+      </p>
+    </div>
+
+    <h2>12. International Users</h2>
+    <div class="card">
+      <p>
+        BCKSTGE is operated from the United States. If you access the Service from outside the United States,
+        your information may be processed and stored in the United States or other countries where our service providers operate.
+        Data protection laws in these locations may differ from those in your jurisdiction.
+      </p>
+    </div>
+
+    <h2>13. Do Not Track</h2>
+    <div class="card">
+      <p>
+        Some browsers offer “Do Not Track” signals. Because there is not a common industry standard for responding to these signals,
+        we do not currently respond to them. We may update this Privacy Policy if a standard is adopted.
+      </p>
+    </div>
+
+    <h2>14. Changes to This Privacy Policy</h2>
+    <div class="card">
+      <p>
+        We may update this Privacy Policy from time to time. If we make material changes, we may notify you through the app,
+        website, email, or another reasonable method. The effective date at the top of this page shows when this Privacy Policy was last updated.
+      </p>
+    </div>
+
+    <h2>15. Contact Us</h2>
+    <div class="card">
+      <p>
+        If you have questions, requests, or complaints about this Privacy Policy or our privacy practices, contact us:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:jacobcabatana@backstageaccess.app">jacobcabatana@backstageaccess.app</a></li>
+        <li><strong>App Name:</strong> BCKSTGE</li>
+        <li><strong>Also known as:</strong> Backstage, Bckstge, Backstage Events</li>
+      </ul>
+    </div>
+
+    <hr />
+
+    <p class="muted">
+      Reviewer note: BCKSTGE uses third party services such as Stripe, Apple Pay, Firebase, email delivery providers,
+      SMS providers, and Apple platform services to operate payments, authentication, hosting, ticketing, order updates,
+      notifications, and app functionality. BCKSTGE does not store full payment card numbers or CVV codes on its own servers.
+    </p>
+  </main>
 </body>
 </html>
+```
