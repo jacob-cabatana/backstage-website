@@ -19,49 +19,61 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const params = new URLSearchParams(window.location.search);
-const eventId = params.get("id");
+const eventId = params.get("id") || params.get("eventId") || params.get("partyId");
 
-async function loadEventDetail() {
+const el = document.getElementById("event-detail");
 
-  const el = document.getElementById("event-detail");
-  el.innerHTML = "<p>Loading event...</p>";
+function escapeHTML(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-  if (!eventId) {
-    el.innerHTML = "<p>Missing event id.</p>";
-    return;
+function timestampToDate(value) {
+  if (!value) return null;
+
+  if (value.seconds) {
+    return new Date(value.seconds * 1000);
   }
 
-  const eventDoc = await getDoc(doc(db, "parties", eventId));
-
-  if (!eventDoc.exists()) {
-    el.innerHTML = "<p>Event not found.</p>";
-    return;
+  if (typeof value.toDate === "function") {
+    return value.toDate();
   }
 
-  const event = eventDoc.data();
-
-  const startDate = event.startsAt?.seconds
-    ? new Date(event.startsAt.seconds * 1000)
-    : null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
 function getOrdinal(day) {
   if (day > 3 && day < 21) return "th";
+
   switch (day % 10) {
-    case 1: return "st";
-    case 2: return "nd";
-    case 3: return "rd";
-    default: return "th";
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
   }
 }
 
 function formatPrettyDateTime(date) {
+  if (!date) return "Date TBA";
+
   const day = date.getDate();
   const ordinal = getOrdinal(day);
 
-  const month = date.toLocaleDateString("en-US", { month: "long" });
+  const month = date.toLocaleDateString("en-US", {
+    month: "long"
+  });
+
   const year = date.getFullYear();
 
-  // Time formatting
   let hours = date.getHours();
   const minutes = date.getMinutes();
 
@@ -80,53 +92,134 @@ function formatPrettyDateTime(date) {
   return `${month} ${day}${ordinal}, ${year} at ${timeString}`;
 }
 
-const formattedDate = startDate
-  ? formatPrettyDateTime(startDate)
-  : "Date TBA";
+function getDayText(date) {
+  if (!date) return "--";
 
-  const imageUrl = event.mediaUrl
-    ? event.mediaUrl
-    : "https://via.placeholder.com/800x400";
+  return date.toLocaleDateString("en-US", {
+    day: "numeric"
+  });
+}
+
+function getMonthText(date) {
+  if (!date) return "---";
+
+  return date.toLocaleDateString("en-US", {
+    month: "short"
+  });
+}
+
+function resolveTitle(event) {
+  return (
+    event.title ||
+    event.eventName ||
+    event.name ||
+    event.partyName ||
+    "Untitled Event"
+  );
+}
+
+function resolveLocation(event) {
+  return (
+    event.locationName ||
+    event.venueName ||
+    event.location ||
+    event.address ||
+    "Location TBA"
+  );
+}
+
+function resolveImageUrl(event) {
+  return (
+    event.mediaUrl ||
+    event.imageUrl ||
+    event.eventImageUrl ||
+    event.photoUrl ||
+    ""
+  );
+}
+
+function renderLoading() {
+  el.innerHTML = `
+    <div class="detail-shell">
+      <div class="guestlist">
+        <h3>Loading event...</h3>
+      </div>
+    </div>
+  `;
+}
+
+function renderError(title, message) {
+  el.innerHTML = `
+    <div class="detail-shell">
+      <div class="guestlist">
+        <h3>${escapeHTML(title)}</h3>
+        <p style="margin:0;color:rgba(255,255,255,0.68);font-weight:600;line-height:1.45;">
+          ${escapeHTML(message)}
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function renderEvent(event) {
+  const startDate = timestampToDate(event.startsAt);
+  const formattedDate = formatPrettyDateTime(startDate);
+  const dayText = getDayText(startDate);
+  const monthText = getMonthText(startDate);
+
+  const title = resolveTitle(event);
+  const location = resolveLocation(event);
+  const imageUrl = resolveImageUrl(event);
 
   el.innerHTML = `
-    <div class="detail-container">
+    <div class="detail-shell">
+      <div class="detail-container">
+        ${
+          imageUrl
+            ? `<img src="${escapeHTML(imageUrl)}" class="detail-image" alt="${escapeHTML(title)}" />`
+            : `<div class="detail-image detail-image-fallback"></div>`
+        }
 
-      <img src="${imageUrl}" class="detail-image"/>
+        <div class="detail-date-badge">
+          <div class="detail-day">${escapeHTML(dayText)}</div>
+          <div class="detail-month">${escapeHTML(monthText)}</div>
+        </div>
 
-      <div class="detail-card">
-        <p class="detail-date">${formattedDate}</p>
-        <p class="detail-price">Tickets Available</p>
-        <button class="ticket-button" id="get-tickets-btn">
-          Get Tickets
-        </button>
+        <div class="detail-card">
+          <h1 class="event-title">${escapeHTML(title)}</h1>
+          <p class="detail-date">${escapeHTML(formattedDate)}</p>
+          <p class="detail-price">${escapeHTML(location)}</p>
+        </div>
       </div>
-
     </div>
   `;
 
-  document.getElementById("get-tickets-btn").onclick = () => {
+  document.querySelector(".detail-container").addEventListener("click", () => {
+    window.location.href = `/checkout.html?id=${encodeURIComponent(eventId)}`;
+  });
+}
 
-    const deepLink = `backstage://party/${eventId}`;
-    const webCheckout = `/checkout.html?id=${eventId}`;
-    
-    let fallbackTriggered = false;
+async function loadEventDetail() {
+  renderLoading();
 
-    const timer = setTimeout(() => {
-      fallbackTriggered = true;
-      window.location.href = webCheckout;
-    }, 1200);
+  if (!eventId) {
+    renderError("Missing event id", "This event link is missing its event id.");
+    return;
+  }
 
-    try {
-      window.location.href = deepLink;
-    } catch {
-      if (!fallbackTriggered) {
-        clearTimeout(timer);
-        window.location.href = webCheckout;
-      }
+  try {
+    const eventDoc = await getDoc(doc(db, "parties", eventId));
+
+    if (!eventDoc.exists()) {
+      renderError("Event not found", "This event does not exist or is no longer available.");
+      return;
     }
 
-  };
-
+    renderEvent(eventDoc.data());
+  } catch (error) {
+    console.error("Failed to load event:", error);
+    renderError("Could not load event", "Something went wrong while loading this event.");
+  }
 }
 
 loadEventDetail();
