@@ -28,7 +28,23 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const params = new URLSearchParams(window.location.search);
-const eventId = params.get("id") || params.get("eventId") || params.get("partyId");
+
+const pathParts = window.location.pathname
+  .split("/")
+  .filter(Boolean);
+
+const pathEventId =
+  pathParts[0] === "party" && pathParts[1]
+    ? pathParts[1]
+    : null;
+
+const eventId =
+  params.get("id") ||
+  params.get("eventId") ||
+  params.get("partyId") ||
+  pathEventId;
+
+console.log("Event analytics eventId:", eventId);
 
 const el = document.getElementById("event-detail");
 
@@ -149,10 +165,12 @@ async function trackEventAnalytics(field) {
   try {
     await ensureSignedIn();
 
-    await updateDoc(doc(db, "parties", eventId), {
-      [field]: increment(1),
-      "analytics.lastUpdatedAt": serverTimestamp()
-    });
+await updateDoc(doc(db, "parties", eventId), {
+  [field]: increment(1),
+  "analytics.lastUpdatedAt": serverTimestamp()
+});
+
+console.log("Analytics tracked:", field, eventId);
   } catch (error) {
     console.error("Analytics update failed:", error);
   }
@@ -246,7 +264,7 @@ async function loadEventDetail() {
       return;
     }
 
-    await trackEventAnalytics("analytics.webViews");
+await trackEventAnalytics("analytics.webViews");
 renderEvent(eventDoc.data());
   } catch (error) {
     console.error("Failed to load event:", error);
