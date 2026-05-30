@@ -2,8 +2,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc,
+  updateDoc,
+  increment,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOftoMjETRbr3v7zncb-kVvLewkpmE2n0",
@@ -17,6 +25,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 const params = new URLSearchParams(window.location.search);
 const eventId = params.get("id") || params.get("eventId") || params.get("partyId");
@@ -128,6 +137,27 @@ function resolveLocation(event) {
   );
 }
 
+async function ensureSignedIn() {
+  if (auth.currentUser) return auth.currentUser;
+  const result = await signInAnonymously(auth);
+  return result.user;
+}
+
+async function trackEventAnalytics(field) {
+  if (!eventId) return;
+
+  try {
+    await ensureSignedIn();
+
+    await updateDoc(doc(db, "parties", eventId), {
+      [field]: increment(1),
+      "analytics.lastUpdatedAt": serverTimestamp()
+    });
+  } catch (error) {
+    console.error("Analytics update failed:", error);
+  }
+}
+
 function resolveImageUrl(event) {
   return (
     event.mediaUrl ||
@@ -194,9 +224,10 @@ function renderEvent(event) {
     </div>
   `;
 
-  document.querySelector(".detail-container").addEventListener("click", () => {
+document.querySelector(".detail-container").addEventListener("click", async () => {
+    await trackEventAnalytics("analytics.ticketClicks");
     window.location.href = `/checkout.html?id=${encodeURIComponent(eventId)}`;
-  });
+});
 }
 
 async function loadEventDetail() {
@@ -215,7 +246,8 @@ async function loadEventDetail() {
       return;
     }
 
-    renderEvent(eventDoc.data());
+    await trackEventAnalytics("analytics.webViews");
+renderEvent(eventDoc.data());
   } catch (error) {
     console.error("Failed to load event:", error);
     renderError("Could not load event", "Something went wrong while loading this event.");

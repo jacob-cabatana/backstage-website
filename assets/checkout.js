@@ -2,7 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc,
+  updateDoc,
+  increment,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import {
@@ -161,6 +164,19 @@ function formatMoney(value) {
   return `$${Number(value || 0).toFixed(2)}`;
 }
 
+async function trackCheckoutStart() {
+  if (!eventId) return;
+
+  try {
+    await updateDoc(doc(db, "parties", eventId), {
+      "analytics.checkoutStarts": increment(1),
+      "analytics.lastUpdatedAt": serverTimestamp()
+    });
+  } catch (error) {
+    console.error("Checkout analytics failed:", error);
+  }
+}
+
 async function loadCheckout() {
   if (!eventId) {
     container.innerHTML = "<p>Missing event.</p>";
@@ -175,8 +191,9 @@ async function loadCheckout() {
     return;
   }
 
-  const event = docSnap.data();
-  activePhase = getActivePhase(event.ticketPhases || []);
+const event = docSnap.data();
+activePhase = getActivePhase(event.ticketPhases || []);
+await trackCheckoutStart();
 
   let freeHTML = "";
 
