@@ -9,8 +9,6 @@
 </head>
 
 <body>
-
-<body>
   <div class="page-shell">
     <header class="topbar">
       <div class="brand-lockup">
@@ -89,37 +87,33 @@ document.getElementById("message").innerHTML = `
 
   const ticketsContainer = document.getElementById("tickets-container");
 
-  data.tickets.forEach((ticket, index) => {
-const wrapper = document.createElement("div");
-wrapper.className = "ticket-card";
+data.tickets.forEach((ticket, index) => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "ticket-card";
 
-const title = document.createElement("div");
+  const qrImg = document.createElement("img");
 
-    const canvas = document.createElement("canvas");
+  qrImg.src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+    encodeURIComponent(ticket.qrPayload);
 
-const qrImg = document.createElement("img");
+  qrImg.onerror = () => {
+    console.error("QR image failed to load:", qrImg.src);
+  };
 
-qrImg.src =
-  "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
-  encodeURIComponent(ticket.qrPayload);
+  qrImg.className = "qr-image";
 
+  wrapper.appendChild(qrImg);
 
-qrImg.onerror = () => {
-  console.error("QR image failed to load:", qrImg.src);
-};
+  if (ticket.displayCode) {
+    const backup = document.createElement("div");
+    backup.className = "codepill";
+    backup.innerText = `Backup: ${ticket.displayCode}`;
+    wrapper.appendChild(backup);
+  }
 
-qrImg.className = "qr-image";
-
-
-    if (ticket.displayCode) {
-      const backup = document.createElement("div");
-      backup.className = "codepill";
-      backup.innerText = `Backup: ${ticket.displayCode}`;
-      wrapper.appendChild(backup);
-    }
-
-    ticketsContainer.appendChild(wrapper);
-  });
+  ticketsContainer.appendChild(wrapper);
+});
 
         } else {
        document.getElementById("message").innerText =
@@ -139,21 +133,6 @@ setTimeout(() => {
 });
 
     }
-
-    const video = document.getElementById("redeemVideo");
-
-if (video) {
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        video.play();
-      }
-    },
-    { threshold: 0.6 }
-  );
-
-  observer.observe(video);
-}
     function copyCode(rawCode, button){
   navigator.clipboard.writeText(rawCode)
     .then(() => {
