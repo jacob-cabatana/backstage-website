@@ -412,10 +412,27 @@ if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
 
     const canvas = document.createElement("canvas");
 
-    QRCode.toCanvas(canvas, ticket.qrPayload, {
-      width: 240,
-      margin: 2
-    });
+if (typeof QRCode === "undefined") {
+  console.error("QRCode library did not load");
+  throw new Error("QRCode library did not load");
+}
+
+QRCode.toCanvas(
+  canvas,
+  ticket.qrPayload,
+  {
+    width: 240,
+    margin: 2
+  },
+  function (error) {
+    if (error) {
+      console.error("QR render error:", error);
+      return;
+    }
+
+    console.log("QR rendered for ticket:", ticket.ticketId);
+  }
+);
 
     canvas.style.background = "white";
     canvas.style.borderRadius = "14px";
@@ -446,10 +463,12 @@ setTimeout(() => {
         }
 
       })
-      .catch(() => {
-        document.getElementById("message").innerText =
-          "Payment confirmed. Please check your email shortly.";
-      });
+ .catch((err) => {
+  console.error("SUCCESS PAGE ERROR:", err);
+
+  document.getElementById("message").innerText =
+    "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
+});
 
     }
 
