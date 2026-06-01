@@ -2,70 +2,109 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Backstage</title>
+  <title>Backstage Event</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Link Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Backstage Event" />
+  <meta property="og:description" content="View this event on BCKSTGE." />
+  <meta property="og:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
+  <meta property="og:url" content="https://backstageaccess.app/party" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Backstage Event" />
+  <meta name="twitter:description" content="View this event on Backstage." />
+  <meta name="twitter:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
+
   <style>
-    :root{
-      --bg:#0b0614;
-      --card:#140b24;
-      --border: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.70);
-      --accent:#6F1EFF;
-      --accent2:#5D03FF;
+    :root {
+      --bg: #050505;
+      --card: rgba(255,255,255,.065);
+      --border: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.94);
+      --muted: rgba(255,255,255,.66);
+      --accent: #9C4FF2;
+      --accent2: #225CDA;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      background: radial-gradient(900px 500px at 50% 0%, rgba(111,30,255,.25), transparent 60%), var(--bg);
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(156,79,242,.34), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(34,92,218,.30), transparent 38%),
+        var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-    .wrap{
-      width:min(520px, 100%);
-    }
-    .card{
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border);
-      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 22px;
-      box-shadow: 0 22px 60px rgba(0,0,0,.45);
-      backdrop-filter: blur(10px);
     }
-    .logo{
-      width:72px;
-      height:72px;
-      border-radius:18px;
-      margin:0 auto 14px;
-      overflow:hidden;
+
+    .wrap {
+      width: min(470px, 100%);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 26px;
+      box-shadow: 0 30px 90px rgba(0,0,0,.46);
+      backdrop-filter: blur(18px);
+      text-align: center;
+    }
+
+    .preview {
+      width: 100%;
+      border-radius: 22px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 22px 60px rgba(34,92,218,.28);
+      display: block;
+    }
+
+    .app-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      margin: 0 auto 14px;
+      overflow: hidden;
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
-      background:#000;
+      background: #000;
+      display: none;
     }
-    .logo img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
+
+    .app-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    h1{
+
+    h1 {
       margin: 0 0 8px;
-      font-size: 24px;
-      text-align:center;
+      font-size: 28px;
+      line-height: 1.05;
+      letter-spacing: -.6px;
+      text-align: center;
     }
-    p{
+
+    p {
       margin: 0 0 16px;
       font-size: 15px;
       color: var(--muted);
-      text-align:center;
-      line-height:1.4;
+      text-align: center;
+      line-height: 1.45;
     }
-    .pill{
+
+    .pill {
       margin: 12px auto 0;
       width: fit-content;
       padding: 8px 12px;
@@ -74,49 +113,54 @@
       color: rgba(255,255,255,.78);
       font-size: 13px;
     }
-.app-icon {
-  width: 96px;
-  height: 96px;
-  transform: scale(0.65);
-  transform-origin: center;
-  margin-bottom: 6px;
-}
 
-
-    .btns{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top:16px;
+    .btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
     }
-    a.btn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-decoration:none;
-      border-radius: 16px;
-      padding: 14px 14px;
-      font-weight: 700;
+
+    button,
+    a.btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border-radius: 18px;
+      padding: 15px 14px;
+      font-weight: 800;
       font-size: 15px;
       border: 1px solid rgba(255,255,255,.14);
       transition: transform .08s ease, opacity .08s ease;
-      user-select:none;
+      user-select: none;
+      cursor: pointer;
+      width: 100%;
     }
-    a.btn:active{transform: scale(.99); opacity:.9}
-    .primary{
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color:white;
+
+    button:active,
+    a.btn:active {
+      transform: scale(.99);
+      opacity: .9;
+    }
+
+    .primary {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: white;
       box-shadow: 0 18px 45px rgba(111,30,255,.25);
     }
-    .secondary{
+
+    .secondary {
       background: rgba(255,255,255,.06);
       color: rgba(255,255,255,.90);
     }
-    .tiny{
+
+    .tiny {
       margin-top: 12px;
       font-size: 12px;
       color: rgba(255,255,255,.55);
-      text-align:center;
+      text-align: center;
+      line-height: 1.35;
     }
   </style>
 </head>
@@ -125,48 +169,73 @@
   <div class="wrap">
     <div class="card">
 
-      <!-- App Icon -->
-      <div class="logo">
-        <img src="/assets/app-icon.png" alt="Backstage app icon" class="app-icon">
+      <img class="preview" src="/assets/StaffScanner.png" alt="Backstage Event" />
 
-
+      <div class="app-icon-wrap">
+        <img src="/assets/app-icon.png" alt="Backstage app icon" class="app-icon" />
       </div>
 
-      <h1>Get Backstage</h1>
-      <p>To view this party, you’ll need the Backstage app.</p>
+      <h1>Open this event on Backstage</h1>
+
+      <p>View tickets, details, and event access inside the Backstage app.</p>
 
       <div id="partyPill" class="pill" style="display:none;"></div>
 
       <div class="btns">
-        <a class="btn primary"
+        <button class="primary" onclick="openParty()">
+          Open Event
+        </button>
+
+        <a class="btn secondary"
            href="https://apps.apple.com/us/app/backstage-events/id6751863780">
           Download on the App Store
         </a>
-
-     
       </div>
+
+      <div id="fallbackText" class="tiny"></div>
 
     </div>
   </div>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const redirectedPath = params.get("path");
-  const fromBrowserFlow = params.get("browserFlow") === "1";
+  <script>
+    const params = new URLSearchParams(window.location.search);
 
-  const path = redirectedPath || window.location.pathname;
-  const parts = path.split("/").filter(Boolean);
+    const redirectedPath = params.get("path");
+    const path = redirectedPath || window.location.pathname;
 
-  const partyId =
-    parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
+    const parts = path
+      .split("/")
+      .map(part => part.trim())
+      .filter(Boolean);
 
-  const pill = document.getElementById("partyPill");
+    const partyId =
+      parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
 
-  if (partyId && pill) {
-    pill.style.display = "block";
-    pill.textContent = "Opening party…";
-  }
+    const pill = document.getElementById("partyPill");
+    const fallbackText = document.getElementById("fallbackText");
 
-</script>
+    if (partyId && pill) {
+      pill.style.display = "block";
+      pill.textContent = "Opening party...";
+    }
+
+    function openParty() {
+      if (!partyId) {
+        fallbackText.textContent = "This event link is missing an event ID.";
+        return;
+      }
+
+      window.location.href = `backstage://party/${encodeURIComponent(partyId)}`;
+
+      setTimeout(() => {
+        fallbackText.textContent =
+          "If Backstage did not open, make sure the app is installed.";
+      }, 900);
+    }
+
+    if (partyId) {
+      setTimeout(openParty, 550);
+    }
+  </script>
 </body>
 </html>
