@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Backstage Staff Scanner</title>
+
+  <meta property="og:title" content="Backstage Staff Scanner" />
+  <meta property="og:description" content="Open this secure staff scanner link to scan tickets for this event." />
+  <meta property="og:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
+  <meta property="og:url" content="https://backstageaccess.app/staff-scanner.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(156, 79, 242, 0.35), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(34, 92, 218, 0.32), transparent 38%),
+        #050505;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 26px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 30px;
+      padding: 28px;
+      background: rgba(255,255,255,0.065);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.45);
+      backdrop-filter: blur(18px);
+      text-align: center;
+    }
+
+    .logo {
+      width: 190px;
+      margin: 0 auto 22px;
+      display: block;
+    }
+
+    .icon-wrap {
+      width: 104px;
+      height: 104px;
+      border-radius: 999px;
+      margin: 0 auto 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #9C4FF2, #225CDA);
+      box-shadow: 0 0 42px rgba(156,79,242,0.42);
+    }
+
+    .icon {
+      font-size: 46px;
+      line-height: 1;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.8px;
+      line-height: 1.05;
+    }
+
+    p {
+      margin: 12px 0 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .button {
+      margin-top: 26px;
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 17px 18px;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #9C4FF2, #225CDA);
+      cursor: pointer;
+      box-shadow: 0 16px 36px rgba(34,92,218,0.32);
+    }
+
+    .fallback {
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.42);
+      word-break: break-word;
+    }
+
+    .badge {
+      display: inline-flex;
+      margin-bottom: 16px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .scanner-preview {
+  width: 100%;
+  border-radius: 22px;
+  margin: 18px 0 22px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 22px 60px rgba(34,92,218,0.28);
+}
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <img class="logo" src="/assets/LOGO-A4.png" alt="Backstage" />
+
+    <div class="badge">Secure staff access</div>
+
+ <img class="scanner-preview" src="/assets/StaffScanner.png" alt="Backstage Staff Scanner" />
+
+    <h1>Staff Scanner</h1>
+
+    <p>
+      Open this secure Backstage scanner link to scan tickets for this event.
+    </p>
+
+    <button class="button" onclick="openScanner()">
+      Open Staff Scanner
+    </button>
+
+    <div class="fallback" id="fallbackText"></div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const partyId = params.get("partyId") || "";
+    const token = params.get("token") || "";
+
+    const deepLink =
+      `backstage://scanner?partyId=${encodeURIComponent(partyId)}&token=${encodeURIComponent(token)}`;
+
+    function openScanner() {
+      if (!partyId || !token) {
+        document.getElementById("fallbackText").textContent =
+          "This scanner link is missing required access details.";
+        return;
+      }
+
+      window.location.href = deepLink;
+
+      setTimeout(() => {
+        document.getElementById("fallbackText").textContent =
+          "If Backstage did not open, make sure the app is installed on this device.";
+      }, 900);
+    }
+  </script>
+</body>
+</html>

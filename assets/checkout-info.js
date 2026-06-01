@@ -91,13 +91,21 @@ function normalizePhone(value) {
 }
 
 function formatPhone(value) {
-  const digits = String(value || "").replace(/\D/g, "");
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 10);
 
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)} ${digits.slice(6)}`;
+  if (digits.length === 0) {
+    return "";
   }
 
-  return value;
+  if (digits.length <= 3) {
+    return `(${digits}`;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  }
+
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)} ${digits.slice(6)}`;
 }
 
 function validate() {
@@ -118,7 +126,11 @@ const valid =
 firstName.addEventListener("input", validate);
 lastName.addEventListener("input", validate);
 email.addEventListener("input", validate);
-phone.addEventListener("input", validate);
+phone.addEventListener("input", () => {
+  phone.value = formatPhone(phone.value);
+  validate();
+  refreshReview();
+});
 photoInput.addEventListener("change", (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
