@@ -24,15 +24,7 @@
     <main class="success-layout">
       <section class="hero-card">
 
-        <div class="checkwrap" aria-hidden="true">
-          <div class="check">
-            <svg viewBox="0 0 24 24">
-              <path d="M20 6L9 17l-5-5"></path>
-            </svg>
-          </div>
-        </div>
-
-        <p class="eyebrow">You are in</p>
+  
 
         <h1>
           Payment<br>
@@ -102,10 +94,6 @@ const wrapper = document.createElement("div");
 wrapper.className = "ticket-card";
 
 const title = document.createElement("div");
-title.className = "ticket-title";
-title.innerHTML = data.tickets.length > 1
-  ? `<span>Ticket ${index + 1}</span><span>Ready</span>`
-  : `<span>Your Ticket</span><span>Ready</span>`;
 
     const canvas = document.createElement("canvas");
 
@@ -122,8 +110,6 @@ qrImg.onerror = () => {
 
 qrImg.className = "qr-image";
 
-wrapper.appendChild(title);
-wrapper.appendChild(qrImg);
 
     if (ticket.displayCode) {
       const backup = document.createElement("div");
