@@ -5,11 +5,14 @@
   <title>Backstage Event</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Link Preview -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Backstage Event" />
   <meta property="og:description" content="View this event on BCKSTGE." />
   <meta property="og:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
+  <meta property="og:image:secure_url" content="https://backstageaccess.app/assets/StaffScanner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://backstageaccess.app/party" />
 
   <meta name="twitter:card" content="summary_large_image" />
@@ -67,24 +70,6 @@
       margin-bottom: 24px;
       border: 1px solid rgba(255,255,255,.12);
       box-shadow: 0 22px 60px rgba(34,92,218,.28);
-      display: block;
-    }
-
-    .app-icon-wrap {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      margin: 0 auto 14px;
-      overflow: hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
-      background: #000;
-      display: none;
-    }
-
-    .app-icon {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
       display: block;
     }
 
@@ -171,10 +156,6 @@
 
       <img class="preview" src="/assets/StaffScanner.png" alt="Backstage Event" />
 
-      <div class="app-icon-wrap">
-        <img src="/assets/app-icon.png" alt="Backstage app icon" class="app-icon" />
-      </div>
-
       <h1>Open this event on Backstage</h1>
 
       <p>View tickets, details, and event access inside the Backstage app.</p>
@@ -233,8 +214,11 @@
       }, 900);
     }
 
-    if (partyId) {
-      setTimeout(openParty, 550);
+    const isPreviewBot =
+      /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
+
+    if (partyId && !isPreviewBot) {
+      setTimeout(openParty, 1400);
     }
   </script>
 </body>
