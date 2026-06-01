@@ -179,18 +179,22 @@
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
 
-    const redirectedPath = params.get("path");
-    const path = redirectedPath || window.location.pathname;
+let partyId = params.get("id") || "";
 
-    const parts = path
-      .split("/")
-      .map(part => part.trim())
-      .filter(Boolean);
+if (!partyId) {
+  const redirectedPath = params.get("path");
+  const path = redirectedPath || window.location.pathname;
 
-    const partyId =
-      parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
+  const parts = path
+    .split("/")
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  partyId =
+    parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
+}
 
     const pill = document.getElementById("partyPill");
     const fallbackText = document.getElementById("fallbackText");
