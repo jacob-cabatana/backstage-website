@@ -5,11 +5,36 @@
   <title>Payment Successful</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/success.css">
+  <link rel="stylesheet" href="css/success.css">
 </head>
 
 <body>
   <div class="page-shell">
+
+    <div id="appSheetOverlay" class="app-sheet-overlay">
+      <div class="app-sheet">
+        <button class="app-sheet-close" onclick="closeAppSheet()" aria-label="Close">
+          ×
+        </button>
+
+  
+
+        <h2>Download BCKSTGE</h2>
+
+        <p>
+          Claim your official ticket in BCKSTGE and see who’s going before you arrive.
+        </p>
+
+        <button class="app-sheet-button" onclick="openBackstageApp()">
+          Get BCKSTGE
+        </button>
+
+        <button class="app-sheet-link" onclick="closeAppSheet()">
+          Continue on web
+        </button>
+      </div>
+    </div>
+
     <header class="topbar">
       <div class="brand-lockup">
         <div class="brand-mark"></div>
@@ -21,9 +46,6 @@
 
     <main class="success-layout">
       <section class="hero-card">
-
-  
-
         <h1>
           Payment<br>
           <span class="gradient-text">Successful</span>
@@ -41,15 +63,13 @@
   </div>
 
   <script>
-
     const params = new URLSearchParams(window.location.search);
-const sessionId = params.get("session_id");
+    const sessionId = params.get("session_id");
 
-if (!sessionId) {
-  document.getElementById("message").innerText =
-    "Missing session. Please check your email.";
-} else {
-
+    if (!sessionId) {
+      document.getElementById("message").innerText =
+        "Missing session. Please check your email.";
+    } else {
       fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -57,95 +77,104 @@ if (!sessionId) {
       })
       .then(res => res.json())
       .then(data => {
-
         console.log("VERIFY RESPONSE:", data);
-if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
 
-document.getElementById("message").innerHTML = `
-  <p>
-    Your ticket is ready. Show this QR code at the door.
-  </p>
+        if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
+          document.getElementById("message").innerHTML = `
+            <p>
+              Your ticket is ready. Show this QR code at the door.
+            </p>
 
-  <div id="tickets-container" class="codes"></div>
+            <div id="tickets-container" class="codes"></div>
 
-  <p>
-    Want it saved inside Backstage? Download the app and claim it there.
-  </p>
+            <p>
+              Want it saved inside Backstage? Download the app and claim it there.
+            </p>
 
-  <a
-    class="appstore"
-    href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <img
-      src="/assets/app-store-badge.svg"
-      alt="Download on the App Store"
-    />
-  </a>
-`;
+            <a
+              class="appstore"
+              href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="/assets/app-store-badge.svg"
+                alt="Download on the App Store"
+              />
+            </a>
+          `;
 
-  const ticketsContainer = document.getElementById("tickets-container");
+          const ticketsContainer = document.getElementById("tickets-container");
 
-data.tickets.forEach((ticket, index) => {
-  const wrapper = document.createElement("div");
-  wrapper.className = "ticket-card";
+          data.tickets.forEach((ticket, index) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "ticket-card";
 
-  const qrImg = document.createElement("img");
+            const qrImg = document.createElement("img");
 
-  qrImg.src =
-    "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
-    encodeURIComponent(ticket.qrPayload);
+            qrImg.src =
+              "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+              encodeURIComponent(ticket.qrPayload);
 
-  qrImg.onerror = () => {
-    console.error("QR image failed to load:", qrImg.src);
-  };
+            qrImg.onerror = () => {
+              console.error("QR image failed to load:", qrImg.src);
+            };
 
-  qrImg.className = "qr-image";
+            qrImg.className = "qr-image";
 
-  wrapper.appendChild(qrImg);
+            wrapper.appendChild(qrImg);
 
-  if (ticket.displayCode) {
-    const backup = document.createElement("div");
-    backup.className = "codepill";
-    backup.innerText = `Backup: ${ticket.displayCode}`;
-    wrapper.appendChild(backup);
-  }
+            if (ticket.displayCode) {
+              const backup = document.createElement("div");
+              backup.className = "codepill";
+              backup.innerText = `Backup: ${ticket.displayCode}`;
+              wrapper.appendChild(backup);
+            }
 
-  ticketsContainer.appendChild(wrapper);
-});
-
+            ticketsContainer.appendChild(wrapper);
+          });
         } else {
-       document.getElementById("message").innerText =
-  "Finalizing your ticket… this may take a moment.";
+          document.getElementById("message").innerText =
+            "Finalizing your ticket… this may take a moment.";
 
-setTimeout(() => {
-  window.location.reload();
-}, 1500);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         }
-
       })
- .catch((err) => {
-  console.error("SUCCESS PAGE ERROR:", err);
+      .catch((err) => {
+        console.error("SUCCESS PAGE ERROR:", err);
 
-  document.getElementById("message").innerText =
-    "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
-});
-
+        document.getElementById("message").innerText =
+          "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
+      });
     }
-    function copyCode(rawCode, button){
-  navigator.clipboard.writeText(rawCode)
-    .then(() => {
-      button.innerText = "Copied!";
-      setTimeout(() => {
-        button.innerText = "Copy Code";
-      }, 1500);
-    })
-    .catch(() => {
-      alert("Unable to copy. Please copy manually.");
-    });
-}
-  </script>
 
+    function closeAppSheet() {
+      const sheet = document.getElementById("appSheetOverlay");
+
+      if (!sheet) return;
+
+      sheet.classList.add("hidden");
+    }
+
+    function openBackstageApp() {
+      window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
+    }
+
+    function copyCode(rawCode, button) {
+      navigator.clipboard.writeText(rawCode)
+        .then(() => {
+          button.innerText = "Copied!";
+
+          setTimeout(() => {
+            button.innerText = "Copy Code";
+          }, 1500);
+        })
+        .catch(() => {
+          alert("Unable to copy. Please copy manually.");
+        });
+    }
+  </script>
 </body>
 </html>
