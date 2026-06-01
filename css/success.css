@@ -149,10 +149,10 @@ h1 {
 }
 
 .ticket-card {
-  background: rgba(0,0,0,0.28);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 28px;
-  padding: 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   display: grid;
   gap: 12px;
   justify-items: center;
@@ -169,12 +169,14 @@ h1 {
 }
 
 .appstore {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   margin-top: 14px;
 }
 
 .appstore img {
-  height: 48px;
+  width: min(260px, 100%);
+  height: auto;
 }
 
 .app-sheet-overlay {
