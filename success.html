@@ -17,8 +17,6 @@
           ×
         </button>
 
-  
-
         <h2>Download BCKSTGE</h2>
 
         <p>
@@ -34,15 +32,6 @@
         </button>
       </div>
     </div>
-
-    <header class="topbar">
-      <div class="brand-lockup">
-        <div class="brand-mark"></div>
-        <div class="brand-text">Backstage</div>
-      </div>
-
-      <div class="secure-pill">Secure checkout</div>
-    </header>
 
     <main class="success-layout">
       <section class="hero-card">
@@ -81,10 +70,6 @@
 
         if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
           document.getElementById("message").innerHTML = `
-            <p>
-              Your ticket is ready. Show this QR code at the door.
-            </p>
-
             <div id="tickets-container" class="codes"></div>
 
             <p>
@@ -106,7 +91,7 @@
 
           const ticketsContainer = document.getElementById("tickets-container");
 
-          data.tickets.forEach((ticket, index) => {
+          data.tickets.forEach((ticket) => {
             const wrapper = document.createElement("div");
             wrapper.className = "ticket-card";
 
@@ -123,14 +108,6 @@
             qrImg.className = "qr-image";
 
             wrapper.appendChild(qrImg);
-
-            if (ticket.displayCode) {
-              const backup = document.createElement("div");
-              backup.className = "codepill";
-              backup.innerText = `Backup: ${ticket.displayCode}`;
-              wrapper.appendChild(backup);
-            }
-
             ticketsContainer.appendChild(wrapper);
           });
         } else {
@@ -160,20 +137,6 @@
 
     function openBackstageApp() {
       window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
-    }
-
-    function copyCode(rawCode, button) {
-      navigator.clipboard.writeText(rawCode)
-        .then(() => {
-          button.innerText = "Copied!";
-
-          setTimeout(() => {
-            button.innerText = "Copy Code";
-          }, 1500);
-        })
-        .catch(() => {
-          alert("Unable to copy. Please copy manually.");
-        });
     }
   </script>
 </body>
