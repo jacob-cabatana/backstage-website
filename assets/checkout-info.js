@@ -28,6 +28,7 @@ if (!tickets.length || !eventId) {
 const firstName = document.getElementById("first-name");
 const lastName = document.getElementById("last-name");
 const email = document.getElementById("email");
+const phone = document.getElementById("phone");
 const button = document.getElementById("final-pay-button");
 const photoInput = document.getElementById("profile-photo");
 const photoPreview = document.getElementById("profile-preview");
@@ -75,11 +76,36 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function normalizePhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    return `+1${digits}`;
+  }
+
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `+${digits}`;
+  }
+
+  return "";
+}
+
+function formatPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)} ${digits.slice(6)}`;
+  }
+
+  return value;
+}
+
 function validate() {
 const valid =
   firstName.value.trim().length > 0 &&
   lastName.value.trim().length > 0 &&
   isValidEmail(email.value.trim()) &&
+  normalizePhone(phone.value.trim()).length > 0 &&
   profilePhotoFile;
 
   button.disabled = !valid;
@@ -92,6 +118,7 @@ const valid =
 firstName.addEventListener("input", validate);
 lastName.addEventListener("input", validate);
 email.addEventListener("input", validate);
+phone.addEventListener("input", validate);
 photoInput.addEventListener("change", (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
@@ -174,12 +201,13 @@ if (!promoOk) return;
   button.classList.add("loading");
   button.disabled = true;
 
-  const buyer = {
-    firstName: firstName.value.trim(),
-    lastName: lastName.value.trim(),
-    email: email.value.trim()
-  };
-
+const buyer = {
+  firstName: firstName.value.trim(),
+  lastName: lastName.value.trim(),
+  email: email.value.trim(),
+  phone: phone.value.trim(),
+  phoneE164: normalizePhone(phone.value.trim())
+};
   try {
     const response = await fetch(
       "https://us-central1-backstageapp-27cb3.cloudfunctions.net/createWebCheckoutSession",
@@ -316,6 +344,7 @@ const progressFill = document.getElementById("progress-fill");
 
 const reviewName = document.getElementById("review-name");
 const reviewEmail = document.getElementById("review-email");
+const reviewPhone = document.getElementById("review-phone");
 const reviewPromo = document.getElementById("review-promo");
 
 let checkoutUiStep = 0;
@@ -354,6 +383,7 @@ function refreshReview() {
 
   reviewName.textContent = fullName || "Missing";
   reviewEmail.textContent = email.value.trim() || "Missing";
+  reviewPhone.textContent = formatPhone(phone.value.trim()) || "Missing";
   reviewPromo.textContent = promoCode || "None";
 }
 
@@ -362,6 +392,7 @@ function canMovePastBuyerInfo() {
     firstName.value.trim().length > 0 &&
     lastName.value.trim().length > 0 &&
     isValidEmail(email.value.trim()) &&
+    normalizePhone(phone.value.trim()).length > 0 &&
     profilePhotoFile
   );
 }
@@ -395,7 +426,7 @@ function setCheckoutUiStep(nextStep) {
 
 uiNextButton.addEventListener("click", () => {
   if (checkoutUiStep === 0 && !canMovePastBuyerInfo()) {
-    alert("Add your photo, name, and a valid email first.");
+    alert("Add your photo, name, valid email, and phone number first.");
     return;
   }
 
@@ -406,7 +437,7 @@ uiBackButton.addEventListener("click", () => {
   setCheckoutUiStep(checkoutUiStep - 1);
 });
 
-[firstName, lastName, email].forEach(input => {
+[firstName, lastName, email, phone].forEach(input => {
   input.addEventListener("input", refreshReview);
 });
 
