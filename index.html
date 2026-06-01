@@ -829,22 +829,7 @@ body.menu-open #menuOverlay{
 
 <body>
 
-  <div id="siteGate" class="gateScreen">
-    <div class="gateCard">
-      <img src="assets/LOGO-A4.png" alt="Backstage logo" class="gateLogo">
-
-      <div class="gateKicker">Private Access</div>
-      <h1>Enter code</h1>
-      <p>This page is locked.</p>
-
-      <input id="gateCodeInput" type="password" placeholder="Access code">
-      <button id="gateUnlockBtn">Unlock</button>
-
-      <p id="gateMessage" class="gateMessage"></p>
-    </div>
-  </div>
-
-  <div id="siteContent" style="display:none;">
+<div id="siteContent">
 
   <nav class="nav">
 <div class="nav-inner">
@@ -1085,42 +1070,6 @@ body.menu-open #menuOverlay{
 </div>
 
 <script>
-  const PRIVATE_ACCESS_CODE = "BCKSTGE2022";
-
-  const siteGate = document.getElementById("siteGate");
-  const siteContent = document.getElementById("siteContent");
-  const gateCodeInput = document.getElementById("gateCodeInput");
-  const gateUnlockBtn = document.getElementById("gateUnlockBtn");
-  const gateMessage = document.getElementById("gateMessage");
-
-  function unlockSite() {
-    const enteredCode = gateCodeInput.value.trim();
-
-    if (enteredCode !== PRIVATE_ACCESS_CODE) {
-      gateMessage.textContent = "Wrong code.";
-      gateCodeInput.value = "";
-      gateCodeInput.focus();
-      return;
-    }
-
-    sessionStorage.setItem("backstage_site_unlocked", "true");
-    siteGate.style.display = "none";
-    siteContent.style.display = "block";
-  }
-
-  if (sessionStorage.getItem("backstage_site_unlocked") === "true") {
-    siteGate.style.display = "none";
-    siteContent.style.display = "block";
-  }
-
-  gateUnlockBtn.addEventListener("click", unlockSite);
-
-  gateCodeInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-      unlockSite();
-    }
-  });
-
   const statEl = document.getElementById("cutStat");
   let started = false;
 
