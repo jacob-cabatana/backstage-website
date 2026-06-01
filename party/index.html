@@ -7,18 +7,18 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Backstage Event" />
-  <meta property="og:description" content="View this event on Backstage." />
-  <meta property="og:image" content="https://backstageaccess.app/assets/EventShare.png" />
-  <meta property="og:image:secure_url" content="https://backstageaccess.app/assets/EventShare.png" />
+  <meta property="og:description" content="View this event on BCKSTGE." />
+  <meta property="og:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
+  <meta property="og:image:secure_url" content="https://backstageaccess.app/assets/StaffScanner.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:url" content="https://backstageaccess.app/party/index.html" />
+  <meta property="og:url" content="https://backstageaccess.app/party" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Backstage Event" />
   <meta name="twitter:description" content="View this event on Backstage." />
-  <meta name="twitter:image" content="https://backstageaccess.app/assets/EventShare.png" />
+  <meta name="twitter:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
 
   <style>
     :root {
@@ -154,7 +154,7 @@
   <div class="wrap">
     <div class="card">
 
-      <img class="preview" src="/assets/EventShare.png" alt="Backstage Event" />
+      <img class="preview" src="/assets/StaffScanner.png" alt="Backstage Event" />
 
       <h1>Open this event on Backstage</h1>
 
@@ -179,22 +179,22 @@
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
 
-    let partyId = params.get("id") || "";
+let partyId = params.get("id") || "";
 
-    if (!partyId) {
-      const redirectedPath = params.get("path");
-      const path = redirectedPath || window.location.pathname;
+if (!partyId) {
+  const redirectedPath = params.get("path");
+  const path = redirectedPath || window.location.pathname;
 
-      const parts = path
-        .split("/")
-        .map(part => part.trim())
-        .filter(Boolean);
+  const parts = path
+    .split("/")
+    .map(part => part.trim())
+    .filter(Boolean);
 
-      partyId =
-        parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
-    }
+  partyId =
+    parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
+}
 
     const pill = document.getElementById("partyPill");
     const fallbackText = document.getElementById("fallbackText");
