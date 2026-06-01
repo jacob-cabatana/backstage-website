@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Backstage Event</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Backstage Event" />
+  <meta property="og:description" content="View this event on Backstage." />
+  <meta property="og:image" content="https://backstageaccess.app/assets/StaffScanner.png" />
+  <meta property="og:url" content="https://backstageaccess.app/party" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script>
+    const pathParts = window.location.pathname.split("/");
+    const partyId = pathParts[pathParts.length - 1];
+
+    if (partyId) {
+      window.location.href = `backstage://party/${partyId}`;
+    }
+  </script>
+</head>
+
+<body style="margin:0;background:#050505;color:white;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;">
+    <div style="max-width:420px;">
+      <img src="/assets/StaffScanner.png" style="width:100%;border-radius:24px;margin-bottom:24px;" />
+      <h1>Open this event on Backstage</h1>
+      <p style="color:rgba(255,255,255,.65);">If the app does not open automatically, make sure Backstage is installed.</p>
+      <button onclick="window.location.href = `backstage://party/${partyId}`" style="margin-top:20px;padding:16px 22px;border:0;border-radius:16px;background:linear-gradient(90deg,#9C4FF2,#225CDA);color:white;font-weight:800;font-size:16px;">
+        Open Event
+      </button>
+    </div>
+  </main>
+</body>
+</html>
