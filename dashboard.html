@@ -1569,7 +1569,7 @@ async function getCustomerName(order) {
 
 async function printOrderReceipt(order) {
   try {
-   const response = await fetch("http://10.0.0.34:3001/print-order", {
+  const response = await fetch("http://localhost:3001/print-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
