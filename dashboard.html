@@ -710,9 +710,35 @@ import {
     let latestOrdersSnapshot = null;
     let activeView = "setup";
     let unseenOrdersCount = 0;
-    let knownActiveOrderIds = new Set();
-    let hasLoadedOrdersOnce = false;
-    const customerNameCache = {};
+let knownActiveOrderIds = new Set();
+let hasLoadedOrdersOnce = false;
+let soundUnlocked = false;
+const customerNameCache = {};
+
+const newOrderSound = new Audio("/assets/new-order.mp3");
+newOrderSound.preload = "auto";
+newOrderSound.volume = 1;
+
+document.addEventListener("click", () => {
+  soundUnlocked = true;
+
+  newOrderSound.play()
+    .then(() => {
+      newOrderSound.pause();
+      newOrderSound.currentTime = 0;
+    })
+    .catch(() => {});
+}, { once: true });
+
+function playNewOrderSound() {
+  if (!soundUnlocked) return;
+
+  newOrderSound.currentTime = 0;
+
+  newOrderSound.play().catch(err => {
+    console.warn("New order sound blocked:", err);
+  });
+}
 
     const venueName = document.getElementById("venueName");
     const venueAddress = document.getElementById("venueAddress");
