@@ -716,45 +716,6 @@ let hasLoadedOrdersOnce = false;
 let soundUnlocked = false;
 const customerNameCache = {};
 
-const newOrderSound = new Audio("/assets/new-order.mp3");
-newOrderSound.preload = "auto";
-newOrderSound.volume = 1;
-
-async function unlockOrderSound() {
-  try {
-    soundUnlocked = true;
-
-    await newOrderSound.play();
-
-    newOrderSound.pause();
-    newOrderSound.currentTime = 0;
-
-    if (enableSoundBtn) {
-      enableSoundBtn.textContent = "Order sound enabled";
-      enableSoundBtn.disabled = true;
-    }
-  } catch (err) {
-    console.warn("Order sound unlock failed:", err);
-
-    if (enableSoundBtn) {
-      enableSoundBtn.textContent = "Tap again to enable sound";
-    }
-  }
-}
-
-if (enableSoundBtn) {
-  enableSoundBtn.addEventListener("click", unlockOrderSound);
-}
-
-function playNewOrderSound() {
-  if (!soundUnlocked) return;
-
-  newOrderSound.currentTime = 0;
-
-  newOrderSound.play().catch(err => {
-    console.warn("New order sound blocked:", err);
-  });
-}
 
     const venueName = document.getElementById("venueName");
     const venueAddress = document.getElementById("venueAddress");
@@ -819,6 +780,38 @@ function playNewOrderSound() {
     const connectStripeBtn = document.getElementById("connectStripeBtn");
     const payoutsMessage = document.getElementById("payoutsMessage");
     const enableSoundBtn = document.getElementById("enableSoundBtn");
+    const newOrderSound = new Audio("/assets/new-order.mp3");
+newOrderSound.preload = "auto";
+newOrderSound.volume = 1;
+
+async function unlockOrderSound() {
+  try {
+    await newOrderSound.play();
+
+    newOrderSound.pause();
+    newOrderSound.currentTime = 0;
+
+    soundUnlocked = true;
+
+    enableSoundBtn.textContent = "Order sound enabled";
+    enableSoundBtn.disabled = true;
+  } catch (err) {
+    console.warn("Order sound unlock failed:", err);
+    enableSoundBtn.textContent = "Tap again to enable sound";
+  }
+}
+
+enableSoundBtn.addEventListener("click", unlockOrderSound);
+
+function playNewOrderSound() {
+  if (!soundUnlocked) return;
+
+  newOrderSound.currentTime = 0;
+
+  newOrderSound.play().catch(err => {
+    console.warn("New order sound blocked:", err);
+  });
+}
 document.querySelectorAll(".tab").forEach(button => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
@@ -1687,15 +1680,24 @@ if (!orderMatchesSelectedPickupSpot(order)) {
 activeOrderIds.add(docSnap.id);
     });
 
-    if (hasLoadedOrdersOnce && activeView !== "orders") {
-      activeOrderIds.forEach(orderId => {
-        if (!knownActiveOrderIds.has(orderId)) {
-          unseenOrdersCount += 1;
-        }
-      });
+if (hasLoadedOrdersOnce) {
+  let newOrdersDetected = 0;
 
+  activeOrderIds.forEach(orderId => {
+    if (!knownActiveOrderIds.has(orderId)) {
+      newOrdersDetected += 1;
+    }
+  });
+
+  if (newOrdersDetected > 0) {
+    playNewOrderSound();
+
+    if (activeView !== "orders") {
+      unseenOrdersCount += newOrdersDetected;
       renderOrdersBadge();
     }
+  }
+}
 
     knownActiveOrderIds = activeOrderIds;
     hasLoadedOrdersOnce = true;
