@@ -405,10 +405,11 @@
       <button id="logoutBtn" class="textBtn">Log out</button>
     </header>
 
-    <section class="statusLine">
-      <div id="livePill" class="pill off">Offline</div>
-      <div id="setupText" class="setupText">Finish setup to start accepting orders.</div>
-    </section>
+<section class="statusLine">
+  <div id="livePill" class="pill off">Offline</div>
+  <div id="setupText" class="setupText">Finish setup to start accepting orders.</div>
+  <button id="enableSoundBtn" class="quietBtn" type="button">Enable order sound</button>
+</section>
 
 <nav class="tabs">
   <button class="tab active" data-view="setup">Setup</button>
@@ -719,16 +720,31 @@ const newOrderSound = new Audio("/assets/new-order.mp3");
 newOrderSound.preload = "auto";
 newOrderSound.volume = 1;
 
-document.addEventListener("click", () => {
-  soundUnlocked = true;
+async function unlockOrderSound() {
+  try {
+    soundUnlocked = true;
 
-  newOrderSound.play()
-    .then(() => {
-      newOrderSound.pause();
-      newOrderSound.currentTime = 0;
-    })
-    .catch(() => {});
-}, { once: true });
+    await newOrderSound.play();
+
+    newOrderSound.pause();
+    newOrderSound.currentTime = 0;
+
+    if (enableSoundBtn) {
+      enableSoundBtn.textContent = "Order sound enabled";
+      enableSoundBtn.disabled = true;
+    }
+  } catch (err) {
+    console.warn("Order sound unlock failed:", err);
+
+    if (enableSoundBtn) {
+      enableSoundBtn.textContent = "Tap again to enable sound";
+    }
+  }
+}
+
+if (enableSoundBtn) {
+  enableSoundBtn.addEventListener("click", unlockOrderSound);
+}
 
 function playNewOrderSound() {
   if (!soundUnlocked) return;
@@ -802,6 +818,7 @@ function playNewOrderSound() {
     const payoutsBankText = document.getElementById("payoutsBankText");
     const connectStripeBtn = document.getElementById("connectStripeBtn");
     const payoutsMessage = document.getElementById("payoutsMessage");
+    const enableSoundBtn = document.getElementById("enableSoundBtn");
 document.querySelectorAll(".tab").forEach(button => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
