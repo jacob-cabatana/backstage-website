@@ -418,9 +418,10 @@
   Orders
   <span id="ordersBadge" class="ordersBadge" hidden>0</span>
 </button>
-  <button class="tab" data-view="history">History</button>
-  <button class="tab" data-view="audience">Audience</button>
-  <button class="tab" data-view="payouts">Payouts</button>
+<button class="tab" data-view="history">History</button>
+<button class="tab" data-view="analytics">Analytics</button>
+<button class="tab" data-view="audience">Audience</button>
+<button class="tab" data-view="payouts">Payouts</button>
 </nav>
 
     <section id="setupView" class="view active">
@@ -599,24 +600,20 @@
     <strong id="history7DayTips">$0.00</strong>
   </div>
 
+<div class="historySummary">
   <div>
-    <span>Last 7 Days Orders</span>
-    <strong id="history7DayOrderCount">0</strong>
+    <span>Tonight Bar Sales</span>
+    <strong id="historyRevenue">$0.00</strong>
   </div>
 
   <div>
-    <span>Last Month Revenue</span>
-    <strong id="historyMonthRevenue">$0.00</strong>
+    <span>Tonight Tips</span>
+    <strong id="historyTips">$0.00</strong>
   </div>
 
   <div>
-    <span>Last Month Tips</span>
-    <strong id="historyMonthTips">$0.00</strong>
-  </div>
-
-  <div>
-    <span>Last Month Orders</span>
-    <strong id="historyMonthOrderCount">0</strong>
+    <span>Tonight Orders</span>
+    <strong id="historyOrderCount">0</strong>
   </div>
 </div>
 
@@ -625,14 +622,61 @@
 
 <div id="pickupSpotStatsList" class="historySummary"></div>
 
-<div class="pickupStatsHeader">
-  <h2>Pickup Spot Breakdown</h2>
-  <p class="muted">See which pickup spots customers are choosing most.</p>
-</div>
 
-<div id="pickupSpotStatsList" class="historySummary"></div>
 
 <div id="historyList" class="ordersListFix"></div>
+</section>
+
+<section id="analyticsView" class="view">
+  <h2>Analytics</h2>
+  <p class="muted">Revenue is bar sales only. Tips are separate.</p>
+
+  <div class="historySummary">
+    <div>
+      <span>Tonight Revenue</span>
+      <strong id="analyticsTonightRevenue">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Tonight Tips</span>
+      <strong id="analyticsTonightTips">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Tonight Orders</span>
+      <strong id="analyticsTonightOrders">0</strong>
+    </div>
+
+    <div>
+      <span>Last 7 Days Revenue</span>
+      <strong id="analytics7DayRevenue">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Last 7 Days Tips</span>
+      <strong id="analytics7DayTips">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Last 7 Days Orders</span>
+      <strong id="analytics7DayOrders">0</strong>
+    </div>
+
+    <div>
+      <span>Last Month Revenue</span>
+      <strong id="analyticsMonthRevenue">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Last Month Tips</span>
+      <strong id="analyticsMonthTips">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Last Month Orders</span>
+      <strong id="analyticsMonthOrders">0</strong>
+    </div>
+  </div>
 </section>
 
 <section id="audienceView" class="view">
@@ -792,13 +836,17 @@ const customerNameCache = {};
     const historyTips = document.getElementById("historyTips");
     const historyOrderCount = document.getElementById("historyOrderCount");
 
-    const history7DayRevenue = document.getElementById("history7DayRevenue");
-    const history7DayTips = document.getElementById("history7DayTips");
-    const history7DayOrderCount = document.getElementById("history7DayOrderCount");
+const analyticsTonightRevenue = document.getElementById("analyticsTonightRevenue");
+const analyticsTonightTips = document.getElementById("analyticsTonightTips");
+const analyticsTonightOrders = document.getElementById("analyticsTonightOrders");
 
-    const historyMonthRevenue = document.getElementById("historyMonthRevenue");
-    const historyMonthTips = document.getElementById("historyMonthTips");
-    const historyMonthOrderCount = document.getElementById("historyMonthOrderCount");
+const analytics7DayRevenue = document.getElementById("analytics7DayRevenue");
+const analytics7DayTips = document.getElementById("analytics7DayTips");
+const analytics7DayOrders = document.getElementById("analytics7DayOrders");
+
+const analyticsMonthRevenue = document.getElementById("analyticsMonthRevenue");
+const analyticsMonthTips = document.getElementById("analyticsMonthTips");
+const analyticsMonthOrders = document.getElementById("analyticsMonthOrders");
     const pickupSpotStatsList = document.getElementById("pickupSpotStatsList");
 
     const audienceCount = document.getElementById("audienceCount");
@@ -1989,6 +2037,22 @@ function getLastMonthStartSeconds() {
   return Math.floor(start.getTime() / 1000);
 }
 
+function getOrderBarSales(order) {
+  if (!Array.isArray(order.items)) {
+    return 0;
+  }
+
+  return order.items.reduce((sum, drink) => {
+    const quantity = Number(drink.quantity || 1);
+    const price = Number(drink.price || 0);
+    const lineTotal = Number(
+      drink.lineTotal ?? (price * quantity)
+    );
+
+    return sum + lineTotal;
+  }, 0);
+}
+
 function calculateOrderStats(orders) {
   return orders.reduce((stats, entry) => {
     stats.revenue += getOrderBarSales(entry.order);
@@ -2161,21 +2225,7 @@ const completedOrders = snap.docs
         return bTime - aTime;
       });
 
-function getOrderBarSales(order) {
-  if (!Array.isArray(order.items)) {
-    return 0;
-  }
 
-  return order.items.reduce((sum, drink) => {
-    const quantity = Number(drink.quantity || 1);
-    const price = Number(drink.price || 0);
-    const lineTotal = Number(
-      drink.lineTotal ?? (price * quantity)
-    );
-
-    return sum + lineTotal;
-  }, 0);
-}
 
 const tonightOrders = completedOrders.filter(entry =>
   entry.completedSeconds >= tonightStartSeconds
@@ -2200,13 +2250,17 @@ historyRevenue.textContent = `$${tonightStats.revenue.toFixed(2)}`;
 historyTips.textContent = `$${tonightStats.tips.toFixed(2)}`;
 historyOrderCount.textContent = tonightStats.count;
 
-history7DayRevenue.textContent = `$${last7DayStats.revenue.toFixed(2)}`;
-history7DayTips.textContent = `$${last7DayStats.tips.toFixed(2)}`;
-history7DayOrderCount.textContent = last7DayStats.count;
+analyticsTonightRevenue.textContent = `$${tonightStats.revenue.toFixed(2)}`;
+analyticsTonightTips.textContent = `$${tonightStats.tips.toFixed(2)}`;
+analyticsTonightOrders.textContent = tonightStats.count;
 
-historyMonthRevenue.textContent = `$${lastMonthStats.revenue.toFixed(2)}`;
-historyMonthTips.textContent = `$${lastMonthStats.tips.toFixed(2)}`;
-historyMonthOrderCount.textContent = lastMonthStats.count;
+analytics7DayRevenue.textContent = `$${last7DayStats.revenue.toFixed(2)}`;
+analytics7DayTips.textContent = `$${last7DayStats.tips.toFixed(2)}`;
+analytics7DayOrders.textContent = last7DayStats.count;
+
+analyticsMonthRevenue.textContent = `$${lastMonthStats.revenue.toFixed(2)}`;
+analyticsMonthTips.textContent = `$${lastMonthStats.tips.toFixed(2)}`;
+analyticsMonthOrders.textContent = lastMonthStats.count;
 
 renderPickupSpotStats(tonightOrders);
 
