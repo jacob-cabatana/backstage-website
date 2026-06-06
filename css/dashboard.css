@@ -615,14 +615,14 @@ select:focus {
   margin: 26px 0 22px;
 }
 
-.historySummary div {
+.historySummary > div {
   padding: 18px;
   border-radius: 18px;
   background: rgba(255,255,255,.055);
   border: 1px solid rgba(255,255,255,.10);
 }
 
-.historySummary span {
+.historySummary > div > span {
   display: block;
   color: var(--muted);
   font-size: 12px;
@@ -632,7 +632,7 @@ select:focus {
   text-transform: uppercase;
 }
 
-.historySummary strong {
+.historySummary > div > strong {
   display: block;
   color: white;
   font-size: 30px;
