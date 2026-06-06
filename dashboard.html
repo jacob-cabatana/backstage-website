@@ -391,18 +391,36 @@
   }
 }
 </style>
+  <link rel="stylesheet" href="/css/dashboard-apple-redesign.css" />
 </head>
 
 <body>
   <main class="page">
     <header class="top">
-      <div>
-        <div class="kicker">Backstage Fast Lane</div>
-        <h1 id="venueName">Loading...</h1>
-        <p id="venueAddress">Bar drink ordering dashboard</p>
-      </div>
+ <div>
+  <h1 id="venueName">Loading...</h1>
+</div>
 
-      <button id="logoutBtn" class="textBtn">Log out</button>
+<div class="topActions">
+  <span class="themeIcon moon" aria-hidden="true">☾</span>
+
+  <button
+    id="themeToggle"
+    class="themeToggle"
+    type="button"
+    role="switch"
+    aria-checked="false"
+    aria-label="Toggle dark mode"
+  >
+    <span class="themeToggleTrack">
+      <span class="themeToggleThumb"></span>
+    </span>
+  </button>
+
+  <span class="themeIcon sun" aria-hidden="true">☀</span>
+
+  <button id="logoutBtn" class="textBtn">Log out</button>
+</div>
     </header>
 
 <section class="statusLine">
@@ -963,7 +981,9 @@ syncStripe();
         venue = snap.data();
 
         venueName.textContent = venue.venueName || "Unnamed venue";
-        venueAddress.textContent = venue.venueAddress || "No address saved";
+if (venueAddress) {
+  venueAddress.textContent = venue.venueAddress || "No address saved";
+}
 
 if (venue.venuePhotoUrl) {
   venuePhotoPreview.src = venue.venuePhotoUrl;
@@ -2523,5 +2543,8 @@ function formatDrinkCategory(category) {
         .replaceAll("'", "&#039;");
     }
   </script>
+<script src="/js/dashboard-theme-toggle.js" defer></script>
+</body>
+</html>
 </body>
 </html>
