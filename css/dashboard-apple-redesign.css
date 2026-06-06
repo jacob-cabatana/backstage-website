@@ -237,3 +237,111 @@ html[data-theme="dark"] .themeIcon.moon {
 html[data-theme="dark"] .themeIcon.sun {
   color: #ffb340;
 }
+
+/* Fix History tab layout */
+#historyView .historySummary {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+  gap: 14px !important;
+  margin: 22px 0 !important;
+}
+
+#historyList.historyOrdersGrid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 16px !important;
+  align-items: start !important;
+  width: 100% !important;
+  margin-top: 18px !important;
+}
+
+#historyList .orderCard {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+#historyList .orderHeader,
+#historyList .orderFooter {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+#historyList .orderCode {
+  font-size: 28px !important;
+}
+
+#historyList .orderTotal {
+  font-size: 18px !important;
+}
+
+#historyList .orderActions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+#historyList .smallBtn {
+  min-width: auto !important;
+  padding: 9px 13px !important;
+  font-size: 13px !important;
+}
+
+@media (max-width: 700px) {
+  #historyList.historyOrdersGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Smaller Enable Sound button */
+#enableSoundBtn {
+  width: 50% !important;
+  max-width: 290px !important;
+  min-height: 36px !important;
+  margin-top: 0 !important;
+  margin-left: auto !important;
+  padding: 9px 16px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #007aff !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 18px rgba(0, 122, 255, 0.22) !important;
+}
+
+/* After sound is enabled */
+#enableSoundBtn:disabled {
+  opacity: 1 !important;
+  cursor: default !important;
+  background: rgba(120, 120, 128, 0.24) !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+}
+
+/* Speaker icon when enabled */
+#enableSoundBtn:disabled::before {
+  content: "🔊";
+  margin-right: 7px;
+}
+
+/* Dark mode version */
+html[data-theme="dark"] #enableSoundBtn {
+  background: #0a84ff !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] #enableSoundBtn:disabled {
+  background: rgba(120, 120, 128, 0.28) !important;
+  color: #c7c7cc !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  #enableSoundBtn {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+  }
+}

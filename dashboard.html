@@ -592,57 +592,41 @@
   <h2>Order History</h2>
   <p class="muted">Completed drink orders will show here.</p>
 
-<div class="historySummary">
-  <div>
-    <span>Tonight Revenue</span>
-    <strong id="historyRevenue">$0.00</strong>
+  <div class="historySummary">
+    <div>
+      <span>Tonight Revenue</span>
+      <strong id="historyRevenue">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Tonight Tips</span>
+      <strong id="historyTips">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Tonight Orders</span>
+      <strong id="historyOrderCount">0</strong>
+    </div>
+
+    <div>
+      <span>Last 7 Days Revenue</span>
+      <strong id="history7DayRevenue">$0.00</strong>
+    </div>
+
+    <div>
+      <span>Last 7 Days Tips</span>
+      <strong id="history7DayTips">$0.00</strong>
+    </div>
   </div>
 
-  <div>
-    <span>Tonight Tips</span>
-    <strong id="historyTips">$0.00</strong>
+  <div class="pickupStatsHeader">
+    <h2>Pickup Spot Breakdown</h2>
+    <p class="muted">See where customers are choosing to pick up their orders.</p>
   </div>
 
-  <div>
-    <span>Tonight Orders</span>
-    <strong id="historyOrderCount">0</strong>
-  </div>
+  <div id="pickupSpotStatsList" class="historySummary"></div>
 
-  <div>
-    <span>Last 7 Days Revenue</span>
-    <strong id="history7DayRevenue">$0.00</strong>
-  </div>
-
-  <div>
-    <span>Last 7 Days Tips</span>
-    <strong id="history7DayTips">$0.00</strong>
-  </div>
-
-<div class="historySummary">
-  <div>
-    <span>Tonight Bar Sales</span>
-    <strong id="historyRevenue">$0.00</strong>
-  </div>
-
-  <div>
-    <span>Tonight Tips</span>
-    <strong id="historyTips">$0.00</strong>
-  </div>
-
-  <div>
-    <span>Tonight Orders</span>
-    <strong id="historyOrderCount">0</strong>
-  </div>
-</div>
-
-<h2 style="margin-top: 24px;">Pickup Spot Breakdown</h2>
-<p class="muted">See where customers are choosing to pick up their orders.</p>
-
-<div id="pickupSpotStatsList" class="historySummary"></div>
-
-
-
-<div id="historyList" class="ordersListFix"></div>
+  <div id="historyList" class="historyOrdersGrid"></div>
 </section>
 
 <section id="analyticsView" class="view">
@@ -2318,11 +2302,10 @@ if (completedOrders.length === 0) {
       item.innerHTML = `
         <div class="orderCard picked_up">
           <div class="orderHeader">
-            <div>
-              <div class="orderCode">#${clean(order.orderCode || docSnap.id)}</div>
-              <div class="orderStatusPill picked_up">completed</div>
-              <div class="orderAge">${clean(completedText)}</div>
-            </div>
+        <div>
+  <div class="orderCode">#${clean(order.orderCode || docSnap.id)}</div>
+  <div class="orderAge">${clean(completedText)}</div>
+</div>
 
            <div class="orderTotal">$${getOrderBarSales(order).toFixed(2)}</div>
           </div>
@@ -2343,10 +2326,9 @@ if (completedOrders.length === 0) {
     ${Array.isArray(order.items) ? order.items.length : 0} item types
   </div>
 
-  <div class="orderActions">
-    <button class="smallBtn historyPrintBtn">Print</button>
-    <span class="readyText">Completed</span>
-  </div>
+<div class="orderActions">
+  <button class="smallBtn historyPrintBtn">Print</button>
+</div>
 </div>
         </div>
       `;
