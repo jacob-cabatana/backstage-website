@@ -2012,7 +2012,7 @@ function renderPickupSpotStats(completedOrders) {
     }
 
     stats[spotName].count += 1;
-    stats[spotName].revenue += Number(order.total || 0);
+    stats[spotName].revenue += getOrderBarSales(order);
     stats[spotName].tips += Number(order.tip || 0);
   });
 
@@ -2091,8 +2091,24 @@ const completedOrders = snap.docs
         return bTime - aTime;
       });
 
+function getOrderBarSales(order) {
+  if (!Array.isArray(order.items)) {
+    return 0;
+  }
+
+  return order.items.reduce((sum, drink) => {
+    const quantity = Number(drink.quantity || 1);
+    const price = Number(drink.price || 0);
+    const lineTotal = Number(
+      drink.lineTotal ?? (price * quantity)
+    );
+
+    return sum + lineTotal;
+  }, 0);
+}
+
 const totalRevenue = completedOrders.reduce((sum, entry) => {
-  return sum + Number(entry.order.total || 0);
+  return sum + getOrderBarSales(entry.order);
 }, 0);
 
 const totalTips = completedOrders.reduce((sum, entry) => {
@@ -2144,7 +2160,7 @@ if (completedOrders.length === 0) {
               <div class="orderAge">${clean(completedText)}</div>
             </div>
 
-            <div class="orderTotal">$${Number(order.total || 0).toFixed(2)}</div>
+           <div class="orderTotal">$${getOrderBarSales(order).toFixed(2)}</div>
           </div>
 
 <div class="orderItemsCard">
