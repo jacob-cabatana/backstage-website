@@ -1693,26 +1693,28 @@ async function getCustomerName(order) {
   }
 }
 
+const PRINTER_SERVER_URL = "http://127.0.0.1:3001"
+
 async function printOrderReceipt(order) {
   try {
-const response = await fetch("http://10.0.0.34:3001/print-order", {
+    const response = await fetch(`${PRINTER_SERVER_URL}/print-order`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(order)
-    });
+    })
 
-    const result = await response.json();
- 
+    const result = await response.json()
+
     if (!response.ok) {
-      throw new Error(result.message || "Print failed");
+      throw new Error(result.error || result.message || "Print failed")
     }
 
-    console.log("Receipt printed:", result.message);
+    console.log("Receipt printed:", result.message)
   } catch (err) {
-    console.error("Print failed:", err);
-    alert("Could not print receipt. Make sure the Backstage Printer Server is running.");
+    console.error("Print failed:", err)
+    alert(`Could not print receipt:\n\n${err.message}`)
   }
 }
 
