@@ -580,13 +580,43 @@
   </div>
 
   <div>
-    <span>Tips</span>
+    <span>Tonight Tips</span>
     <strong id="historyTips">$0.00</strong>
   </div>
 
   <div>
-    <span>Completed Orders</span>
+    <span>Tonight Orders</span>
     <strong id="historyOrderCount">0</strong>
+  </div>
+
+  <div>
+    <span>Last 7 Days Revenue</span>
+    <strong id="history7DayRevenue">$0.00</strong>
+  </div>
+
+  <div>
+    <span>Last 7 Days Tips</span>
+    <strong id="history7DayTips">$0.00</strong>
+  </div>
+
+  <div>
+    <span>Last 7 Days Orders</span>
+    <strong id="history7DayOrderCount">0</strong>
+  </div>
+
+  <div>
+    <span>Last Month Revenue</span>
+    <strong id="historyMonthRevenue">$0.00</strong>
+  </div>
+
+  <div>
+    <span>Last Month Tips</span>
+    <strong id="historyMonthTips">$0.00</strong>
+  </div>
+
+  <div>
+    <span>Last Month Orders</span>
+    <strong id="historyMonthOrderCount">0</strong>
   </div>
 </div>
 
@@ -761,6 +791,14 @@ const customerNameCache = {};
     const historyRevenue = document.getElementById("historyRevenue");
     const historyTips = document.getElementById("historyTips");
     const historyOrderCount = document.getElementById("historyOrderCount");
+
+    const history7DayRevenue = document.getElementById("history7DayRevenue");
+    const history7DayTips = document.getElementById("history7DayTips");
+    const history7DayOrderCount = document.getElementById("history7DayOrderCount");
+
+    const historyMonthRevenue = document.getElementById("historyMonthRevenue");
+    const historyMonthTips = document.getElementById("historyMonthTips");
+    const historyMonthOrderCount = document.getElementById("historyMonthOrderCount");
     const pickupSpotStatsList = document.getElementById("pickupSpotStatsList");
 
     const audienceCount = document.getElementById("audienceCount");
@@ -1933,6 +1971,38 @@ function getTonightStartSeconds() {
   return Math.floor(start.getTime() / 1000);
 }
 
+function getDaysAgoStartSeconds(daysAgo) {
+  const start = new Date();
+
+  start.setDate(start.getDate() - daysAgo);
+  start.setHours(0, 0, 0, 0);
+
+  return Math.floor(start.getTime() / 1000);
+}
+
+function getLastMonthStartSeconds() {
+  const start = new Date();
+
+  start.setMonth(start.getMonth() - 1);
+  start.setHours(0, 0, 0, 0);
+
+  return Math.floor(start.getTime() / 1000);
+}
+
+function calculateOrderStats(orders) {
+  return orders.reduce((stats, entry) => {
+    stats.revenue += getOrderBarSales(entry.order);
+    stats.tips += Number(entry.order.tip || 0);
+    stats.count += 1;
+
+    return stats;
+  }, {
+    revenue: 0,
+    tips: 0,
+    count: 0
+  });
+}
+
 function watchAudience() {
   if (!userId) return;
 
@@ -2107,18 +2177,38 @@ function getOrderBarSales(order) {
   }, 0);
 }
 
-const totalRevenue = completedOrders.reduce((sum, entry) => {
-  return sum + getOrderBarSales(entry.order);
-}, 0);
+const tonightOrders = completedOrders.filter(entry =>
+  entry.completedSeconds >= tonightStartSeconds
+);
 
-const totalTips = completedOrders.reduce((sum, entry) => {
-  return sum + Number(entry.order.tip || 0);
-}, 0);
+const last7DayStartSeconds = getDaysAgoStartSeconds(7);
+const lastMonthStartSeconds = getLastMonthStartSeconds();
 
-historyRevenue.textContent = `$${totalRevenue.toFixed(2)}`;
-historyTips.textContent = `$${totalTips.toFixed(2)}`;
-historyOrderCount.textContent = completedOrders.length;
-renderPickupSpotStats(completedOrders);
+const last7DayOrders = completedOrders.filter(entry =>
+  entry.completedSeconds >= last7DayStartSeconds
+);
+
+const lastMonthOrders = completedOrders.filter(entry =>
+  entry.completedSeconds >= lastMonthStartSeconds
+);
+
+const tonightStats = calculateOrderStats(tonightOrders);
+const last7DayStats = calculateOrderStats(last7DayOrders);
+const lastMonthStats = calculateOrderStats(lastMonthOrders);
+
+historyRevenue.textContent = `$${tonightStats.revenue.toFixed(2)}`;
+historyTips.textContent = `$${tonightStats.tips.toFixed(2)}`;
+historyOrderCount.textContent = tonightStats.count;
+
+history7DayRevenue.textContent = `$${last7DayStats.revenue.toFixed(2)}`;
+history7DayTips.textContent = `$${last7DayStats.tips.toFixed(2)}`;
+history7DayOrderCount.textContent = last7DayStats.count;
+
+historyMonthRevenue.textContent = `$${lastMonthStats.revenue.toFixed(2)}`;
+historyMonthTips.textContent = `$${lastMonthStats.tips.toFixed(2)}`;
+historyMonthOrderCount.textContent = lastMonthStats.count;
+
+renderPickupSpotStats(tonightOrders);
 
 if (completedOrders.length === 0) {
   historyList.innerHTML = `<div class="empty">No completed orders yet.</div>`;
