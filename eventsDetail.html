@@ -41,6 +41,17 @@
       background: #000;
     }
 
+    html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
     #event-detail {
       width: 100%;
       min-height: 100vh;
@@ -214,24 +225,28 @@
       font-weight: 500;
     }
 
-    .secure-ticket-button {
-      width: 100%;
-      min-height: 50px;
-      border: 0;
-      border-radius: 999px;
-      background: var(--button);
-      color: var(--button-text);
-      font-size: 13px;
-      font-weight: 750;
-      letter-spacing: 0.01em;
-      cursor: pointer;
-      text-transform: none;
-      transition: transform 0.16s ease, opacity 0.16s ease;
-    }
+.secure-ticket-button {
+  width: 100%;
+  min-height: 50px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) border-box;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-transform: none;
+  transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.22);
+}
 
-    .secure-ticket-button:hover {
-      opacity: 0.94;
-    }
+.secure-ticket-button:hover {
+  opacity: 1;
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.28);
+}
 
     .secure-ticket-button:active {
       transform: scale(0.985);
@@ -422,6 +437,8 @@
   .detail-main {
     padding: 22px 16px 0;
   }
+
+  
 }
   </style>
 </head>
