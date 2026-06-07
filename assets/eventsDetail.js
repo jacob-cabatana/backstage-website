@@ -127,6 +127,18 @@ function resolveTitle(event) {
   );
 }
 
+function resolveHostImageUrl(event) {
+  return (
+    event.hostPhotoUrl ||
+    event.hostPhotoURL ||
+    event.hostProfileImage ||
+    event.hostProfileImageUrl ||
+    event.hostImageUrl ||
+    event.hostAvatar ||
+    ""
+  );
+}
+
 function resolveLocation(event) {
   return (
     event.locationName ||
@@ -167,15 +179,6 @@ function resolveHost(event) {
     event.organizerName ||
     event.presentedBy ||
     "Backstage"
-  );
-}
-
-function resolveCategory(event) {
-  return (
-    event.category ||
-    event.eventCategory ||
-    event.type ||
-    "Event"
   );
 }
 
@@ -306,7 +309,7 @@ function renderEvent(event) {
   const description = resolveDescription(event);
   const imageUrl = resolveImageUrl(event);
   const host = resolveHost(event);
-  const category = resolveCategory(event);
+  const hostImageUrl = resolveHostImageUrl(event);
   const ageRequirement = resolveAgeRequirement(event);
   const priceLabel = resolveStartingPrice(event);
 
@@ -317,24 +320,48 @@ function renderEvent(event) {
       <section class="detail-hero">
         ${
           imageUrl
-            ? `<img src="${escapeHTML(imageUrl)}" class="detail-image" alt="${escapeHTML(title)}" />`
+            ? `
+              <img
+                src="${escapeHTML(imageUrl)}"
+                class="detail-image"
+                alt="${escapeHTML(title)}"
+              />
+            `
             : `<div class="detail-image-fallback" aria-label="${escapeHTML(title)}"></div>`
         }
       </section>
 
       <main class="detail-main">
         <h1 class="event-title">${escapeHTML(title)}</h1>
-        <p class="event-host">${escapeHTML(host)}</p>
+
+        <div class="event-host-row">
+          ${
+            hostImageUrl
+              ? `
+                <div class="host-avatar-ring">
+                  <img
+                    src="${escapeHTML(hostImageUrl)}"
+                    class="host-avatar"
+                    alt="${escapeHTML(host)}"
+                  />
+                </div>
+              `
+              : ``
+          }
+
+          <p class="event-host">${escapeHTML(host)}</p>
+        </div>
+
         <p class="event-date-line">${escapeHTML(formattedDate)}</p>
 
         <div class="quick-info">
           <div class="info-line">
-            <span class="info-icon">•</span>
-            <span>${escapeHTML(category)}</span>
-          </div>
+            <span class="info-icon-svg" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="presentation">
+                <path d="M12 22s7-6.2 7-13a7 7 0 1 0-14 0c0 6.8 7 13 7 13zm0-9.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"></path>
+              </svg>
+            </span>
 
-          <div class="info-line">
-            <span class="info-icon">📍</span>
             <span>${escapeHTML(location)}</span>
           </div>
         </div>
@@ -380,7 +407,7 @@ function renderEvent(event) {
         </div>
 
         <button class="secure-ticket-button secure-ticket-action" type="button">
-        Secure Now
+          Secure Now
         </button>
       </div>
     </div>
