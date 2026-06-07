@@ -33,6 +33,12 @@ const eventId = params.get("id");
 
 const container = document.getElementById("checkout-event");
 const genderPrompt = document.getElementById("gender-prompt");
+const hero = document.getElementById("checkout-hero");
+const heroImage = document.getElementById("checkout-hero-image");
+const heroTitle = document.getElementById("hero-title");
+const heroDate = document.getElementById("hero-date");
+const heroLocation = document.getElementById("hero-location");
+const bottomTotal = document.getElementById("bottom-total");
 
 let currentUser = null;
 let activePhase = null;
@@ -164,6 +170,83 @@ function formatMoney(value) {
   return `$${Number(value || 0).toFixed(2)}`;
 }
 
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function firstValue(...values) {
+  return values.find((value) => {
+    if (value === undefined || value === null) return false;
+    if (typeof value === "string") return value.trim().length > 0;
+    return true;
+  });
+}
+
+function formatEventDate(event) {
+  const raw = firstValue(
+    event.startDate,
+    event.date,
+    event.eventDate,
+    event.startTime,
+    event.startsAt,
+    event.timestamp
+  );
+  const parsed = parseFirestoreDate(raw);
+
+  if (!parsed) return "Date TBA";
+
+  return parsed.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function formatEventLocation(event) {
+  return firstValue(
+    event.venueName,
+    event.locationName,
+    event.locationTitle,
+    event.address,
+    event.location,
+    event.venue,
+    "Venue TBA"
+  );
+}
+
+function getEventImageURL(event) {
+  return firstValue(
+    event.imageURL,
+    event.flyerURL,
+    event.coverImageURL,
+    event.photoURL,
+    event.posterURL,
+    event.imageUrl,
+    event.flyerUrl
+  );
+}
+
+function hydrateHero(event) {
+  const title = firstValue(event.title, event.name, "Backstage tickets");
+  const imageURL = getEventImageURL(event);
+
+  if (heroTitle) heroTitle.textContent = title;
+  if (heroDate) heroDate.textContent = formatEventDate(event);
+  if (heroLocation) heroLocation.textContent = formatEventLocation(event);
+  document.title = `${title} | Backstage`;
+
+  if (imageURL && heroImage && hero) {
+    heroImage.src = imageURL;
+    heroImage.hidden = false;
+    hero.classList.remove("is-empty");
+  }
+}
+
 async function trackCheckoutStart() {
   if (!eventId) return;
 
@@ -191,9 +274,10 @@ async function loadCheckout() {
     return;
   }
 
-const event = docSnap.data();
-activePhase = getActivePhase(event.ticketPhases || []);
-await trackCheckoutStart();
+  const event = docSnap.data();
+  hydrateHero(event);
+  activePhase = getActivePhase(event.ticketPhases || []);
+  await trackCheckoutStart();
 
   let freeHTML = "";
 
@@ -266,12 +350,12 @@ await trackCheckoutStart();
       <div class="price-card"
         data-ticket-type="men"
         data-price="${malePrice}"
-        data-phase-name="${activePhase?.name || ""}">
+        data-phase-name="${escapeHTML(activePhase?.name || "")}">
 
         <h3>Male Ticket</h3>
-        <p class="phase-label">${activePhase?.name || ""}</p>
-        <p class="phase-timer">${getPhaseCountdown(activePhase)}</p>
-        <p class="price-label">Price: ${formatMoney(maleAllIn)}</p>
+        <p class="phase-label">${escapeHTML(activePhase?.name || "")}</p>
+        <p class="phase-timer">${escapeHTML(getPhaseCountdown(activePhase))}</p>
+        <p class="price-label">Price: ${formatMoney(maleAllIn)} All-In</p>
 
         <div class="quantity-controls">
           <button class="minus">−</button>
@@ -283,12 +367,12 @@ await trackCheckoutStart();
       <div class="price-card"
         data-ticket-type="women"
         data-price="${femalePrice}"
-        data-phase-name="${activePhase?.name || ""}">
+        data-phase-name="${escapeHTML(activePhase?.name || "")}">
 
         <h3>Female Ticket</h3>
-        <p class="phase-label">${activePhase?.name || ""}</p>
-        <p class="phase-timer">${getPhaseCountdown(activePhase)}</p>
-        <p class="price-label">Price: ${formatMoney(femaleAllIn)}</p>
+        <p class="phase-label">${escapeHTML(activePhase?.name || "")}</p>
+        <p class="phase-timer">${escapeHTML(getPhaseCountdown(activePhase))}</p>
+        <p class="price-label">Price: ${formatMoney(femaleAllIn)} All-In</p>
 
         <div class="quantity-controls">
           <button class="minus">−</button>
@@ -302,7 +386,12 @@ await trackCheckoutStart();
   container.innerHTML = `
     <div class="checkout-card">
       <div class="event-header">
-        <h2>${event.title}</h2>
+        <h2>${escapeHTML(event.title || "Event")}</h2>
+        <p class="event-subhead">Choose your ticket type below</p>
+      </div>
+
+      <div>
+        <h3 class="section-label">Tickets</h3>
         <p class="event-subhead">Choose your ticket type below</p>
       </div>
 
@@ -310,7 +399,7 @@ await trackCheckoutStart();
       ${pricingHTML}
 
       <div id="global-total" class="global-total">
-        Total: $0.00
+        Total: $0.00 All In
       </div>
     </div>
   `;
@@ -447,10 +536,15 @@ function updateTotalFromVisibleCards() {
     }
   });
 
+  const totalText = `$${total.toFixed(2)}`;
   const totalEl = document.getElementById("global-total");
 
   if (totalEl) {
-    totalEl.innerText = `Total: $${total.toFixed(2)} All In`;
+    totalEl.innerText = `Total: ${totalText} All In`;
+  }
+
+  if (bottomTotal) {
+    bottomTotal.innerText = totalText;
   }
 }
 
