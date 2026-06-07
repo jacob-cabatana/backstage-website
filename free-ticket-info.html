@@ -540,8 +540,12 @@
   </div>
   
 
- <script>
+<script>
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
   function showAppSheet() {
+    if (isAndroid) return;
+
     const sheet = document.getElementById("appSheetOverlay");
     if (!sheet) return;
 
@@ -558,8 +562,24 @@
   }
 
   function openBackstageApp() {
+    if (isAndroid) return;
+
     window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!isAndroid) return;
+
+    const appStoreButton = document.querySelector(".app-store-button");
+    if (appStoreButton) {
+      appStoreButton.remove();
+    }
+
+    const appSheet = document.getElementById("appSheetOverlay");
+    if (appSheet) {
+      appSheet.remove();
+    }
+  });
 </script>
 
 <script type="module" src="assets/free-ticket-info.js"></script>

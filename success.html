@@ -11,7 +11,7 @@
 <body>
   <div class="page-shell">
 
-    <div id="appSheetOverlay" class="app-sheet-overlay">
+    <div id="appSheetOverlay" class="app-sheet-overlay hidden">
       <div class="app-sheet">
         <button class="app-sheet-close" onclick="closeAppSheet()" aria-label="Close">
           ×
@@ -51,27 +51,59 @@
     </main>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get("session_id");
+<script>
+  const isAndroid = /Android/i.test(navigator.userAgent);
 
-    if (!sessionId) {
-      document.getElementById("message").innerText =
-        "Missing session. Please check your email.";
-    } else {
-      fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId })
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("VERIFY RESPONSE:", data);
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("session_id");
 
-        if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
-          document.getElementById("message").innerHTML = `
-            <div id="tickets-container" class="codes"></div>
+  function showAppSheet() {
+    if (isAndroid) return;
 
+    const sheet = document.getElementById("appSheetOverlay");
+    if (!sheet) return;
+
+    sheet.classList.remove("hidden");
+  }
+
+  function closeAppSheet() {
+    const sheet = document.getElementById("appSheetOverlay");
+    if (!sheet) return;
+
+    sheet.classList.add("hidden");
+  }
+
+  function openBackstageApp() {
+    if (isAndroid) return;
+
+    window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
+  }
+
+  if (isAndroid) {
+    const sheet = document.getElementById("appSheetOverlay");
+    if (sheet) {
+      sheet.remove();
+    }
+  }
+
+  if (!sessionId) {
+    document.getElementById("message").innerText =
+      "Missing session. Please check your email.";
+  } else {
+    fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("VERIFY RESPONSE:", data);
+
+      if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
+        document.getElementById("message").innerHTML = `
+          <div id="tickets-container" class="codes"></div>
+
+          ${isAndroid ? "" : `
             <p>
               Want it saved inside BCKSTGE? Download the app and claim it there.
             </p>
@@ -87,57 +119,50 @@
                 alt="Download on the App Store"
               />
             </a>
-          `;
+          `}
+        `;
 
-          const ticketsContainer = document.getElementById("tickets-container");
+        const ticketsContainer = document.getElementById("tickets-container");
 
-          data.tickets.forEach((ticket) => {
-            const wrapper = document.createElement("div");
-            wrapper.className = "ticket-card";
+        data.tickets.forEach((ticket) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "ticket-card";
 
-            const qrImg = document.createElement("img");
+          const qrImg = document.createElement("img");
 
-            qrImg.src =
-              "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
-              encodeURIComponent(ticket.qrPayload);
+          qrImg.src =
+            "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+            encodeURIComponent(ticket.qrPayload);
 
-            qrImg.onerror = () => {
-              console.error("QR image failed to load:", qrImg.src);
-            };
+          qrImg.onerror = () => {
+            console.error("QR image failed to load:", qrImg.src);
+          };
 
-            qrImg.className = "qr-image";
+          qrImg.className = "qr-image";
 
-            wrapper.appendChild(qrImg);
-            ticketsContainer.appendChild(wrapper);
-          });
-        } else {
-          document.getElementById("message").innerText =
-            "Finalizing your ticket… this may take a moment.";
+          wrapper.appendChild(qrImg);
+          ticketsContainer.appendChild(wrapper);
+        });
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        }
-      })
-      .catch((err) => {
-        console.error("SUCCESS PAGE ERROR:", err);
-
+        setTimeout(() => {
+          showAppSheet();
+        }, 700);
+      } else {
         document.getElementById("message").innerText =
-          "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
-      });
-    }
+          "Finalizing your ticket… this may take a moment.";
 
-    function closeAppSheet() {
-      const sheet = document.getElementById("appSheetOverlay");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    })
+    .catch((err) => {
+      console.error("SUCCESS PAGE ERROR:", err);
 
-      if (!sheet) return;
-
-      sheet.classList.add("hidden");
-    }
-
-    function openBackstageApp() {
-      window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
-    }
-  </script>
+      document.getElementById("message").innerText =
+        "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
+    });
+  }
+</script>
 </body>
 </html>
