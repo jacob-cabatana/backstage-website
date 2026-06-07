@@ -7,46 +7,55 @@
   <link rel="stylesheet" href="assets/styles.css" />
 
   <style>
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #000000;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 60px 16px;
-  color: white;
-  overflow-y: auto;
-}
-
-    .free-container {
-      width: 100%;
-      max-width: 420px;
-      padding: 36px 26px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 24px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 60px 16px;
+      color: white;
+      overflow-y: auto;
     }
 
-    .free-container {
-  display: flex;
-  flex-direction: column;
-}
+    .page {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
 
-    h1 {
+    .card {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px 10px;
+      background: transparent;
+      border: none;
+      backdrop-filter: none;
+      box-shadow: none;
+      text-align: center;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    h2 {
       margin: 0;
       font-size: 24px;
-      text-align: center;
-      font-weight: 600;
+      font-weight: 800;
+      letter-spacing: -0.4px;
     }
 
     .subtitle {
-      margin: 8px 0 32px;
+      margin: 10px 0 32px;
       text-align: center;
       font-size: 14px;
       color: rgba(255,255,255,0.65);
+      font-weight: 500;
     }
 
     .form {
@@ -56,67 +65,67 @@ body {
     }
 
     .photo-picker {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
-}
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
 
-.photo-circle {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background:
-    linear-gradient(#000, #000) padding-box,
-    linear-gradient(135deg, #9c4ff2, #225cda) border-box;
-  border: 2px solid transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-}
+    .photo-circle {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background:
+        linear-gradient(#000, #000) padding-box,
+        linear-gradient(135deg, #9c4ff2, #225cda) border-box;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
 
-.photo-circle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: none;
-  pointer-events: none;
-}
+    .photo-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      pointer-events: none;
+    }
 
-.photo-plus {
-  font-size: 36px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.6);
-  position: absolute;
-  pointer-events: none;
-}
+    .photo-plus {
+      font-size: 36px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      position: absolute;
+      pointer-events: none;
+    }
 
-#profile-photo {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-}
+    #profile-photo {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
 
     .name-row {
       display: flex;
       gap: 12px;
     }
 
-.form input {
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.08);
-  color: white;
-  font-size: 16px;
-  outline: none;
-  transition: 0.2s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
+    .form input {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
     .form input::placeholder {
       color: rgba(255,255,255,0.6);
@@ -128,37 +137,38 @@ body {
       box-shadow: 0 0 0 2px rgba(156,79,242,0.35);
     }
 
-#claim-free-button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 16px;
-  border-radius: 18px;
-  border: 2px solid transparent;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-  color: white;
+    #claim-free-button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      border: 2px solid transparent;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+      color: white;
 
-  background:
-    linear-gradient(#000, #000) padding-box,
-    linear-gradient(90deg, #9c4ff2, #225cda) border-box;
+      background:
+        linear-gradient(#000, #000) padding-box,
+        linear-gradient(90deg, #9c4ff2, #225cda) border-box;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-sizing: border-box;
+    }
 
     #claim-free-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-#claim-free-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(156,79,242,0.35);
-}
+    #claim-free-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(156,79,242,0.35);
+    }
 
     .btn-spinner {
       width: 18px;
@@ -182,273 +192,264 @@ body {
       to { transform: rotate(360deg); }
     }
 
-    .code-display {
-      margin-top: 30px;
-      padding: 20px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.08);
-      text-align: center;
+    .ticket-result {
       display: none;
+      margin-top: 28px;
+      animation: fadeUp 0.35s ease both;
     }
 
-    .code-display h2 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      color: rgba(255,255,255,0.75);
-      font-weight: 500;
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .acquire-code {
+    .success-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      background:
+        linear-gradient(#000, #000) padding-box,
+        linear-gradient(135deg, #9c4ff2, #225cda) border-box;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 4px;
+      font-weight: 900;
+    }
+
+    .ticket-ready-title {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .ticket-ready-subtitle {
+      margin: 8px auto 22px;
+      max-width: 300px;
+      color: rgba(255,255,255,0.64);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .qr-card {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 28px;
+      padding: 18px;
+      box-sizing: border-box;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    .qr-frame {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 14px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .qr-image {
+      display: block;
+      width: 240px;
+      height: 240px;
+      border-radius: 14px;
+    }
+
+    .ticket-meta {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ticket-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .ticket-label {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: rgba(255,255,255,0.42);
+    }
+
+    .ticket-code {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 2px;
       background: linear-gradient(90deg, #9c4ff2, #225cda);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-#copy-code-button {
-  width: 100%;
-  padding: 12px 0;
-  border-radius: 12px;
-  border: none;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: rgba(255,255,255,0.12);
-  color: white;
-  transition: 0.2s ease;
-}
-
-.acquire-code-column {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 10px;
-}
-
-
-#copy-code-button:hover {
-  background: rgba(255,255,255,0.2);
-}
-
-#copy-code-button.copied {
-  background: #2ecc71;
-  color: #0f0f14;
-}
-
-    .redeem-note {
-      margin-top: 12px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.6);
+    #copy-code-button {
+      margin-top: 14px;
+      width: 100%;
+      padding: 13px 0;
+      border-radius: 14px;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      transition: 0.2s ease;
     }
 
-.app-store-button {
-  width: 100%;
-  padding: 12px 0;
-  border-radius: 12px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  color: white;
-  background: linear-gradient(90deg, #9c4ff2, #225cda);
-  transition: 0.2s ease;
-}
+    #copy-code-button:hover {
+      background: rgba(255,255,255,0.2);
+    }
 
-.app-store-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(156,79,242,0.45);
-}
+    #copy-code-button.copied {
+      background: #2ecc71;
+      color: #0f0f14;
+    }
 
-.scroll-hint{
-  margin-top: 24px;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
+    .app-store-button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 14px 0;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      color: white;
+      background: linear-gradient(90deg, #9c4ff2, #225cda);
+      transition: 0.2s ease;
+      display: block;
+      box-sizing: border-box;
+    }
 
-.page{
-  min-height: 100vh;
-  display:flex;
-  flex-direction: column;
-  align-items:center;
-  justify-content:center;
-}
+    .app-store-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(156,79,242,0.45);
+    }
 
-.card{
-  width: 100%;
-  max-width: 420px;
-  padding: 34px 26px;
-  border-radius: 24px;
-  background: transparent;
-  border: none;
-  backdrop-filter: none;
-  box-shadow: none;
-  text-align: center;
-  position: relative;
-}
+    .door-note {
+      margin: 16px 0 0;
+      color: rgba(255,255,255,0.55);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
 
-.chevrons{
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+    @media (max-width: 420px) {
+      body {
+        padding: 40px 16px;
+      }
 
-.chevron{
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid white;
-  border-bottom: 2px solid white;
-  transform: rotate(45deg);
-  opacity: 0.8;
-  animation: chevronBounce 1.6s infinite;
-}
+      .name-row {
+        gap: 10px;
+      }
 
-@keyframes chevronBounce{
-  0%,100%{ transform: translateY(0) rotate(45deg); opacity: 0.4; }
-  50%{ transform: translateY(6px) rotate(45deg); opacity: 1; }
-}
-
-.how-to{
-  margin-top: 32px;
-  color: rgba(255,255,255,0.9);
-  text-align: left;
-}
-
-.how-to h3{
-  font-size: 16px;
-  font-weight: 800;
-  margin-bottom: 12px;
-}
-
-.how-to ol{
-  padding-left: 18px;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.how-to li{
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.75);
-}
-
-.video-section{
-  margin-top: 40px;
-  max-width: 320px;
-  width: 100%;
-}
+      .qr-image {
+        width: 220px;
+        height: 220px;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div class="page">
+    <div class="card">
 
-<div class="page">
+      <div id="form-section">
+        <h2>Claim Your Free Ticket</h2>
+        <p class="subtitle">Enter your details to receive your QR ticket</p>
 
-  <div class="card">
+        <div class="form">
+          <div class="photo-picker">
+            <label class="photo-circle">
+              <img id="profile-preview" />
+              <div class="photo-plus">+</div>
 
-    <h2>Claim Your Free Ticket</h2>
+              <input
+                id="profile-photo"
+                type="file"
+                accept="image/*"
+                required
+              />
+            </label>
+          </div>
 
-<div class="form">
+          <div class="name-row">
+            <input id="first-name" type="text" placeholder="First Name" />
+            <input id="last-name" type="text" placeholder="Last Name" />
+          </div>
 
-<div class="photo-picker">
-  <label class="photo-circle">
-    <img id="profile-preview" />
-    <div class="photo-plus">+</div>
+          <input id="email" type="email" placeholder="Email Address" />
 
-    <input
-      id="profile-photo"
-      type="file"
-      accept="image/*"
-      required
-    />
-  </label>
-</div>
+          <input
+            id="phone"
+            type="tel"
+            placeholder="Phone Number"
+            inputmode="tel"
+            autocomplete="tel"
+          />
+        </div>
 
-  <div class="name-row">
-    <input id="first-name" type="text" placeholder="First Name" />
-    <input id="last-name" type="text" placeholder="Last Name" />
-  </div>
-
-<input id="email" type="email" placeholder="Email Address" />
-
-<input
-  id="phone"
-  type="tel"
-  placeholder="Phone Number"
-  inputmode="tel"
-  autocomplete="tel"
-/>
-
-</div>
-
-    <button id="claim-free-button">
-      <span class="btn-text">Secure Ticket</span>
-      <span class="btn-spinner"></span>
-    </button>
-
-    <div class="code-display" id="code-display">
-      <h2>Your Free Ticket Code</h2>
-
-      <div class="acquire-code-column">
-        <div class="acquire-code" id="acquire-code">XXXXXXX</div>
-        <button id="copy-code-button">Copy</button>
-
-        <a
-          href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-          target="_blank"
-          rel="noopener"
-          class="app-store-button"
-        >
-          Download Backstage to access your ticket
-        </a>
+        <button id="claim-free-button" disabled>
+          <span class="btn-text">Get Free Ticket</span>
+          <span class="btn-spinner"></span>
+        </button>
       </div>
+
+      <div class="ticket-result" id="ticket-result">
+        <div class="success-icon">✓</div>
+
+        <h2 class="ticket-ready-title">Ticket Ready</h2>
+        <p class="ticket-ready-subtitle">
+          Show this QR code at the door. Your ticket is also linked to your phone number inside Backstage.
+        </p>
+
+        <div class="qr-card">
+          <div class="qr-frame">
+            <img id="ticket-qr" class="qr-image" alt="Ticket QR Code" />
+          </div>
+
+          <div class="ticket-meta">
+            <div class="ticket-name" id="ticket-name">Your Ticket</div>
+            <div class="ticket-label">Backup Code</div>
+            <div class="ticket-code" id="ticket-code">XXXX - XXX</div>
+          </div>
+
+          <button id="copy-code-button">Copy Backup Code</button>
+
+          <a
+            href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+            target="_blank"
+            rel="noopener"
+            class="app-store-button"
+          >
+            Download Backstage
+          </a>
+
+          <p class="door-note">
+            Screenshot this QR code just in case your connection is slow at the door.
+          </p>
+        </div>
+      </div>
+
     </div>
-
   </div>
 
-  <div class="scroll-hint" id="scroll-hint" style="display:none;">
-    <span>Scroll down</span>
-    <div class="chevrons">
-      <div class="chevron"></div>
-      <div class="chevron"></div>
-      <div class="chevron"></div>
-    </div>
-  </div>
-
-  <div class="how-to" id="how-to" style="display:none;">
-    <h3>How to claim your ticket in Backstage</h3>
-    <ol>
-      <li>Download the Backstage app</li>
-      <li>From the Home Feed, tap the Ticket view</li>
-      <li>Tap <strong>Claim Ticket</strong></li>
-      <li>Enter your code and tap <strong>Submit</strong></li>
-    </ol>
-  </div>
-
-  <div class="video-section" id="video-section" style="display:none;">
-    <video
-      id="redeemVideo"
-      playsinline
-      muted
-      loop
-      preload="metadata"
-      style="width:100%; max-height:500px; border-radius:24px;"
-    >
-      <source src="/assets/HowToClaim.mp4" type="video/mp4">
-    </video>
-  </div>
-
-</div>
-
-<script type="module" src="assets/free-ticket-info.js"></script>
-
+  <script type="module" src="assets/free-ticket-info.js"></script>
 </body>
 </html>

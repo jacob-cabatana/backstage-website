@@ -35,6 +35,7 @@ const ticketType = params.get("type");
 console.log("partyId:", partyId);
 console.log("ticketType:", ticketType);
 
+const formSection = document.getElementById("form-section");
 const firstNameInput = document.getElementById("first-name");
 const lastNameInput = document.getElementById("last-name");
 const emailInput = document.getElementById("email");
@@ -44,11 +45,14 @@ const photoPreview = document.getElementById("profile-preview");
 const photoPlus = document.querySelector(".photo-plus");
 const button = document.getElementById("claim-free-button");
 
-const codeDisplay = document.getElementById("code-display");
-const codeEl = document.getElementById("acquire-code");
+const ticketResult = document.getElementById("ticket-result");
+const ticketQr = document.getElementById("ticket-qr");
+const ticketName = document.getElementById("ticket-name");
+const ticketCode = document.getElementById("ticket-code");
 const copyButton = document.getElementById("copy-code-button");
 
 let profilePhotoFile = null;
+let currentRawCode = "";
 
 if (!partyId || !ticketType) {
   alert("Missing ticket information.");
@@ -70,6 +74,25 @@ function formatPhoneNumber(value) {
 
 function getPhoneDigits() {
   return phoneInput.value.replace(/\D/g, "");
+}
+
+function formatAcquireCode(code) {
+  if (!code) return "";
+
+  const cleanCode = String(code).replace(/\s/g, "");
+
+  if (cleanCode.length <= 4) {
+    return cleanCode;
+  }
+
+  return cleanCode.slice(0, 4) + " - " + cleanCode.slice(4);
+}
+
+function buildQrUrl(qrPayload) {
+  return (
+    "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+    encodeURIComponent(qrPayload)
+  );
 }
 
 function validateForm() {
@@ -154,78 +177,81 @@ button.addEventListener("click", async () => {
 
     const data = result.data;
 
-    if (data && data.acquireCode) {
-      const acquireCode = data.acquireCode;
-
-      const photoRef = ref(
-        storage,
-        `ticketProfiles/${partyId}/${acquireCode}.jpg`
-      );
-
-      try {
-        await uploadBytes(photoRef, profilePhotoFile);
-      } catch (e) {
-        console.error(e);
-        alert("Photo upload failed. Please try again.");
-        button.classList.remove("loading");
-        button.disabled = false;
-        return;
-      }
-
-      const downloadURL = await getDownloadURL(photoRef);
-
-      const attachRes = await fetch(
-        "https://us-central1-backstageapp-27cb3.cloudfunctions.net/attachTicketPhoto",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            partyId,
-            acquireCode,
-            photoURL: downloadURL
-          })
-        }
-      );
-
-      if (!attachRes.ok) {
-        console.warn("Photo attached request failed:", attachRes.status);
-      }
-
-      const rawCode = data.acquireCode;
-      const formattedCode = rawCode.slice(0, 4) + " - " + rawCode.slice(4);
-
-      codeEl.innerText = formattedCode;
-      codeDisplay.style.display = "block";
-
-      document.getElementById("scroll-hint").style.display = "flex";
-      document.getElementById("how-to").style.display = "block";
-      document.getElementById("video-section").style.display = "block";
-
-      copyButton.onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(rawCode);
-
-          copyButton.innerText = "Copied";
-          copyButton.classList.add("copied");
-
-          setTimeout(() => {
-            copyButton.innerText = "Copy";
-            copyButton.classList.remove("copied");
-          }, 2000);
-        } catch (e) {
-          alert("Unable to copy code.");
-        }
-      };
-
-      document.querySelector(".form").style.display = "none";
-      button.style.display = "none";
-    } else {
+    if (!data || !data.acquireCode) {
       alert("Unexpected response from server.");
       button.classList.remove("loading");
       button.disabled = false;
+      return;
     }
+
+    const acquireCode = data.acquireCode;
+
+    const photoRef = ref(
+      storage,
+      `ticketProfiles/${partyId}/${acquireCode}.jpg`
+    );
+
+    try {
+      await uploadBytes(photoRef, profilePhotoFile);
+    } catch (e) {
+      console.error(e);
+      alert("Photo upload failed. Please try again.");
+      button.classList.remove("loading");
+      button.disabled = false;
+      return;
+    }
+
+    const downloadURL = await getDownloadURL(photoRef);
+
+    const attachRes = await fetch(
+      "https://us-central1-backstageapp-27cb3.cloudfunctions.net/attachTicketPhoto",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          partyId,
+          acquireCode,
+          photoURL: downloadURL
+        })
+      }
+    );
+
+    if (!attachRes.ok) {
+      console.warn("Photo attach request failed:", attachRes.status);
+    }
+
+    const qrPayload =
+      data.qrPayload ||
+      data.ticket?.qrPayload ||
+      acquireCode;
+
+    const displayCode =
+      data.displayCode ||
+      data.ticket?.displayCode ||
+      formatAcquireCode(acquireCode);
+
+    currentRawCode = acquireCode;
+
+    ticketQr.src = buildQrUrl(qrPayload);
+
+    ticketQr.onerror = () => {
+      console.error("QR image failed to load:", ticketQr.src);
+      alert("Ticket created, but the QR code failed to load. Please refresh.");
+    };
+
+    ticketName.innerText = `${firstName} ${lastName}`;
+    ticketCode.innerText = displayCode;
+
+    formSection.style.display = "none";
+    ticketResult.style.display = "block";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
   } catch (error) {
     console.error(error);
 
@@ -246,19 +272,20 @@ button.addEventListener("click", async () => {
   }
 });
 
-const video = document.getElementById("redeemVideo");
+copyButton.onclick = async () => {
+  if (!currentRawCode) return;
 
-if (video) {
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        video.play();
-      }
-    },
-    {
-      threshold: 0.6
-    }
-  );
+  try {
+    await navigator.clipboard.writeText(currentRawCode);
 
-  observer.observe(video);
-}
+    copyButton.innerText = "Copied!";
+    copyButton.classList.add("copied");
+
+    setTimeout(() => {
+      copyButton.innerText = "Copy Backup Code";
+      copyButton.classList.remove("copied");
+    }, 2000);
+  } catch (e) {
+    alert("Unable to copy code.");
+  }
+};
