@@ -225,12 +225,6 @@
       font-weight: 900;
     }
 
-    .ticket-ready-title {
-      margin: 0;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-    }
 
     .ticket-ready-subtitle {
       margin: 8px auto 22px;
@@ -241,15 +235,15 @@
       line-height: 1.45;
     }
 
-    .qr-card {
-      width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 28px;
-      padding: 18px;
-      box-sizing: border-box;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
+.qr-card {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+}
 
     .qr-frame {
       background: #ffffff;
@@ -280,45 +274,6 @@
       color: white;
     }
 
-    .ticket-label {
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: rgba(255,255,255,0.42);
-    }
-
-    .ticket-code {
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      background: linear-gradient(90deg, #9c4ff2, #225cda);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    #copy-code-button {
-      margin-top: 14px;
-      width: 100%;
-      padding: 13px 0;
-      border-radius: 14px;
-      border: none;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      background: rgba(255,255,255,0.12);
-      color: white;
-      transition: 0.2s ease;
-    }
-
-    #copy-code-button:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    #copy-code-button.copied {
-      background: #2ecc71;
-      color: #0f0f14;
-    }
 
     .app-store-button {
       margin-top: 12px;
@@ -341,13 +296,134 @@
       box-shadow: 0 16px 40px rgba(156,79,242,0.45);
     }
 
-    .door-note {
-      margin: 16px 0 0;
-      color: rgba(255,255,255,0.55);
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.45;
-    }
+    .app-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(14px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.app-sheet-overlay.show {
+  display: flex;
+}
+
+.app-sheet-overlay.hidden {
+  display: none;
+}
+
+.app-sheet {
+  width: 100%;
+  max-width: 420px;
+  padding: 42px 22px 22px;
+  border-radius: 28px;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.65);
+  text-align: center;
+  position: relative;
+  animation: sheetUp 0.28s ease both;
+}
+
+@keyframes sheetUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-sheet-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 24px;
+  line-height: 34px;
+  cursor: pointer;
+}
+
+.app-sheet h2 {
+  margin: 8px 0 10px;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+}
+
+.app-sheet p {
+  margin: 0 auto 22px;
+  max-width: 310px;
+  color: rgba(255,255,255,0.68);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.app-sheet-button {
+  width: 100%;
+  padding: 15px 0;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(90deg, #9c4ff2, #225cda);
+  color: white;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.app-sheet-link {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.68);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-sheet-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+
+  border-radius: 50% !important;
+  border: none !important;
+
+  background: rgba(255,255,255,0.10) !important;
+  color: white !important;
+
+  font-size: 22px !important;
+  font-weight: 700;
+  line-height: 34px;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: none !important;
+  transform: none !important;
+}
 
     @media (max-width: 420px) {
       body {
@@ -369,6 +445,28 @@
 <body>
   <div class="page">
     <div class="card">
+
+      <div id="appSheetOverlay" class="app-sheet-overlay">
+  <div class="app-sheet">
+    <button class="app-sheet-close" onclick="closeAppSheet()" aria-label="Close">
+      ×
+    </button>
+
+    <h2>Download BCKSTGE</h2>
+
+    <p>
+      Your ticket is ready. Download BCKSTGE to save it in the app and see who’s going.
+    </p>
+
+    <button class="app-sheet-button" onclick="openBackstageApp()">
+      Get BCKSTGE
+    </button>
+
+    <button class="app-sheet-link" onclick="closeAppSheet()">
+      Continue on web
+    </button>
+  </div>
+</div>
 
       <div id="form-section">
         <h2>Claim Your Free Ticket</h2>
@@ -414,7 +512,6 @@
       <div class="ticket-result" id="ticket-result">
         <div class="success-icon">✓</div>
 
-        <h2 class="ticket-ready-title">Ticket Ready</h2>
   
 
         <div class="qr-card">
@@ -422,13 +519,9 @@
             <img id="ticket-qr" class="qr-image" alt="Ticket QR Code" />
           </div>
 
-          <div class="ticket-meta">
-            <div class="ticket-name" id="ticket-name">Your Ticket</div>
-            <div class="ticket-label">Backup Code</div>
-            <div class="ticket-code" id="ticket-code">XXXX - XXX</div>
-          </div>
-
-          <button id="copy-code-button">Copy Backup Code</button>
+<div class="ticket-meta">
+  <div class="ticket-name" id="ticket-name">Your Ticket</div>
+</div>
 
           <a
             href="https://apps.apple.com/us/app/backstage-events/id6751863780"
@@ -439,15 +532,36 @@
             Download Backstage
           </a>
 
-          <p class="door-note">
-            Screenshot this QR code just in case your connection is slow at the door.
-          </p>
+    
         </div>
       </div>
 
     </div>
   </div>
+  
 
-  <script type="module" src="assets/free-ticket-info.js"></script>
+ <script>
+  function showAppSheet() {
+    const sheet = document.getElementById("appSheetOverlay");
+    if (!sheet) return;
+
+    sheet.classList.remove("hidden");
+    sheet.classList.add("show");
+  }
+
+  function closeAppSheet() {
+    const sheet = document.getElementById("appSheetOverlay");
+    if (!sheet) return;
+
+    sheet.classList.remove("show");
+    sheet.classList.add("hidden");
+  }
+
+  function openBackstageApp() {
+    window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
+  }
+</script>
+
+<script type="module" src="assets/free-ticket-info.js"></script>
 </body>
 </html>

@@ -48,11 +48,8 @@ const button = document.getElementById("claim-free-button");
 const ticketResult = document.getElementById("ticket-result");
 const ticketQr = document.getElementById("ticket-qr");
 const ticketName = document.getElementById("ticket-name");
-const ticketCode = document.getElementById("ticket-code");
-const copyButton = document.getElementById("copy-code-button");
 
 let profilePhotoFile = null;
-let currentRawCode = "";
 
 if (!partyId || !ticketType) {
   alert("Missing ticket information.");
@@ -232,7 +229,6 @@ button.addEventListener("click", async () => {
       data.ticket?.displayCode ||
       formatAcquireCode(acquireCode);
 
-    currentRawCode = acquireCode;
 
     ticketQr.src = buildQrUrl(qrPayload);
 
@@ -242,15 +238,20 @@ button.addEventListener("click", async () => {
     };
 
     ticketName.innerText = `${firstName} ${lastName}`;
-    ticketCode.innerText = displayCode;
 
-    formSection.style.display = "none";
-    ticketResult.style.display = "block";
+formSection.style.display = "none";
+ticketResult.style.display = "block";
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+window.scrollTo({
+  top: 0,
+  behavior: "smooth"
+});
+
+setTimeout(() => {
+  if (typeof window.showAppSheet === "function") {
+    window.showAppSheet();
+  }
+}, 700);
 
   } catch (error) {
     console.error(error);
@@ -271,21 +272,3 @@ button.addEventListener("click", async () => {
     button.disabled = false;
   }
 });
-
-copyButton.onclick = async () => {
-  if (!currentRawCode) return;
-
-  try {
-    await navigator.clipboard.writeText(currentRawCode);
-
-    copyButton.innerText = "Copied!";
-    copyButton.classList.add("copied");
-
-    setTimeout(() => {
-      copyButton.innerText = "Copy Backup Code";
-      copyButton.classList.remove("copied");
-    }, 2000);
-  } catch (e) {
-    alert("Unable to copy code.");
-  }
-};
