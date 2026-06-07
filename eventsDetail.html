@@ -59,24 +59,20 @@
 
 .detail-hero {
   width: 100%;
-  min-height: 260px;
+  aspect-ratio: 4 / 5;
   max-height: 540px;
   background: #000;
   border-radius: 28px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .detail-image,
 .detail-image-fallback {
   width: 100%;
-  height: auto;
-  max-height: 540px;
+  height: 100%;
   display: block;
-  object-fit: contain;
-  object-position: center top;
+  object-fit: cover;
+  object-position: center;
   border-radius: 28px;
 }
 
@@ -290,15 +286,14 @@
   }
 
   .detail-hero {
-    min-height: 200px;
-    max-height: 360px;
     margin: 0 12px;
+    aspect-ratio: 4 / 5;
+    max-height: none;
     border-radius: 24px;
   }
 
   .detail-image,
   .detail-image-fallback {
-    max-height: 360px;
     border-radius: 24px;
   }
 
