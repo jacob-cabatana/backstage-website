@@ -128,33 +128,37 @@ body {
       box-shadow: 0 0 0 2px rgba(156,79,242,0.35);
     }
 
-    #claim-free-button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 16px;
-      border-radius: 18px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-      background: linear-gradient(90deg, #9c4ff2, #225cda);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+#claim-free-button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  border: 2px solid transparent;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  color: white;
+
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(90deg, #9c4ff2, #225cda) border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
 
     #claim-free-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    #claim-free-button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(156,79,242,0.4);
-    }
+#claim-free-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(156,79,242,0.35);
+}
 
     .btn-spinner {
       width: 18px;
@@ -277,15 +281,15 @@ body {
 }
 
 .card{
-  width:100%;
+  width: 100%;
   max-width: 420px;
   padding: 34px 26px;
   border-radius: 24px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-  text-align:center;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  text-align: center;
   position: relative;
 }
 
@@ -351,7 +355,6 @@ body {
   <div class="card">
 
     <h2>Claim Your Free Ticket</h2>
-    <p class="subtitle">Enter your details to receive your ticket code</p>
 
 <div class="form">
 
@@ -374,12 +377,20 @@ body {
     <input id="last-name" type="text" placeholder="Last Name" />
   </div>
 
-  <input id="email" type="email" placeholder="Email Address" />
+<input id="email" type="email" placeholder="Email Address" />
+
+<input
+  id="phone"
+  type="tel"
+  placeholder="Phone Number"
+  inputmode="tel"
+  autocomplete="tel"
+/>
 
 </div>
 
     <button id="claim-free-button">
-      <span class="btn-text">Get Free Ticket</span>
+      <span class="btn-text">Secure Ticket</span>
       <span class="btn-spinner"></span>
     </button>
 

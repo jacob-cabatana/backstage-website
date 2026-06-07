@@ -39,6 +39,7 @@ console.log("ticketType:", ticketType);
 const firstNameInput = document.getElementById("first-name");
 const lastNameInput = document.getElementById("last-name");
 const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("phone");
 const photoInput = document.getElementById("profile-photo");
 const photoPreview = document.getElementById("profile-preview");
 const photoPlus = document.querySelector(".photo-plus");
@@ -61,15 +62,21 @@ function validateForm() {
   const first = firstNameInput.value.trim();
   const last = lastNameInput.value.trim();
   const email = emailInput.value.trim();
-console.log("first:", first);
-console.log("last:", last);
-console.log("email:", email);
+  const phone = phoneInput.value.trim();
 
-const valid =
-  first.length > 1 &&
-  last.length > 1 &&
-  email.includes("@") &&
-  profilePhotoFile;
+  console.log("first:", first);
+  console.log("last:", last);
+  console.log("email:", email);
+  console.log("phone:", phone);
+
+  const digitsOnly = phone.replace(/\D/g, "");
+
+  const valid =
+    first.length > 1 &&
+    last.length > 1 &&
+    email.includes("@") &&
+    digitsOnly.length >= 10 &&
+    profilePhotoFile;
 
   button.disabled = !valid;
 }
@@ -96,9 +103,13 @@ photoInput.addEventListener("change", (e) => {
 button.addEventListener("click", async () => {
   if (button.classList.contains("loading")) return;
 
-  const firstName = firstNameInput.value.trim();
-  const lastName = lastNameInput.value.trim();
-  const email = emailInput.value.trim();
+const firstName = firstNameInput.value.trim();
+const lastName = lastNameInput.value.trim();
+const email = emailInput.value.trim();
+const phone = phoneInput.value.trim();
+const normalizedPhone = phone.replace(/\D/g, "");
+
+if (!firstName || !lastName || !email || normalizedPhone.length < 10) return;
 
   if (!firstName || !lastName || !email) return;
 
@@ -118,7 +129,8 @@ const result = await claimFreeTicket({
   ticketType,
   buyerFirstName: firstName,
   buyerLastName: lastName,
-  buyerEmail: email
+  buyerEmail: email,
+  buyerPhone: normalizedPhone
 });
 
 const data = result.data;
