@@ -102,35 +102,19 @@ function formatPrettyDateTime(date) {
   let hours = date.getHours();
   const minutes = date.getMinutes();
 
-  const ampm = hours >= 12 ? "pm" : "am";
+  const ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12 || 12;
 
   let timeString = "";
 
   if (minutes === 0) {
-    timeString = `${hours} ${ampm}`;
+    timeString = `${hours}:00 ${ampm}`;
   } else {
     const paddedMinutes = minutes.toString().padStart(2, "0");
     timeString = `${hours}:${paddedMinutes} ${ampm}`;
   }
 
   return `${month} ${day}${ordinal}, ${year} at ${timeString}`;
-}
-
-function getDayText(date) {
-  if (!date) return "--";
-
-  return date.toLocaleDateString("en-US", {
-    day: "numeric"
-  });
-}
-
-function getMonthText(date) {
-  if (!date) return "---";
-
-  return date.toLocaleDateString("en-US", {
-    month: "short"
-  });
 }
 
 function resolveTitle(event) {
@@ -153,8 +137,127 @@ function resolveLocation(event) {
   );
 }
 
+function resolveDescription(event) {
+  return (
+    event.description ||
+    event.eventDescription ||
+    event.details ||
+    event.about ||
+    ""
+  );
+}
+
+function resolveImageUrl(event) {
+  return (
+    event.imageURL ||
+    event.imageUrl ||
+    event.mediaUrl ||
+    event.eventImageUrl ||
+    event.photoUrl ||
+    event.flyerURL ||
+    event.flyerUrl ||
+    ""
+  );
+}
+
+function resolveHost(event) {
+  return (
+    event.hostName ||
+    event.host ||
+    event.organizerName ||
+    event.presentedBy ||
+    "Backstage"
+  );
+}
+
+function resolveCategory(event) {
+  return (
+    event.category ||
+    event.eventCategory ||
+    event.type ||
+    "Event"
+  );
+}
+
+function resolveAgeRequirement(event) {
+  if (event.ageRequirement) return event.ageRequirement;
+
+  const goodToKnow = Array.isArray(event.goodToKnow) ? event.goodToKnow : [];
+
+  if (goodToKnow.includes("21_plus")) return "This is a 21+ event";
+  if (goodToKnow.includes("18_plus")) return "This is an 18+ event";
+
+  return "This is a 21+ event";
+}
+
+function calculateAllIn(base) {
+  const price = Number(base || 0);
+
+  if (price <= 0) return 0;
+
+  const stripePercent = 0.029;
+  const stripeFlat = 0.30;
+  const lowPriceThreshold = 7.00;
+  const lowPriceFee = 2.99;
+  const standardFee = 4.99;
+
+  const appliedFee = price < lowPriceThreshold ? lowPriceFee : standardFee;
+  const preliminary = price + appliedFee;
+  const stripeFee = preliminary * stripePercent + stripeFlat;
+
+  return preliminary + stripeFee;
+}
+
+function getActivePhase(ticketPhases = []) {
+  const now = new Date();
+
+  const sorted = [...ticketPhases].sort((a, b) => {
+    const aDate = timestampToDate(a.expiresAt) || new Date("9999-12-31");
+    const bDate = timestampToDate(b.expiresAt) || new Date("9999-12-31");
+
+    return aDate - bDate;
+  });
+
+  return sorted.find((phase) => {
+    const expiresAt = timestampToDate(phase.expiresAt);
+    return expiresAt && now < expiresAt;
+  }) || sorted[sorted.length - 1] || null;
+}
+
+function resolveStartingPrice(event) {
+  if (event.freeTicketsEnabled === true) return "Free";
+
+  let base = Number(event.admissionPrice || event.ticketPrice || event.price || 0);
+
+  if (event.pricingMode === "phases" && event.ticketPhases?.length) {
+    const active = getActivePhase(event.ticketPhases);
+    const prices = [
+      Number(active?.malePrice || 0),
+      Number(active?.femalePrice || 0)
+    ].filter((price) => price > 0);
+
+    if (prices.length) {
+      base = Math.min(...prices);
+    }
+  } else if (event.genderTicketPricing === true) {
+    const prices = [
+      Number(event.maleTicketPrice || 0),
+      Number(event.femaleTicketPrice || 0)
+    ].filter((price) => price > 0);
+
+    if (prices.length) {
+      base = Math.min(...prices);
+    }
+  }
+
+  if (!base || base <= 0) return "Free";
+
+  return `$${calculateAllIn(base).toFixed(2)}`;
+}
+
 async function ensureSignedIn() {
   if (auth.currentUser) return auth.currentUser;
+
   const result = await signInAnonymously(auth);
   return result.user;
 }
@@ -165,46 +268,31 @@ async function trackEventAnalytics(field) {
   try {
     await ensureSignedIn();
 
-await updateDoc(doc(db, "parties", eventId), {
-  [field]: increment(1),
-  "analytics.lastUpdatedAt": serverTimestamp()
-});
+    await updateDoc(doc(db, "parties", eventId), {
+      [field]: increment(1),
+      "analytics.lastUpdatedAt": serverTimestamp()
+    });
 
-console.log("Analytics tracked:", field, eventId);
+    console.log("Analytics tracked:", field, eventId);
   } catch (error) {
     console.error("Analytics update failed:", error);
   }
 }
 
-function resolveImageUrl(event) {
-  return (
-    event.mediaUrl ||
-    event.imageUrl ||
-    event.eventImageUrl ||
-    event.photoUrl ||
-    ""
-  );
-}
-
 function renderLoading() {
   el.innerHTML = `
-    <div class="detail-shell">
-      <div class="guestlist">
-        <h3>Loading event...</h3>
-      </div>
+    <div class="state-card">
+      <h3>Loading event...</h3>
+      <p>Pulling up the details.</p>
     </div>
   `;
 }
 
 function renderError(title, message) {
   el.innerHTML = `
-    <div class="detail-shell">
-      <div class="guestlist">
-        <h3>${escapeHTML(title)}</h3>
-        <p style="margin:0;color:rgba(255,255,255,0.68);font-weight:600;line-height:1.45;">
-          ${escapeHTML(message)}
-        </p>
-      </div>
+    <div class="state-card">
+      <h3>${escapeHTML(title)}</h3>
+      <p>${escapeHTML(message)}</p>
     </div>
   `;
 }
@@ -212,40 +300,98 @@ function renderError(title, message) {
 function renderEvent(event) {
   const startDate = timestampToDate(event.startsAt);
   const formattedDate = formatPrettyDateTime(startDate);
-  const dayText = getDayText(startDate);
-  const monthText = getMonthText(startDate);
 
   const title = resolveTitle(event);
   const location = resolveLocation(event);
+  const description = resolveDescription(event);
   const imageUrl = resolveImageUrl(event);
+  const host = resolveHost(event);
+  const category = resolveCategory(event);
+  const ageRequirement = resolveAgeRequirement(event);
+  const priceLabel = resolveStartingPrice(event);
+
+  document.title = `${title} | Backstage`;
 
   el.innerHTML = `
     <div class="detail-shell">
-      <div class="detail-container">
+      <section class="detail-hero">
         ${
           imageUrl
             ? `<img src="${escapeHTML(imageUrl)}" class="detail-image" alt="${escapeHTML(title)}" />`
-            : `<div class="detail-image detail-image-fallback"></div>`
+            : `<div class="detail-image-fallback" aria-label="${escapeHTML(title)}"></div>`
         }
+      </section>
 
-        <div class="detail-date-badge">
-          <div class="detail-day">${escapeHTML(dayText)}</div>
-          <div class="detail-month">${escapeHTML(monthText)}</div>
+      <main class="detail-main">
+        <h1 class="event-title">${escapeHTML(title)}</h1>
+        <p class="event-host">${escapeHTML(host)}</p>
+        <p class="event-date-line">${escapeHTML(formattedDate)}</p>
+
+        <div class="quick-info">
+          <div class="info-line">
+            <span class="info-icon">•</span>
+            <span>${escapeHTML(category)}</span>
+          </div>
+
+          <div class="info-line">
+            <span class="info-icon">📍</span>
+            <span>${escapeHTML(location)}</span>
+          </div>
         </div>
 
-        <div class="detail-card">
-          <h1 class="event-title">${escapeHTML(title)}</h1>
-          <p class="detail-date">${escapeHTML(formattedDate)}</p>
-          <p class="detail-price">${escapeHTML(location)}</p>
+        <div class="buy-panel">
+          <div>
+            <span class="price-value">${escapeHTML(priceLabel)}</span>
+            <span class="price-caption">The price you'll pay. No surprises later.</span>
+          </div>
+
+          <button class="secure-ticket-button secure-ticket-action" type="button">
+            Secure Now
+          </button>
         </div>
+
+        <section class="section">
+          <h2 class="section-title">About</h2>
+
+          ${
+            description.trim()
+              ? `<p class="event-description">${escapeHTML(description.trim())}</p>`
+              : `<p class="empty-description">Event description coming soon.</p>`
+          }
+
+          <div class="details-list">
+            <div class="details-list-row">
+              <span>ⓘ</span>
+              <span>${escapeHTML(ageRequirement)}</span>
+            </div>
+
+            <div class="details-list-row">
+              <span>⌁</span>
+              <span>Presented by ${escapeHTML(host)}</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="bottom-ticket-bar">
+        <div>
+          <span class="price-value">${escapeHTML(priceLabel)}</span>
+          <span class="price-caption">No surprises later.</span>
+        </div>
+
+        <button class="secure-ticket-button secure-ticket-action" type="button">
+        Secure Now
+        </button>
       </div>
     </div>
   `;
 
-document.querySelector(".detail-container").addEventListener("click", async () => {
-    await trackEventAnalytics("analytics.ticketClicks");
-    window.location.href = `/checkout.html?id=${encodeURIComponent(eventId)}`;
-});
+  document.querySelectorAll(".secure-ticket-action").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await trackEventAnalytics("analytics.ticketClicks");
+      window.location.href = `/checkout.html?id=${encodeURIComponent(eventId)}`;
+    });
+  });
 }
 
 async function loadEventDetail() {
@@ -264,8 +410,8 @@ async function loadEventDetail() {
       return;
     }
 
-await trackEventAnalytics("analytics.webViews");
-renderEvent(eventDoc.data());
+    await trackEventAnalytics("analytics.webViews");
+    renderEvent(eventDoc.data());
   } catch (error) {
     console.error("Failed to load event:", error);
     renderError("Could not load event", "Something went wrong while loading this event.");
