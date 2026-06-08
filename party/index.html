@@ -203,23 +203,23 @@
     const isPreviewBot =
       /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
 
-    if (!partyId) {
-      fallbackText.textContent = "This event link is missing an event ID.";
-      websiteEventLink.style.display = "none";
-    } else {
-      const eventDetailsUrl = `/eventsDetail.html?id=${encodeURIComponent(partyId)}`;
+if (!partyId) {
+  fallbackText.textContent = "This event link is missing an event ID.";
+  websiteEventLink.style.display = "none";
+} else {
+  const eventDetailsUrl = `/eventsDetail.html?id=${encodeURIComponent(partyId)}`;
 
-      if (pill) {
-        pill.style.display = "block";
-        pill.textContent = "Opening event...";
-      }
+  if (pill) {
+    pill.style.display = "block";
+    pill.textContent = "Opening event...";
+  }
 
-      websiteEventLink.href = eventDetailsUrl;
+  websiteEventLink.href = eventDetailsUrl;
 
-      if (!isPreviewBot) {
-        window.location.replace(eventDetailsUrl);
-      }
-    }
+  if (!isPreviewBot) {
+    window.location.replace(eventDetailsUrl);
+  }
+}
   </script>
 </body>
 </html>
