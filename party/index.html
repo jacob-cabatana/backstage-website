@@ -178,48 +178,97 @@
     </div>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
+<script>
+  const params = new URLSearchParams(window.location.search);
 
-    let partyId = params.get("id") || "";
+  let partyId = params.get("id") || "";
 
-    if (!partyId) {
-      const redirectedPath = params.get("path");
-      const path = redirectedPath || window.location.pathname;
+  if (!partyId) {
+    const redirectedPath = params.get("path");
+    const path = redirectedPath || window.location.pathname;
 
-      const parts = path
-        .split("/")
-        .map(part => part.trim())
-        .filter(Boolean);
+    const parts = path
+      .split("/")
+      .map(part => part.trim())
+      .filter(Boolean);
 
-      partyId =
-        parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
+    partyId =
+      parts.length >= 2 && parts[0] === "party" ? parts[1] : "";
+  }
+
+  const pill = document.getElementById("partyPill");
+  const fallbackText = document.getElementById("fallbackText");
+  const websiteEventLink = document.getElementById("websiteEventLink");
+
+  const isPreviewBot =
+    /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
+
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  if (!partyId) {
+    fallbackText.textContent = "This event link is missing an event ID.";
+
+    if (websiteEventLink) {
+      websiteEventLink.style.display = "none";
+    }
+  } else {
+    const encodedPartyId = encodeURIComponent(partyId);
+    const appUrl = `backstage://party/${encodedPartyId}`;
+    const eventDetailsUrl = `/eventsDetail.html?id=${encodedPartyId}`;
+
+    if (pill) {
+      pill.style.display = "block";
+      pill.textContent = "Event link ready";
     }
 
-    const pill = document.getElementById("partyPill");
-    const fallbackText = document.getElementById("fallbackText");
-    const websiteEventLink = document.getElementById("websiteEventLink");
+    if (websiteEventLink) {
+      websiteEventLink.href = eventDetailsUrl;
+      websiteEventLink.textContent = "Continue to Event";
+    }
 
-    const isPreviewBot =
-      /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
+    function goToWebsiteEvent() {
+      window.location.replace(eventDetailsUrl);
+    }
 
-if (!partyId) {
-  fallbackText.textContent = "This event link is missing an event ID.";
-  websiteEventLink.style.display = "none";
-} else {
-  const eventDetailsUrl = `/eventsDetail.html?id=${encodeURIComponent(partyId)}`;
+    function tryOpenAppThenFallback() {
+      let didLeavePage = false;
 
-  if (pill) {
-    pill.style.display = "block";
-    pill.textContent = "Opening event...";
+      const markLeft = () => {
+        didLeavePage = true;
+      };
+
+      window.addEventListener("pagehide", markLeft);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          didLeavePage = true;
+        }
+      });
+
+      window.location.href = appUrl;
+
+      setTimeout(() => {
+        if (!didLeavePage) {
+          goToWebsiteEvent();
+        }
+      }, 1200);
+    }
+
+    if (!isPreviewBot) {
+      if (isIOS) {
+        const openApp = window.confirm("Open this event in BCKSTGE?");
+
+        if (openApp) {
+          tryOpenAppThenFallback();
+        } else {
+          goToWebsiteEvent();
+        }
+      } else {
+        goToWebsiteEvent();
+      }
+    }
   }
-
-  websiteEventLink.href = eventDetailsUrl;
-
-  if (!isPreviewBot) {
-    window.location.replace(eventDetailsUrl);
-  }
-}
-  </script>
+</script>
 </body>
 </html>
