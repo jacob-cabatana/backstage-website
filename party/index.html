@@ -158,14 +158,14 @@
 
       <h1>Backstage Event</h1>
 
-      <p>View tickets, details, and event access for this event.</p>
+      <p>Taking you to this event.</p>
 
       <div id="partyPill" class="pill" style="display:none;"></div>
 
       <div class="btns">
-        <button class="primary" onclick="openParty()">
-          Open in Backstage App
-        </button>
+        <a id="websiteEventLink" class="btn primary" href="#">
+          View Event
+        </a>
 
         <a class="btn secondary"
            href="https://apps.apple.com/us/app/backstage-events/id6751863780">
@@ -198,24 +198,27 @@
 
     const pill = document.getElementById("partyPill");
     const fallbackText = document.getElementById("fallbackText");
+    const websiteEventLink = document.getElementById("websiteEventLink");
 
-    if (partyId && pill) {
-      pill.style.display = "block";
-      pill.textContent = "Event link ready";
-    }
+    const isPreviewBot =
+      /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
 
-    function openParty() {
-      if (!partyId) {
-        fallbackText.textContent = "This event link is missing an event ID.";
-        return;
+    if (!partyId) {
+      fallbackText.textContent = "This event link is missing an event ID.";
+      websiteEventLink.style.display = "none";
+    } else {
+      const eventDetailsUrl = `/eventsDetail.html?id=${encodeURIComponent(partyId)}`;
+
+      if (pill) {
+        pill.style.display = "block";
+        pill.textContent = "Opening event...";
       }
 
-      window.location.href = `backstage://party/${encodeURIComponent(partyId)}`;
+      websiteEventLink.href = eventDetailsUrl;
 
-      setTimeout(() => {
-        fallbackText.textContent =
-          "If Backstage did not open, make sure the app is installed.";
-      }, 900);
+      if (!isPreviewBot) {
+        window.location.replace(eventDetailsUrl);
+      }
     }
   </script>
 </body>
