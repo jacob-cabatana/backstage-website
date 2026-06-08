@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "682DHS5NJT.com.jacobcabatana.backstage",
+        "appID": "682DHS6NJT.com.jacobcabatana.backstage",
         "paths": [
           "/auth/*",
           "/party/index.html",
