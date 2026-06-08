@@ -158,14 +158,14 @@
 
       <h1>Open this event on Backstage</h1>
 
-      <p>View tickets, details, and event access inside the Backstage app.</p>
+      <p>View tickets, details, and event access for this event.</p>
 
       <div id="partyPill" class="pill" style="display:none;"></div>
 
       <div class="btns">
-        <button class="primary" onclick="openParty()">
-          Open Event
-        </button>
+    <button class="primary" onclick="openParty()">
+  Open in BCKSTGE
+</button>
 
         <a class="btn secondary"
            href="https://apps.apple.com/us/app/backstage-events/id6751863780">
@@ -218,12 +218,6 @@
       }, 900);
     }
 
-    const isPreviewBot =
-      /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
-
-    if (partyId && !isPreviewBot) {
-      setTimeout(openParty, 1400);
-    }
   </script>
 </body>
 </html>
