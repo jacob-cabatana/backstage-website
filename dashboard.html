@@ -543,9 +543,35 @@
             <option value="non_alcoholic">Non alcoholic</option>
             <option value="specials">Specials</option>
           </select>
-
-          <label>Price</label>
+<label>Price</label>
           <input id="drinkPrice" type="number" min="0" step="0.01" placeholder="8.00" />
+
+<div id="specialFields" hidden>
+  <label>Ingredients</label>
+  <textarea
+    id="drinkIngredients"
+    rows="3"
+    placeholder="Example: Vodka, Peach Schnapps, Orange Juice"
+  ></textarea>
+
+  <label>Special image optional</label>
+
+  <div class="photoUploadBox">
+    <input id="drinkImageFile" type="file" accept="image/*" hidden />
+
+    <button id="chooseDrinkImageBtn" type="button" class="uploadPhotoBtn">
+      Choose special image
+    </button>
+
+    <span id="drinkImageFileName" class="uploadFileName">
+      No image selected
+    </span>
+  </div>
+
+  <div id="drinkImagePreviewWrap" class="venuePhotoPreviewWrap" style="display:none;">
+    <img id="drinkImagePreview" src="" alt="Special preview" />
+  </div>
+</div>
 
 <button id="addDrinkBtn" class="mainBtn">Add drink</button>
 <button id="seedMenuBtn" class="quietBtn">Seed starter menu</button>
@@ -822,13 +848,91 @@ const customerNameCache = {};
     const pickupSpotList = document.getElementById("pickupSpotList");
     const pickupSpotFilterTabs = document.getElementById("pickupSpotFilterTabs");
 
-    const drinkName = document.getElementById("drinkName");
+const drinkName = document.getElementById("drinkName");
     const drinkCategory = document.getElementById("drinkCategory");
     const drinkPrice = document.getElementById("drinkPrice");
+    const drinkIngredients = document.getElementById("drinkIngredients");
+    const specialFields = document.getElementById("specialFields");
+    const drinkImageFile = document.getElementById("drinkImageFile");
+    const chooseDrinkImageBtn = document.getElementById("chooseDrinkImageBtn");
+    const drinkImageFileName = document.getElementById("drinkImageFileName");
+    const drinkImagePreviewWrap = document.getElementById("drinkImagePreviewWrap");
+    const drinkImagePreview = document.getElementById("drinkImagePreview");
     const addDrinkBtn = document.getElementById("addDrinkBtn");
     const seedMenuBtn = document.getElementById("seedMenuBtn");
     const drinkList = document.getElementById("drinkList");
     const menuMessage = document.getElementById("menuMessage");
+
+    function parseDrinkIngredients(value) {
+      return String(value || "")
+        .split(/,|\n/)
+        .map(item => item.trim())
+        .filter(Boolean);
+    }
+
+    function resetDrinkImageInput() {
+      drinkImageFile.value = "";
+      drinkImageFileName.textContent = "No image selected";
+      drinkImagePreviewWrap.style.display = "none";
+      drinkImagePreview.src = "";
+    }
+
+    function refreshSpecialFields() {
+      specialFields.hidden = drinkCategory.value !== "specials";
+    }
+
+    drinkCategory.addEventListener("change", refreshSpecialFields);
+    refreshSpecialFields();
+
+    chooseDrinkImageBtn.addEventListener("click", () => {
+      drinkImageFile.click();
+    });
+
+    drinkImageFile.addEventListener("change", () => {
+      const selectedFile = drinkImageFile.files[0];
+
+      if (!selectedFile) {
+        resetDrinkImageInput();
+        return;
+      }
+
+      drinkImageFileName.textContent = selectedFile.name;
+      drinkImagePreview.src = URL.createObjectURL(selectedFile);
+      drinkImagePreviewWrap.style.display = "block";
+    });
+
+    async function uploadDrinkImageFile(file) {
+      if (!file) return null;
+
+      const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filePath = `drinkSpecials/${userId}/${Date.now()}-${safeFileName}`;
+      const imageRef = ref(storage, filePath);
+
+      await uploadBytes(imageRef, file);
+
+      return {
+        imageUrl: await getDownloadURL(imageRef),
+        imagePath: filePath
+      };
+    }
+
+    async function uploadSelectedDrinkImageIfNeeded() {
+      return uploadDrinkImageFile(drinkImageFile.files[0]);
+    }
+
+    function chooseReplacementDrinkImage() {
+      return new Promise(resolve => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+
+        input.addEventListener("change", () => {
+          resolve(input.files[0] || null);
+        });
+
+        input.click();
+      });
+    }
 
     const ordersList = document.getElementById("ordersList");
     const readyOrdersList = document.getElementById("readyOrdersList");
@@ -1440,10 +1544,11 @@ starterDrinks.forEach(drink => {
   }
 });
 
-    addDrinkBtn.addEventListener("click", async () => {
+addDrinkBtn.addEventListener("click", async () => {
       const name = drinkName.value.trim();
       const category = drinkCategory.value;
       const price = Number(drinkPrice.value);
+      const isSpecial = category === "specials";
 
       if (!name || !category || !price || price <= 0) {
         menuMessage.textContent = "Add a valid drink name, category, and price.";
@@ -1451,24 +1556,43 @@ starterDrinks.forEach(drink => {
       }
 
       menuMessage.textContent = "Adding...";
+      addDrinkBtn.disabled = true;
 
       try {
-        await addDoc(collection(db, "venues", userId, "drinks"), {
+        const imageData = isSpecial ? await uploadSelectedDrinkImageIfNeeded() : null;
+
+        const drinkData = {
           name,
           category,
           price,
           isAvailable: true,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
-        });
+        };
+
+        if (isSpecial) {
+          drinkData.ingredients = parseDrinkIngredients(drinkIngredients.value);
+
+          if (imageData) {
+            drinkData.imageUrl = imageData.imageUrl;
+            drinkData.imagePath = imageData.imagePath;
+          }
+        }
+
+        await addDoc(collection(db, "venues", userId, "drinks"), drinkData);
 
         drinkName.value = "";
         drinkPrice.value = "";
+        drinkIngredients.value = "";
+        resetDrinkImageInput();
 
         await loadDrinks();
-        menuMessage.textContent = "Drink added.";
+        menuMessage.textContent = isSpecial ? "Special added." : "Drink added.";
       } catch (err) {
+        console.error("Add drink failed:", err);
         menuMessage.textContent = err.message || "Could not add drink.";
+      } finally {
+        addDrinkBtn.disabled = false;
       }
     });
 
@@ -1526,11 +1650,28 @@ const visibleDrinks = allDrinks
     const item = document.createElement("div");
     item.className = "drinkItem";
 
+const ingredientsText = Array.isArray(drink.ingredients)
+      ? drink.ingredients.join(" • ")
+      : "";
+
     item.innerHTML = `
       <div class="drinkMain">
-        <div>
-          <strong>${clean(drink.name)}</strong>
-          <span>${clean(formatDrinkCategory(drink.category))} · ${isAvailable ? "Available" : "Unavailable"}</span>
+        <div style="display:flex; gap:12px; align-items:center;">
+          ${
+            drink.imageUrl
+              ? `<img src="${clean(drink.imageUrl)}" alt="" style="width:58px;height:58px;object-fit:cover;border-radius:14px;">`
+              : ""
+          }
+
+          <div>
+            <strong>${clean(drink.name)}</strong>
+            <span>${clean(formatDrinkCategory(drink.category))} · ${isAvailable ? "Available" : "Unavailable"}</span>
+            ${
+              ingredientsText
+                ? `<span>${clean(ingredientsText)}</span>`
+                : ""
+            }
+          </div>
         </div>
 
         <b>$${Number(drink.price || 0).toFixed(2)}</b>
@@ -1543,6 +1684,12 @@ const visibleDrinks = allDrinks
             : `<button class="smallBtn availableBtn">Mark available</button>`
         }
 
+        ${
+          drink.category === "specials"
+            ? `<button class="smallBtn editSpecialBtn">Edit special</button>`
+            : ""
+        }
+
         <button class="smallBtn editPriceBtn">Edit price</button>
         <button class="smallBtn deleteDrinkBtn">Delete</button>
       </div>
@@ -1552,6 +1699,7 @@ const visibleDrinks = allDrinks
 
     const unavailableBtn = item.querySelector(".unavailableBtn");
     const availableBtn = item.querySelector(".availableBtn");
+    const editSpecialBtn = item.querySelector(".editSpecialBtn");
     const editPriceBtn = item.querySelector(".editPriceBtn");
     const deleteDrinkBtn = item.querySelector(".deleteDrinkBtn");
 
@@ -1610,6 +1758,53 @@ const visibleDrinks = allDrinks
     } catch (err) {
       console.error("Price update failed:", err);
       alert(err.message || "Could not update price.");
+    }
+  });
+}
+
+if (editSpecialBtn) {
+  editSpecialBtn.addEventListener("click", async () => {
+    const newPriceText = prompt("Special price?", Number(drink.price || 0).toFixed(2));
+
+    if (newPriceText === null) return;
+
+    const newPrice = Number(newPriceText);
+
+    if (!newPrice || newPrice <= 0) {
+      alert("Enter a valid price.");
+      return;
+    }
+
+    const currentIngredients = Array.isArray(drink.ingredients)
+      ? drink.ingredients.join(", ")
+      : "";
+
+    const newIngredientsText = prompt("Ingredients? Separate with commas.", currentIngredients);
+
+    if (newIngredientsText === null) return;
+
+    const updates = {
+      price: newPrice,
+      ingredients: parseDrinkIngredients(newIngredientsText),
+      updatedAt: serverTimestamp()
+    };
+
+    if (confirm("Replace special image?")) {
+      const imageFile = await chooseReplacementDrinkImage();
+
+      if (imageFile) {
+        const imageData = await uploadDrinkImageFile(imageFile);
+        updates.imageUrl = imageData.imageUrl;
+        updates.imagePath = imageData.imagePath;
+      }
+    }
+
+    try {
+      await updateDoc(drinkRef, updates);
+      await loadDrinks();
+    } catch (err) {
+      console.error("Special update failed:", err);
+      alert(err.message || "Could not update special.");
     }
   });
 }
