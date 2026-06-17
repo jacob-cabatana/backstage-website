@@ -66,24 +66,80 @@ async function ensureSignedIn() {
   return result.user;
 }
 
-function calculateAllIn(unitPrice, quantity) {
-  if (!unitPrice || unitPrice === 0) {
-    return { total: 0 };
+const STRIPE_PERCENT = 0.029;
+const STRIPE_FLAT_CENTS = 30;
+
+const TICKET_ORDER_BASE_FEE_CENTS = 49;
+const TICKET_PER_TICKET_FEE_CENTS = 50;
+const TICKET_MAIN_RATE = 0.15;
+const TICKET_HIGH_RATE = 0.10;
+const TICKET_MAIN_RATE_CAP_PER_TICKET_CENTS = 2000;
+
+function dollarsToCents(value) {
+  const number = Number(value || 0);
+  return Number.isFinite(number) ? Math.round(number * 100) : 0;
+}
+
+function formatMoneyCents(cents) {
+  return `$${(Number(cents || 0) / 100).toFixed(2)}`;
+}
+
+function calculateTicketServiceFeeCents(subtotalCents, quantity) {
+  const qty = Math.max(Math.trunc(Number(quantity || 1)), 1);
+  const subtotal = Math.max(Math.trunc(Number(subtotalCents || 0)), 0);
+
+  if (subtotal <= 0) return 0;
+
+  const mainRateCapCents = qty * TICKET_MAIN_RATE_CAP_PER_TICKET_CENTS;
+  const mainRateSubtotal = Math.min(subtotal, mainRateCapCents);
+  const highRateSubtotal = Math.max(subtotal - mainRateCapCents, 0);
+
+  const fee =
+    TICKET_ORDER_BASE_FEE_CENTS +
+    qty * TICKET_PER_TICKET_FEE_CENTS +
+    mainRateSubtotal * TICKET_MAIN_RATE +
+    highRateSubtotal * TICKET_HIGH_RATE;
+
+  return Math.round(fee);
+}
+
+function calculateAllInFromSubtotalCents(subtotalCents, quantity) {
+  const qty = Math.max(Math.trunc(Number(quantity || 0)), 0);
+  const subtotal = Math.max(Math.trunc(Number(subtotalCents || 0)), 0);
+
+  if (qty <= 0 || subtotal <= 0) {
+    return {
+      subtotalCents: 0,
+      serviceFeeCents: 0,
+      stripeFeeCents: 0,
+      totalCents: 0,
+      total: 0
+    };
   }
 
-  const LOW_THRESHOLD = 7;
-  const LOW_FEE = 2.99;
-  const STANDARD_FEE = 4.99;
-  const PER_TICKET_FEE = 3.99;
+  const serviceFeeCents = calculateTicketServiceFeeCents(subtotal, qty);
+  const preliminaryCents = subtotal + serviceFeeCents;
 
-  const subtotal = unitPrice * quantity;
-  const baseFee = unitPrice < LOW_THRESHOLD ? LOW_FEE : STANDARD_FEE;
-  const fee = baseFee + Math.max(0, quantity - 1) * PER_TICKET_FEE;
-  const preliminary = subtotal + fee;
-  const stripeFee = preliminary * 0.029 + 0.30;
-  const total = preliminary + stripeFee;
+  const totalCents = Math.ceil(
+    (preliminaryCents + STRIPE_FLAT_CENTS) / (1 - STRIPE_PERCENT)
+  );
 
-  return { total };
+  const stripeFeeCents = totalCents - preliminaryCents;
+
+  return {
+    subtotalCents: subtotal,
+    serviceFeeCents,
+    stripeFeeCents,
+    totalCents,
+    total: totalCents / 100
+  };
+}
+
+function calculateAllIn(unitPrice, quantity) {
+  const qty = Math.max(Math.trunc(Number(quantity || 0)), 0);
+  const subtotalCents = dollarsToCents(unitPrice) * qty;
+
+  return calculateAllInFromSubtotalCents(subtotalCents, qty);
 }
 
 function parseFirestoreDate(value) {
@@ -235,30 +291,29 @@ function hydrateEventHeader(event) {
 
   document.title = `${title} | Backstage`;
 
+  if (imageURL && heroImage) {
+    console.log("Checkout image URL:", imageURL);
 
-if (imageURL && heroImage) {
-  console.log("Checkout image URL:", imageURL);
+    heroImage.onload = () => {
+      heroImage.hidden = false;
+      heroImage.style.display = "block";
 
-  heroImage.onload = () => {
-    heroImage.hidden = false;
-    heroImage.style.display = "block";
+      if (imageFallback) {
+        imageFallback.hidden = true;
+        imageFallback.style.display = "none";
+      }
+    };
 
-    if (imageFallback) {
-      imageFallback.hidden = true;
-      imageFallback.style.display = "none";
+    heroImage.onerror = () => {
+      console.error("Checkout image failed:", imageURL);
+    };
+
+    heroImage.src = imageURL;
+
+    if (heroEl) {
+      heroEl.classList.remove("is-empty");
     }
-  };
-
-  heroImage.onerror = () => {
-    console.error("Checkout image failed:", imageURL);
-  };
-
-  heroImage.src = imageURL;
-
-  if (heroEl) {
-    heroEl.classList.remove("is-empty");
   }
-}
 
   const accent = firstValue(event.accentColor, event.eventAccentColor, event.themeColor);
 
@@ -336,7 +391,7 @@ function getTicketRows(event) {
       gender: "women",
       name: "GA Female",
       unitPrice: femalePrice,
-      priceLabel: `${formatMoney(calculateAllIn(femalePrice, 1).total)} all-in`,
+      priceLabel: `${formatMoneyCents(calculateAllIn(femalePrice, 1).totalCents)} all-in`,
       phaseName: activePhase?.name || "General Admission",
       timer: getPhaseCountdown(activePhase)
     });
@@ -346,10 +401,29 @@ function getTicketRows(event) {
       gender: "men",
       name: "GA Male",
       unitPrice: malePrice,
-      priceLabel: `${formatMoney(calculateAllIn(malePrice, 1).total)} all-in`,
+      priceLabel: `${formatMoneyCents(calculateAllIn(malePrice, 1).totalCents)} all-in`,
       phaseName: activePhase?.name || "General Admission",
       timer: getPhaseCountdown(activePhase)
     });
+  } else {
+    const generalPrice = Number(firstValue(
+      event.admissionPrice,
+      event.ticketPrice,
+      event.price,
+      0
+    ));
+
+    if (generalPrice > 0) {
+      rows.push({
+        kind: "paid",
+        gender: "general",
+        name: "General Admission",
+        unitPrice: generalPrice,
+        priceLabel: `${formatMoneyCents(calculateAllIn(generalPrice, 1).totalCents)} all-in`,
+        phaseName: "General Admission",
+        timer: ""
+      });
+    }
   }
 
   return rows;
@@ -380,8 +454,14 @@ function renderFreeRow(row) {
 }
 
 function renderPaidRow(row, index) {
-  const pillLabel = row.gender === "women" ? "GA Female" : "GA Male";
-  const allInPrice = calculateAllIn(row.unitPrice, 1).total;
+  const pillLabel =
+    row.gender === "women"
+      ? "GA Female"
+      : row.gender === "men"
+        ? "GA Male"
+        : "GA";
+
+  const allInPriceCents = calculateAllIn(row.unitPrice, 1).totalCents;
 
   return `
     <article class="ticket-row paid-ticket"
@@ -402,7 +482,7 @@ function renderPaidRow(row, index) {
         <div>
           <div class="ticket-pill">
             <span class="ticket-pill-label">${escapeHTML(pillLabel)}</span>
-            <span class="ticket-pill-price">$${Math.round(allInPrice)}<small>ea</small></span>
+            <span class="ticket-pill-price">${formatMoneyCents(allInPriceCents)}<small>ea</small></span>
           </div>
 
           <div class="qty-control" aria-label="Quantity for ${escapeHTML(row.name)}">
@@ -417,7 +497,7 @@ function renderPaidRow(row, index) {
 }
 
 function updateTotal() {
-  let total = 0;
+  let subtotalCents = 0;
   let count = 0;
 
   document.querySelectorAll(".paid-ticket").forEach((card) => {
@@ -432,13 +512,17 @@ function updateTotal() {
     }
 
     if (quantity > 0) {
-      total += calculateAllIn(price, quantity).total;
+      subtotalCents += dollarsToCents(price) * quantity;
       count += quantity;
     }
   });
 
+  const totalCents = count > 0
+    ? calculateAllInFromSubtotalCents(subtotalCents, count).totalCents
+    : 0;
+
   if (bottomTotal) {
-    bottomTotal.textContent = `$${total.toFixed(2)}`;
+    bottomTotal.textContent = formatMoneyCents(totalCents);
   }
 
   if (bottomCaption) {
@@ -496,7 +580,7 @@ function attachTicketHandlers() {
             ticketType: card.dataset.ticketType,
             quantity,
             unitPrice: Number(card.dataset.price),
-            pricingMode: "phases",
+            pricingMode: card.dataset.ticketType === "general" ? "single" : "phases",
             phaseName: card.dataset.phaseName
           });
         }
@@ -539,10 +623,10 @@ async function loadCheckout() {
     return;
   }
 
-try {
-  await ensureSignedIn();
+  try {
+    await ensureSignedIn();
 
-  const docRef = doc(db, "parties", eventId);
+    const docRef = doc(db, "parties", eventId);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
