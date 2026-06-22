@@ -38,9 +38,6 @@ const container = document.getElementById("checkout-event");
 const checkoutRoot = document.getElementById("checkout-root");
 const heroImage = document.getElementById("checkout-hero-image");
 const imageFallback = document.getElementById("checkout-image-fallback");
-const eventTitle = document.getElementById("event-title");
-const eventDate = document.getElementById("event-date");
-const eventLocation = document.getElementById("event-location");
 const ticketCount = document.getElementById("ticket-count");
 const bottomTotal = document.getElementById("bottom-total");
 const bottomCaption = document.getElementById("bottom-caption");
@@ -66,6 +63,10 @@ async function ensureSignedIn() {
   return result.user;
 }
 
+// ------------------------------------------------------------
+// Pricing constants — keep matched with app/functions
+// ------------------------------------------------------------
+
 const STRIPE_PERCENT = 0.029;
 const STRIPE_FLAT_CENTS = 30;
 
@@ -75,18 +76,157 @@ const TICKET_MAIN_RATE = 0.15;
 const TICKET_HIGH_RATE = 0.10;
 const TICKET_MAIN_RATE_CAP_PER_TICKET_CENTS = 2000;
 
+// ------------------------------------------------------------
+// Basic helpers
+// ------------------------------------------------------------
+
+function readBool(value, fallback = false) {
+  if (typeof value === "boolean") return value;
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value !== 0;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    if (["true", "yes", "1"].includes(normalized)) return true;
+    if (["false", "no", "0"].includes(normalized)) return false;
+  }
+
+  return fallback;
+}
+
+function readInt(value, fallback = 0) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.trunc(value);
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return Math.trunc(parsed);
+  }
+
+  return fallback;
+}
+
+function readCents(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(Math.round(value), 0);
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return Math.max(Math.round(parsed), 0);
+  }
+
+  return null;
+}
+
 function dollarsToCents(value) {
   const number = Number(value || 0);
-  return Number.isFinite(number) ? Math.round(number * 100) : 0;
+  return Number.isFinite(number) ? Math.max(Math.round(number * 100), 0) : 0;
+}
+
+function priceCentsFrom(object, centsKey, dollarsKey) {
+  if (!object) return null;
+
+  const cents = readCents(object[centsKey]);
+  if (cents !== null) return cents;
+
+  if (object[dollarsKey] !== undefined && object[dollarsKey] !== null) {
+    return dollarsToCents(object[dollarsKey]);
+  }
+
+  return null;
 }
 
 function formatMoneyCents(cents) {
   return `$${(Number(cents || 0) / 100).toFixed(2)}`;
 }
 
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function firstValue(...values) {
+  return values.find((value) => {
+    if (value === undefined || value === null) return false;
+    if (typeof value === "string") return value.trim().length > 0;
+    return true;
+  });
+}
+
+function parseFirestoreDate(value) {
+  if (!value) return null;
+
+  if (value instanceof Date) return value;
+
+  if (typeof value?.toDate === "function") {
+    return value.toDate();
+  }
+
+  if (typeof value?.seconds === "number") {
+    return new Date(value.seconds * 1000);
+  }
+
+  if (typeof value?._seconds === "number") {
+    return new Date(value._seconds * 1000);
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return new Date(value * 1000);
+  }
+
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  return null;
+}
+
+function formatClock(date) {
+  if (!date) return "";
+
+  return date.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
+function normalizeClockText(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+
+  return text
+    .replace(/\s+/g, " ")
+    .replace(":00 ", " ")
+    .replace("AM", "AM")
+    .replace("PM", "PM");
+}
+
+function normalizeTicketGender(gender) {
+  const normalized = String(gender || "").trim().toLowerCase();
+
+  if (["male", "m", "man", "men"].includes(normalized)) return "male";
+  if (["female", "f", "woman", "women"].includes(normalized)) return "female";
+
+  return null;
+}
+
+// ------------------------------------------------------------
+// All-in pricing
+// ------------------------------------------------------------
+
 function calculateTicketServiceFeeCents(subtotalCents, quantity) {
-  const qty = Math.max(Math.trunc(Number(quantity || 1)), 1);
-  const subtotal = Math.max(Math.trunc(Number(subtotalCents || 0)), 0);
+  const qty = Math.max(readInt(quantity, 1), 1);
+  const subtotal = Math.max(readInt(subtotalCents, 0), 0);
 
   if (subtotal <= 0) return 0;
 
@@ -104,8 +244,8 @@ function calculateTicketServiceFeeCents(subtotalCents, quantity) {
 }
 
 function calculateAllInFromSubtotalCents(subtotalCents, quantity) {
-  const qty = Math.max(Math.trunc(Number(quantity || 0)), 0);
-  const subtotal = Math.max(Math.trunc(Number(subtotalCents || 0)), 0);
+  const qty = Math.max(readInt(quantity, 0), 0);
+  const subtotal = Math.max(readInt(subtotalCents, 0), 0);
 
   if (qty <= 0 || subtotal <= 0) {
     return {
@@ -135,91 +275,15 @@ function calculateAllInFromSubtotalCents(subtotalCents, quantity) {
   };
 }
 
-function calculateAllIn(unitPrice, quantity) {
-  const qty = Math.max(Math.trunc(Number(quantity || 0)), 0);
-  const subtotalCents = dollarsToCents(unitPrice) * qty;
+function allInPerTicketCents(unitPriceCents) {
+  if (unitPriceCents <= 0) return 0;
 
-  return calculateAllInFromSubtotalCents(subtotalCents, qty);
+  return calculateAllInFromSubtotalCents(unitPriceCents, 1).totalCents;
 }
 
-function parseFirestoreDate(value) {
-  if (!value) return null;
-  if (value instanceof Date) return value;
-
-  if (typeof value?.toDate === "function") {
-    return value.toDate();
-  }
-
-  if (typeof value?.seconds === "number") {
-    return new Date(value.seconds * 1000);
-  }
-
-  if (typeof value === "string") {
-    const parsed = new Date(value);
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
-
-  return null;
-}
-
-function getSortedPhases(ticketPhases = []) {
-  return [...ticketPhases].sort((a, b) => {
-    const aDate = parseFirestoreDate(a.expiresAt) || new Date("9999-12-31");
-    const bDate = parseFirestoreDate(b.expiresAt) || new Date("9999-12-31");
-    return aDate - bDate;
-  });
-}
-
-function getActivePhase(ticketPhases = []) {
-  const now = new Date();
-  const sorted = getSortedPhases(ticketPhases);
-
-  const active = sorted.find((phase) => {
-    const expiresAt = parseFirestoreDate(phase.expiresAt);
-    return expiresAt && now < expiresAt;
-  });
-
-  return active || sorted[sorted.length - 1] || null;
-}
-
-function getPhaseCountdown(phase) {
-  if (!phase) return "";
-
-  const expiresAt = parseFirestoreDate(phase.expiresAt);
-  if (!expiresAt) return "";
-
-  const seconds = Math.floor((expiresAt - new Date()) / 1000);
-  if (seconds <= 0) return "";
-
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) return `Price increases in ${days} day${days > 1 ? "s" : ""}`;
-  if (hours > 0) return `Price increases in ${hours} hour${hours > 1 ? "s" : ""}`;
-  return `Price increases in ${minutes} minute${minutes > 1 ? "s" : ""}`;
-}
-
-function formatMoney(value) {
-  return `$${Number(value || 0).toFixed(2)}`;
-}
-
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function firstValue(...values) {
-  return values.find((value) => {
-    if (value === undefined || value === null) return false;
-    if (typeof value === "string") return value.trim().length > 0;
-    return true;
-  });
-}
+// ------------------------------------------------------------
+// Event header
+// ------------------------------------------------------------
 
 function formatEventDate(event) {
   const raw = firstValue(
@@ -292,8 +356,6 @@ function hydrateEventHeader(event) {
   document.title = `${title} | Backstage`;
 
   if (imageURL && heroImage) {
-    console.log("Checkout image URL:", imageURL);
-
     heroImage.onload = () => {
       heroImage.hidden = false;
       heroImage.style.display = "block";
@@ -335,44 +397,549 @@ async function trackCheckoutStart() {
   }
 }
 
-function getTicketRows(event) {
-  const rows = [];
+// ------------------------------------------------------------
+// Legacy phase fallback
+// ------------------------------------------------------------
 
-  if (event.freeTicketsEnabled === true) {
-    const femaleTotal = Number(event.freeFemaleTotal || 0);
-    const femaleClaimed = Number(event.freeFemaleClaimed || 0);
-    const femaleRemaining = Math.max(0, femaleTotal - femaleClaimed);
+function getSortedPhases(ticketPhases = []) {
+  return [...ticketPhases].sort((a, b) => {
+    const aDate = parseFirestoreDate(a.expiresAt) || new Date("9999-12-31");
+    const bDate = parseFirestoreDate(b.expiresAt) || new Date("9999-12-31");
+    return aDate - bDate;
+  });
+}
 
-    const maleTotal = Number(event.freeMaleTotal || 0);
-    const maleClaimed = Number(event.freeMaleClaimed || 0);
-    const maleRemaining = Math.max(0, maleTotal - maleClaimed);
+function getActivePhase(ticketPhases = []) {
+  const now = new Date();
+  const sorted = getSortedPhases(ticketPhases);
 
-    if (femaleTotal > 0) {
-      rows.push({
-        kind: "free",
-        gender: "women",
-        name: "Free Female",
-        priceLabel: "Free",
-        availableLabel: femaleRemaining > 0 ? `${femaleRemaining} free left` : "Sold out",
-        soldOut: femaleRemaining <= 0
-      });
-    }
+  const active = sorted.find((phase) => {
+    const expiresAt = parseFirestoreDate(phase.expiresAt);
+    return expiresAt && now < expiresAt;
+  });
 
-    if (maleTotal > 0) {
-      rows.push({
-        kind: "free",
-        gender: "men",
-        name: "Free Male",
-        priceLabel: "Free",
-        availableLabel: maleRemaining > 0 ? `${maleRemaining} free left` : "Sold out",
-        soldOut: maleRemaining <= 0
-      });
+  return active || sorted[sorted.length - 1] || null;
+}
+
+function getPhaseCountdown(phase) {
+  if (!phase) return "";
+
+  const expiresAt = parseFirestoreDate(phase.expiresAt);
+  if (!expiresAt) return "";
+
+  const seconds = Math.floor((expiresAt - new Date()) / 1000);
+  if (seconds <= 0) return "";
+
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `Price increases in ${days} day${days > 1 ? "s" : ""}`;
+  if (hours > 0) return `Price increases in ${hours} hour${hours > 1 ? "s" : ""}`;
+  return `Price increases in ${minutes} minute${minutes > 1 ? "s" : ""}`;
+}
+
+// ------------------------------------------------------------
+// New ticket type logic — mirrors app model
+// ------------------------------------------------------------
+
+function rawTicketTitle(ticket) {
+  return String(
+    ticket?.displayTitle ||
+    ticket?.name ||
+    ticket?.title ||
+    "Ticket"
+  );
+}
+
+function normalizedTicketTitle(ticket) {
+  const kind = String(ticket?.kind || ticket?.id || "").toLowerCase();
+  const entryWindow = ticket?.entryWindow || {};
+  const entryWindowType = String(
+    entryWindow?.type || ticket?.entryWindowType || "anytime"
+  ).toLowerCase();
+
+  const rawValidBeforeText =
+    ticket?.validBeforeText ||
+    entryWindow?.cutoffTimeText ||
+    "";
+
+  const validBeforeText = normalizeClockText(rawValidBeforeText);
+  const rawTitle = rawTicketTitle(ticket);
+
+  switch (kind) {
+    case "before_time_general_admission":
+      return validBeforeText ? `Before ${validBeforeText}` : "Before Time";
+
+    case "bckstge_access":
+      return "General Admission";
+
+    case "beyond_the_stage":
+      return "BCKSTGE Access";
+
+    case "single_general_admission":
+      return "General Admission";
+
+    case "gender_pricing":
+      return "General Admission";
+
+    default:
+      if (rawTitle === "BCKSTGE ACCESS") return "General Admission";
+      if (rawTitle === "BEYOND THE STAGE" || rawTitle === "Beyond the Stage") return "BCKSTGE Access";
+
+      if (rawTitle === "BCKSTGE General Admission") {
+        if (entryWindowType === "before" && validBeforeText) {
+          return `Before ${validBeforeText}`;
+        }
+
+        return "General Admission";
+      }
+
+      return rawTitle;
+  }
+}
+
+function sortByTicketOrder(a, b) {
+  const aOrder = readInt(a?.sortOrder, 0);
+  const bOrder = readInt(b?.sortOrder, 0);
+
+  if (aOrder === bOrder) {
+    return normalizedTicketTitle(a).localeCompare(normalizedTicketTitle(b));
+  }
+
+  return aOrder - bOrder;
+}
+
+function sortByVolumeOrder(a, b) {
+  const aOrder = readInt(a?.sortOrder, 0);
+  const bOrder = readInt(b?.sortOrder, 0);
+
+  if (aOrder === bOrder) {
+    return String(a?.label || "").localeCompare(String(b?.label || ""));
+  }
+
+  return aOrder - bOrder;
+}
+
+function isBeforeTimeTicket(ticket) {
+  const kind = String(ticket?.kind || ticket?.id || "").toLowerCase();
+  const entryWindow = ticket?.entryWindow || {};
+  const entryWindowType = String(
+    entryWindow?.type || ticket?.entryWindowType || "anytime"
+  ).toLowerCase();
+
+  return entryWindowType === "before" || kind === "before_time_general_admission";
+}
+
+function ticketLastValidDate(ticket) {
+  const entryWindow = ticket?.entryWindow || {};
+
+  return (
+    parseFirestoreDate(ticket?.validUntilGraceAt) ||
+    parseFirestoreDate(entryWindow?.validUntilGraceAt) ||
+    parseFirestoreDate(ticket?.validBefore) ||
+    parseFirestoreDate(entryWindow?.cutoffAt) ||
+    null
+  );
+}
+
+function ticketValidUntilText(ticket) {
+  const explicitText =
+    normalizeClockText(ticket?.validUntilGraceText) ||
+    normalizeClockText(ticket?.entryWindow?.validUntilGraceText) ||
+    normalizeClockText(ticket?.validBeforeText) ||
+    normalizeClockText(ticket?.entryWindow?.cutoffTimeText);
+
+  if (explicitText) return explicitText;
+
+  const date = ticketLastValidDate(ticket);
+  return date ? formatClock(date) : "";
+}
+
+function volumeIsRemaining(volume) {
+  const quantityTotal = readInt(volume?.quantityTotal ?? volume?.quantity, 0);
+
+  return (
+    readBool(volume?.quantityIsRemaining, false) ||
+    (readBool(volume?.isFinalVolume, false) && quantityTotal <= 0)
+  );
+}
+
+function volumeAvailableCount(volume, ticketSoldCount) {
+  if (volumeIsRemaining(volume)) return null;
+
+  const startsAfterTicketsSold = readInt(volume?.startsAfterTicketsSold, 0);
+  const quantityTotal = readInt(volume?.quantityTotal ?? volume?.quantity, 0);
+  const endsAfterTicketsSold = readInt(volume?.endsAfterTicketsSold, 0);
+
+  const end = endsAfterTicketsSold > 0
+    ? endsAfterTicketsSold
+    : startsAfterTicketsSold + quantityTotal;
+
+  return Math.max(end - ticketSoldCount, 0);
+}
+
+function volumeSoldOut(volume, ticketSoldCount) {
+  if (volumeIsRemaining(volume)) return false;
+
+  const startsAfterTicketsSold = readInt(volume?.startsAfterTicketsSold, 0);
+  const quantityTotal = readInt(volume?.quantityTotal ?? volume?.quantity, 0);
+  const endsAfterTicketsSold = readInt(volume?.endsAfterTicketsSold, 0);
+
+  const end = endsAfterTicketsSold > 0
+    ? endsAfterTicketsSold
+    : startsAfterTicketsSold + quantityTotal;
+
+  return end > 0 && ticketSoldCount >= end;
+}
+
+function ticketUsesVolumePricing(ticket) {
+  const volumes = Array.isArray(ticket?.volumes) ? ticket.volumes : [];
+
+  return (
+    volumes.length > 0 &&
+    (
+      readBool(ticket?.priceWavesEnabled, false) ||
+      readBool(ticket?.volumePricingEnabled, false)
+    )
+  );
+}
+
+function activeVolumeForTicket(ticket) {
+  if (!ticketUsesVolumePricing(ticket)) return null;
+
+  const ticketSoldCount = readInt(ticket?.quantitySold, 0);
+  const volumes = [...(Array.isArray(ticket?.volumes) ? ticket.volumes : [])]
+    .sort(sortByVolumeOrder);
+
+  for (const volume of volumes) {
+    if (volumeIsRemaining(volume)) return volume;
+
+    const startsAfterTicketsSold = readInt(volume?.startsAfterTicketsSold, 0);
+    const quantityTotal = readInt(volume?.quantityTotal ?? volume?.quantity, 0);
+    const endsAfterTicketsSold = readInt(volume?.endsAfterTicketsSold, 0);
+
+    const end = endsAfterTicketsSold > 0
+      ? endsAfterTicketsSold
+      : startsAfterTicketsSold + quantityTotal;
+
+    if (ticketSoldCount >= startsAfterTicketsSold && ticketSoldCount < end) {
+      return volume;
     }
   }
 
+  return null;
+}
+
+function soldOutVolumesForTicket(ticket) {
+  if (!ticketUsesVolumePricing(ticket)) return [];
+
+  const ticketSoldCount = readInt(ticket?.quantitySold, 0);
+
+  return [...(Array.isArray(ticket?.volumes) ? ticket.volumes : [])]
+    .sort(sortByVolumeOrder)
+    .filter((volume) => volumeSoldOut(volume, ticketSoldCount));
+}
+
+function ticketAvailableCount(ticket, activeVolume = null) {
+  if (ticketUsesVolumePricing(ticket)) {
+    if (!activeVolume) return 0;
+    return volumeAvailableCount(activeVolume, readInt(ticket?.quantitySold, 0));
+  }
+
+  const quantityLimitEnabled = readBool(ticket?.quantityLimitEnabled, false);
+  const unlimitedQuantity = readBool(ticket?.unlimitedQuantity, true);
+
+  if (quantityLimitEnabled && !unlimitedQuantity) {
+    const total = readInt(ticket?.quantityTotal, 0);
+    const sold = readInt(ticket?.quantitySold, 0);
+    return Math.max(total - sold, 0);
+  }
+
+  return null;
+}
+
+function ticketBasePriceCents(ticket, volume = null) {
+  return (
+    priceCentsFrom(volume, "priceCents", "price") ??
+    readCents(ticket?.currentPriceCents) ??
+    priceCentsFrom(ticket, "priceCents", "price") ??
+    0
+  );
+}
+
+function ticketGenderPriceCents(ticket, volume, normalizedGender) {
+  if (normalizedGender === "male") {
+    return (
+      readCents(volume?.malePriceCents) ??
+      readCents(ticket?.malePriceCents) ??
+      ticketBasePriceCents(ticket, volume)
+    );
+  }
+
+  if (normalizedGender === "female") {
+    return (
+      readCents(volume?.femalePriceCents) ??
+      readCents(ticket?.femalePriceCents) ??
+      ticketBasePriceCents(ticket, volume)
+    );
+  }
+
+  return null;
+}
+
+function eventGlobalRemaining(event) {
+  const cap = readInt(event?.capacityLimit ?? event?.capacity ?? event?.maxCapacity, 0);
+  if (cap <= 0) return null;
+
+  const sold = readInt(event?.soldCount ?? event?.ticketsSold ?? event?.peopleGoing, 0);
+  return Math.max(cap - sold, 0);
+}
+
+function isTicketAvailable(ticket, activeVolume) {
+  const status = String(ticket?.status || "active").toLowerCase();
+  if (status !== "active") return false;
+
+  if (isBeforeTimeTicket(ticket)) {
+    const lastValid = ticketLastValidDate(ticket);
+    if (lastValid && new Date() > lastValid) return false;
+  }
+
+  if (ticketUsesVolumePricing(ticket) && !activeVolume) return false;
+
+  const available = ticketAvailableCount(ticket, activeVolume);
+  if (available !== null && available <= 0) return false;
+
+  return true;
+}
+
+function availabilityTextForRow(row) {
+  const parts = [];
+
+  if (row.volumeLabel) {
+    parts.push(row.volumeLabel);
+  }
+
+  if (row.isBeforeTime && row.validUntilText) {
+    parts.push(`Valid until ${row.validUntilText}`);
+  }
+
+  if (row.availableCount !== null && row.availableCount !== undefined) {
+    if (row.availableCount <= 5) {
+      parts.push(`Only ${row.availableCount} left at this price`);
+    } else {
+      parts.push(`${row.availableCount} left`);
+    }
+  }
+
+  return parts.join(" • ");
+}
+
+function buildNewTicketRows(event) {
+  const ticketTypes = Array.isArray(event.ticketTypes) ? event.ticketTypes : [];
+  if (!ticketTypes.length) return [];
+
+  const globalRemaining = eventGlobalRemaining(event);
+  if (globalRemaining !== null && globalRemaining <= 0) return [];
+
+  const rows = [];
+  const sortedTickets = [...ticketTypes].sort(sortByTicketOrder);
+
+  for (const ticket of sortedTickets) {
+    const activeVolume = activeVolumeForTicket(ticket);
+
+    if (!isTicketAvailable(ticket, activeVolume)) continue;
+
+    const ticketAvailable = ticketAvailableCount(ticket, activeVolume);
+    const maxQuantity = Math.max(
+      Math.min(
+        10,
+        ticketAvailable ?? 10,
+        globalRemaining ?? 10
+      ),
+      0
+    );
+
+    if (maxQuantity <= 0) continue;
+
+    const kind = String(ticket.kind || ticket.id || "ticket");
+    const ticketTypeId = String(ticket.id || "");
+    const title = normalizedTicketTitle(ticket);
+    const genderPricesEnabled = readBool(ticket.genderPricesEnabled, false);
+    const volumeLabel = activeVolume ? String(activeVolume.label || "") : "";
+    const isBeforeTime = isBeforeTimeTicket(ticket);
+    const validUntilText = isBeforeTime ? ticketValidUntilText(ticket) : "";
+
+    const common = {
+      kind: "paid",
+      pricingSource: "ticketTypes",
+      ticketTypeId,
+      ticketTypeKind: kind,
+      ticketVolumeId: activeVolume ? String(activeVolume.id || "") : "",
+      ticketVolumeLabel: volumeLabel,
+      volumeLabel,
+      isBeforeTime,
+      validUntilText,
+      availableCount: ticketAvailable,
+      maxQuantity,
+      isPopular: kind === "bckstge_access",
+      rawTitle: rawTicketTitle(ticket)
+    };
+
+    if (genderPricesEnabled) {
+      const femalePriceCents = ticketGenderPriceCents(ticket, activeVolume, "female");
+      const malePriceCents = ticketGenderPriceCents(ticket, activeVolume, "male");
+
+      if (femalePriceCents !== null) {
+        rows.push({
+          ...common,
+          name: title,
+          audienceLabel: "Women price",
+          pillLabel: "Women",
+          ticketGender: "female",
+          unitPriceCents: femalePriceCents
+        });
+      }
+
+      if (malePriceCents !== null) {
+        rows.push({
+          ...common,
+          name: title,
+          audienceLabel: "Men price",
+          pillLabel: "Men",
+          ticketGender: "male",
+          unitPriceCents: malePriceCents
+        });
+      }
+    } else {
+      rows.push({
+        ...common,
+        name: title,
+        audienceLabel: "All guests",
+        pillLabel: common.isPopular ? "Most Popular" : (volumeLabel || "Ticket"),
+        ticketGender: "",
+        unitPriceCents: ticketBasePriceCents(ticket, activeVolume)
+      });
+    }
+
+    for (const soldVolume of soldOutVolumesForTicket(ticket)) {
+      const soldVolumeLabel = String(soldVolume.label || "Previous volume");
+
+      if (genderPricesEnabled) {
+        const femaleSoldOutPriceCents = ticketGenderPriceCents(ticket, soldVolume, "female");
+        const maleSoldOutPriceCents = ticketGenderPriceCents(ticket, soldVolume, "male");
+
+        if (femaleSoldOutPriceCents !== null) {
+          rows.push({
+            kind: "sold_out_volume",
+            name: title,
+            audienceLabel: "Women price",
+            pillLabel: "Sold",
+            ticketGender: "female",
+            ticketTypeId,
+            ticketTypeKind: kind,
+            ticketVolumeId: String(soldVolume.id || ""),
+            ticketVolumeLabel: soldVolumeLabel,
+            volumeLabel: soldVolumeLabel,
+            unitPriceCents: femaleSoldOutPriceCents
+          });
+        }
+
+        if (maleSoldOutPriceCents !== null) {
+          rows.push({
+            kind: "sold_out_volume",
+            name: title,
+            audienceLabel: "Men price",
+            pillLabel: "Sold",
+            ticketGender: "male",
+            ticketTypeId,
+            ticketTypeKind: kind,
+            ticketVolumeId: String(soldVolume.id || ""),
+            ticketVolumeLabel: soldVolumeLabel,
+            volumeLabel: soldVolumeLabel,
+            unitPriceCents: maleSoldOutPriceCents
+          });
+        }
+      } else {
+        rows.push({
+          kind: "sold_out_volume",
+          name: title,
+          audienceLabel: "Previous price",
+          pillLabel: "Sold",
+          ticketGender: "",
+          ticketTypeId,
+          ticketTypeKind: kind,
+          ticketVolumeId: String(soldVolume.id || ""),
+          ticketVolumeLabel: soldVolumeLabel,
+          volumeLabel: soldVolumeLabel,
+          unitPriceCents: ticketBasePriceCents(ticket, soldVolume)
+        });
+      }
+    }
+  }
+
+  // Since the web checkout does not know the buyer's gender, only auto-select a
+  // non-gendered ticket. Gendered rows stay at 0 until the buyer picks Men/Women.
+  const paidRows = rows.filter((row) => row.kind === "paid");
+  const preferred =
+    paidRows.find((row) => row.ticketTypeKind === "bckstge_access" && !row.ticketGender) ||
+    paidRows.find((row) => !row.ticketGender);
+
+  if (preferred) {
+    preferred.defaultSelected = true;
+  }
+
+  return rows;
+}
+
+// ------------------------------------------------------------
+// Ticket rows
+// ------------------------------------------------------------
+
+function buildLegacyFreeRows(event) {
+  const rows = [];
+
+  if (event.freeTicketsEnabled !== true) return rows;
+
+  const femaleTotal = Number(event.freeFemaleTotal || 0);
+  const femaleClaimed = Number(event.freeFemaleClaimed || 0);
+  const femaleRemaining = Math.max(0, femaleTotal - femaleClaimed);
+
+  const maleTotal = Number(event.freeMaleTotal || 0);
+  const maleClaimed = Number(event.freeMaleClaimed || 0);
+  const maleRemaining = Math.max(0, maleTotal - maleClaimed);
+
+  if (femaleTotal > 0) {
+    rows.push({
+      kind: "free",
+      gender: "women",
+      name: "Free Female",
+      priceLabel: "Free",
+      availableLabel: femaleRemaining > 0 ? `${femaleRemaining} free left` : "Sold out",
+      soldOut: femaleRemaining <= 0
+    });
+  }
+
+  if (maleTotal > 0) {
+    rows.push({
+      kind: "free",
+      gender: "men",
+      name: "Free Male",
+      priceLabel: "Free",
+      availableLabel: maleRemaining > 0 ? `${maleRemaining} free left` : "Sold out",
+      soldOut: maleRemaining <= 0
+    });
+  }
+
+  return rows;
+}
+
+function buildLegacyPaidRows(event) {
+  const rows = [];
+
   if (event.pricingMode === "phases" || event.genderTicketPricing === true) {
-    let malePrice = Number(event.maleTicketPrice || 0);
-    let femalePrice = Number(event.femaleTicketPrice || 0);
+    let malePrice = Number(event.maleTicketPrice || event.priceMen || 0);
+    let femalePrice = Number(event.femaleTicketPrice || event.priceWomen || 0);
 
     if (event.pricingMode === "phases" && event.ticketPhases?.length) {
       activePhase = getActivePhase(event.ticketPhases);
@@ -386,25 +953,45 @@ function getTicketRows(event) {
       }
     }
 
-    rows.push({
-      kind: "paid",
-      gender: "women",
-      name: "GA Female",
-      unitPrice: femalePrice,
-      priceLabel: `${formatMoneyCents(calculateAllIn(femalePrice, 1).totalCents)} all-in`,
-      phaseName: activePhase?.name || "General Admission",
-      timer: getPhaseCountdown(activePhase)
-    });
+    if (femalePrice >= 0) {
+      rows.push({
+        kind: "paid",
+        pricingSource: "legacy",
+        ticketTypeId: "",
+        ticketTypeKind: "women",
+        ticketGender: "female",
+        ticketVolumeId: "",
+        ticketVolumeLabel: activePhase?.name || "",
+        volumeLabel: activePhase?.name || "",
+        name: "General Admission",
+        audienceLabel: "Women price",
+        pillLabel: "Women",
+        unitPriceCents: dollarsToCents(femalePrice),
+        phaseName: activePhase?.name || "General Admission",
+        timer: getPhaseCountdown(activePhase),
+        maxQuantity: 10
+      });
+    }
 
-    rows.push({
-      kind: "paid",
-      gender: "men",
-      name: "GA Male",
-      unitPrice: malePrice,
-      priceLabel: `${formatMoneyCents(calculateAllIn(malePrice, 1).totalCents)} all-in`,
-      phaseName: activePhase?.name || "General Admission",
-      timer: getPhaseCountdown(activePhase)
-    });
+    if (malePrice >= 0) {
+      rows.push({
+        kind: "paid",
+        pricingSource: "legacy",
+        ticketTypeId: "",
+        ticketTypeKind: "men",
+        ticketGender: "male",
+        ticketVolumeId: "",
+        ticketVolumeLabel: activePhase?.name || "",
+        volumeLabel: activePhase?.name || "",
+        name: "General Admission",
+        audienceLabel: "Men price",
+        pillLabel: "Men",
+        unitPriceCents: dollarsToCents(malePrice),
+        phaseName: activePhase?.name || "General Admission",
+        timer: getPhaseCountdown(activePhase),
+        maxQuantity: 10
+      });
+    }
   } else {
     const generalPrice = Number(firstValue(
       event.admissionPrice,
@@ -416,12 +1003,20 @@ function getTicketRows(event) {
     if (generalPrice > 0) {
       rows.push({
         kind: "paid",
-        gender: "general",
+        pricingSource: "legacy",
+        ticketTypeId: "",
+        ticketTypeKind: "general",
+        ticketGender: "",
+        ticketVolumeId: "",
+        ticketVolumeLabel: "",
         name: "General Admission",
-        unitPrice: generalPrice,
-        priceLabel: `${formatMoneyCents(calculateAllIn(generalPrice, 1).totalCents)} all-in`,
+        audienceLabel: "All guests",
+        pillLabel: "GA",
+        unitPriceCents: dollarsToCents(generalPrice),
         phaseName: "General Admission",
-        timer: ""
+        timer: "",
+        maxQuantity: 10,
+        defaultSelected: true
       });
     }
   }
@@ -429,71 +1024,248 @@ function getTicketRows(event) {
   return rows;
 }
 
+function getTicketRows(event) {
+  const freeRows = buildLegacyFreeRows(event);
+  const newRows = buildNewTicketRows(event);
+
+  if (newRows.some((row) => row.kind === "paid")) {
+    return [...freeRows, ...newRows];
+  }
+
+  return [...freeRows, ...buildLegacyPaidRows(event)];
+}
+
+function groupKeyForRow(row) {
+  const normalized = normalizeTicketGender(row?.ticketGender || row?.gender || "");
+
+  if (normalized === "female") return "women";
+  if (normalized === "male") return "men";
+
+  return "everyone";
+}
+
+function groupMetaForKey(key) {
+  if (key === "women") {
+    return {
+      title: "Women Tickets",
+      helper: "Use this section for Women pricing.",
+      empty: "No Women tickets are available."
+    };
+  }
+
+  if (key === "men") {
+    return {
+      title: "Men Tickets",
+      helper: "Use this section for Men pricing.",
+      empty: "No Men tickets are available."
+    };
+  }
+
+  return {
+    title: "All Tickets",
+    helper: "No gender selection needed for these.",
+    empty: "No other tickets are available."
+  };
+}
+
+function paidRowSubtitle(row) {
+  if (row.isBeforeTime && row.validUntilText) {
+    return `Entry before ${row.validUntilText}`;
+  }
+
+  const kind = String(row.ticketTypeKind || "").toLowerCase();
+  const title = String(row.name || "").toLowerCase();
+
+  if (kind.includes("beyond") || title.includes("beyond")) return "VIP Experience";
+  if (kind.includes("access") || title.includes("access")) return "Anytime Entry";
+
+  return "Anytime Entry";
+}
+
+function availabilityTextWithoutVolume(row) {
+  const parts = [];
+
+  if (row.isBeforeTime && row.validUntilText) {
+    parts.push(`Valid until ${row.validUntilText}`);
+  }
+
+  if (row.availableCount !== null && row.availableCount !== undefined) {
+    if (row.availableCount <= 5) {
+      parts.push(`Only ${row.availableCount} left at this price`);
+    } else {
+      parts.push(`${row.availableCount} left`);
+    }
+  }
+
+  return parts.join(" • ") || row.timer || "All-in pricing";
+}
+
+function rowVolumeLabel(row) {
+  return String(row.ticketVolumeLabel || row.volumeLabel || row.phaseName || "").trim();
+}
+
+function renderTicketGroups(rows) {
+  const groups = {
+    women: [],
+    men: [],
+    everyone: []
+  };
+
+  for (const row of rows) {
+    groups[groupKeyForRow(row)].push(row);
+  }
+
+  const groupOrder = ["women", "men", "everyone"];
+
+  return groupOrder
+    .filter((key) => groups[key].length > 0)
+    .map((key) => {
+      const meta = groupMetaForKey(key);
+      const groupRows = groups[key];
+      const count = groupRows.filter((row) => row.kind === "paid" || row.kind === "free").length;
+
+      return `
+        <section class="ticket-gender-group" data-ticket-group="${escapeHTML(key)}">
+          <div class="gender-header">
+            <div>
+              <h3 class="gender-title">${escapeHTML(meta.title)}</h3>
+              <p class="gender-helper">${escapeHTML(meta.helper)}</p>
+            </div>
+            <span class="gender-count">${count} option${count === 1 ? "" : "s"}</span>
+          </div>
+
+          <div class="gender-options">
+            ${groupRows
+              .map((row, index) => {
+                if (row.kind === "free") return renderFreeRow(row);
+                if (row.kind === "sold_out_volume") return renderSoldOutVolumeRow(row);
+                return renderPaidRow(row, index);
+              })
+              .join("")}
+          </div>
+        </section>
+      `;
+    })
+    .join("");
+}
+
 function renderFreeRow(row) {
+  const normalizedGender = normalizeTicketGender(row.gender);
+  const genderLabel = normalizedGender === "female" ? "Women" : normalizedGender === "male" ? "Men" : "Guest";
   const disabled = row.soldOut ? "disabled" : "";
-  const pillLabel = row.gender === "women" ? "Free Female" : "Free Male";
 
   return `
-    <article class="ticket-row free-ticket ${row.soldOut ? "is-sold-out" : ""}" data-ticket-gender="${row.gender}">
-      <div class="ticket-copy">
-        <div class="ticket-name-line">
-          <h3 class="ticket-name">${escapeHTML(row.name)}</h3>
+    <article class="ticket-row free-ticket ${row.soldOut ? "is-sold-out" : ""}" data-ticket-gender="${escapeHTML(row.gender || normalizedGender || "")}">
+      <div class="ticket-card-top">
+        <div class="ticket-copy">
+          <div class="ticket-name-line">
+            <h3 class="ticket-name">Free Entry</h3>
+          </div>
+          <p class="ticket-subtitle">${escapeHTML(genderLabel)} ticket</p>
+          <p class="ticket-subtext">${escapeHTML(row.availableLabel)}</p>
         </div>
 
-        <p class="ticket-subtext">${escapeHTML(row.availableLabel)}</p>
+        <div class="ticket-price-label">Free</div>
       </div>
 
-      <div class="ticket-action">
-        <button class="ticket-pill claim-free" type="button" ${disabled}>
-          <span class="ticket-pill-label">${escapeHTML(pillLabel)}</span>
-          <span class="ticket-pill-price">${row.soldOut ? "Sold" : "$0"}<small>${row.soldOut ? "" : "ea"}</small></span>
-        </button>
+      <div class="ticket-badges">
+        <span class="ticket-badge gender">${escapeHTML(genderLabel)} price</span>
+      </div>
+
+      <button class="free-claim-button claim-free" type="button" ${disabled}>
+        ${row.soldOut ? "Sold out" : "Claim free ticket"}
+      </button>
+    </article>
+  `;
+}
+
+function renderSoldOutVolumeRow(row) {
+  const priceText = row.unitPriceCents > 0
+    ? formatMoneyCents(allInPerTicketCents(row.unitPriceCents))
+    : "Free";
+  const volumeLabel = rowVolumeLabel(row);
+  const normalizedGender = normalizeTicketGender(row.ticketGender) || "";
+
+  return `
+    <article class="ticket-row is-sold-out" data-ticket-gender="${escapeHTML(normalizedGender)}">
+      <div class="ticket-card-top">
+        <div class="ticket-copy">
+          <div class="ticket-name-line">
+            <h3 class="ticket-name">${escapeHTML(row.name)}</h3>
+            ${volumeLabel ? `<span class="ticket-volume-badge">${escapeHTML(volumeLabel)}</span>` : ""}
+          </div>
+          <p class="ticket-subtitle">Sold out</p>
+          <p class="ticket-subtext">Previous price${row.audienceLabel ? ` • ${escapeHTML(row.audienceLabel)}` : ""}</p>
+        </div>
+
+        <div class="ticket-price-label">${escapeHTML(priceText)}</div>
       </div>
     </article>
   `;
 }
 
 function renderPaidRow(row, index) {
-  const pillLabel =
-    row.gender === "women"
-      ? "GA Female"
-      : row.gender === "men"
-        ? "GA Male"
-        : "GA";
-
-  const allInPriceCents = calculateAllIn(row.unitPrice, 1).totalCents;
+  const allInPriceCents = allInPerTicketCents(row.unitPriceCents);
+  const priceText = row.unitPriceCents <= 0 ? "Free" : formatMoneyCents(allInPriceCents);
+  const initialQuantity = row.defaultSelected ? 1 : 0;
+  const volumeLabel = rowVolumeLabel(row);
+  const normalizedGender = normalizeTicketGender(row.ticketGender) || "";
 
   return `
-    <article class="ticket-row paid-ticket"
-      data-ticket-gender="${row.gender}"
-      data-ticket-type="${row.gender}"
-      data-price="${row.unitPrice}"
-      data-phase-name="${escapeHTML(row.phaseName)}">
+    <article class="ticket-row paid-ticket ${row.defaultSelected ? "is-selected" : ""}"
+      data-pricing-source="${escapeHTML(row.pricingSource || "legacy")}"
+      data-ticket-type-id="${escapeHTML(row.ticketTypeId || "")}"
+      data-ticket-type-kind="${escapeHTML(row.ticketTypeKind || "general")}"
+      data-ticket-type="${escapeHTML(row.ticketTypeKind || "general")}"
+      data-ticket-title="${escapeHTML(row.name || "Ticket")}"
+      data-ticket-gender="${escapeHTML(normalizedGender)}"
+      data-ticket-volume-id="${escapeHTML(row.ticketVolumeId || "")}"
+      data-ticket-volume-label="${escapeHTML(row.ticketVolumeLabel || "")}"
+      data-unit-price-cents="${Number(row.unitPriceCents || 0)}"
+      data-price="${Number(row.unitPriceCents || 0) / 100}"
+      data-phase-name="${escapeHTML(row.phaseName || "")}"
+      data-max-quantity="${Number(row.maxQuantity || 10)}">
 
-      <div class="ticket-copy">
-        <div class="ticket-name-line">
-          <h3 class="ticket-name">${escapeHTML(row.name)}</h3>
+      <div class="ticket-card-top">
+        <div class="ticket-copy">
+          <div class="ticket-name-line">
+            <h3 class="ticket-name">${escapeHTML(row.name)}</h3>
+            ${volumeLabel ? `<span class="ticket-volume-badge">${escapeHTML(volumeLabel)}</span>` : ""}
+          </div>
+
+          <p class="ticket-subtitle">${escapeHTML(paidRowSubtitle(row))}</p>
+          <p class="ticket-subtext">${escapeHTML(availabilityTextWithoutVolume(row))}</p>
         </div>
 
-        <p class="ticket-subtext">${escapeHTML(row.phaseName)}</p>
+        <div class="ticket-price-label">${escapeHTML(priceText)}${row.unitPriceCents <= 0 ? "" : "<small>ea</small>"}</div>
       </div>
 
-      <div class="ticket-action">
-        <div>
-          <div class="ticket-pill">
-            <span class="ticket-pill-label">${escapeHTML(pillLabel)}</span>
-            <span class="ticket-pill-price">${formatMoneyCents(allInPriceCents)}<small>ea</small></span>
-          </div>
+      <div class="ticket-badges">
+        ${row.isPopular ? `<span class="ticket-badge popular">🔥 Most Popular</span>` : ""}
+        ${row.audienceLabel ? `<span class="ticket-badge gender">${escapeHTML(row.audienceLabel)}</span>` : ""}
+      </div>
 
-          <div class="qty-control" aria-label="Quantity for ${escapeHTML(row.name)}">
-            <button class="qty-button minus" type="button" disabled aria-label="Decrease quantity">−</button>
-            <span class="quantity" data-row-index="${index}">0</span>
-            <button class="qty-button plus" type="button" aria-label="Increase quantity">+</button>
-          </div>
-        </div>
+      <div class="qty-control" aria-label="Quantity for ${escapeHTML(row.name)}">
+        <button class="qty-button minus" type="button" ${initialQuantity <= 0 ? "disabled" : ""} aria-label="Decrease quantity">−</button>
+        <span class="quantity-wrap">
+          <span class="quantity" data-row-index="${index}">${initialQuantity}</span>
+          <span class="quantity-label">ticket</span>
+        </span>
+        <button class="qty-button plus" type="button" aria-label="Increase quantity">+</button>
       </div>
     </article>
   `;
+}
+
+// ------------------------------------------------------------
+// Selection behavior
+// ------------------------------------------------------------
+
+function selectedPaidCards() {
+  return [...document.querySelectorAll(".paid-ticket")].filter((card) => {
+    const quantity = Number(card.querySelector(".quantity")?.textContent || 0);
+    return quantity > 0;
+  });
 }
 
 function updateTotal() {
@@ -501,9 +1273,18 @@ function updateTotal() {
   let count = 0;
 
   document.querySelectorAll(".paid-ticket").forEach((card) => {
-    const price = Number(card.dataset.price);
-    const quantity = Number(card.querySelector(".quantity")?.textContent || 0);
+    const unitPriceCents = readInt(card.dataset.unitPriceCents, 0);
+    const maxQuantity = Math.max(readInt(card.dataset.maxQuantity, 10), 0);
+    const quantityEl = card.querySelector(".quantity");
+    const plus = card.querySelector(".plus");
     const minus = card.querySelector(".minus");
+
+    let quantity = readInt(quantityEl?.textContent, 0);
+    quantity = Math.max(Math.min(quantity, maxQuantity), 0);
+
+    if (quantityEl) {
+      quantityEl.textContent = String(quantity);
+    }
 
     card.classList.toggle("is-selected", quantity > 0);
 
@@ -511,8 +1292,12 @@ function updateTotal() {
       minus.disabled = quantity <= 0;
     }
 
+    if (plus) {
+      plus.disabled = maxQuantity <= 0 || quantity >= maxQuantity;
+    }
+
     if (quantity > 0) {
-      subtotalCents += dollarsToCents(price) * quantity;
+      subtotalCents += unitPriceCents * quantity;
       count += quantity;
     }
   });
@@ -522,17 +1307,31 @@ function updateTotal() {
     : 0;
 
   if (bottomTotal) {
-    bottomTotal.textContent = formatMoneyCents(totalCents);
+    bottomTotal.textContent =
+      count > 0 && totalCents === 0
+        ? "Free"
+        : formatMoneyCents(totalCents);
   }
 
   if (bottomCaption) {
     bottomCaption.textContent =
-      count > 0 ? `${count} ticket${count > 1 ? "s" : ""} selected` : "Select tickets";
+      count > 0
+        ? `${count} ticket${count > 1 ? "s" : ""} selected`
+        : "Select tickets";
   }
 
   if (checkoutButton) {
     checkoutButton.disabled = count === 0;
   }
+}
+
+function resetOtherTicketRows(activeCard) {
+  document.querySelectorAll(".paid-ticket").forEach((card) => {
+    if (card === activeCard) return;
+
+    const quantity = card.querySelector(".quantity");
+    if (quantity) quantity.textContent = "0";
+  });
 }
 
 function attachTicketHandlers() {
@@ -541,18 +1340,35 @@ function attachTicketHandlers() {
     const plus = card.querySelector(".plus");
     const minus = card.querySelector(".minus");
 
-    plus.onclick = () => {
-      quantity.textContent = Number(quantity.textContent || 0) + 1;
-      updateTotal();
-    };
+    if (plus) {
+      plus.onclick = () => {
+        const current = readInt(quantity?.textContent, 0);
+        const maxQuantity = Math.max(readInt(card.dataset.maxQuantity, 10), 0);
 
-    minus.onclick = () => {
-      const current = Number(quantity.textContent || 0);
-      if (current <= 0) return;
+        if (current <= 0) {
+          resetOtherTicketRows(card);
+        }
 
-      quantity.textContent = current - 1;
-      updateTotal();
-    };
+        if (quantity) {
+          quantity.textContent = String(Math.min(current + 1, maxQuantity));
+        }
+
+        updateTotal();
+      };
+    }
+
+    if (minus) {
+      minus.onclick = () => {
+        const current = readInt(quantity?.textContent, 0);
+        if (current <= 0) return;
+
+        if (quantity) {
+          quantity.textContent = String(Math.max(current - 1, 0));
+        }
+
+        updateTotal();
+      };
+    }
   });
 
   document.querySelectorAll(".claim-free").forEach((button) => {
@@ -570,26 +1386,40 @@ function attachTicketHandlers() {
 
   if (checkoutButton) {
     checkoutButton.onclick = () => {
-      const selectedTickets = [];
+      const selectedCards = selectedPaidCards();
 
-      document.querySelectorAll(".paid-ticket").forEach((card) => {
-        const quantity = Number(card.querySelector(".quantity")?.textContent || 0);
-
-        if (quantity > 0) {
-          selectedTickets.push({
-            ticketType: card.dataset.ticketType,
-            quantity,
-            unitPrice: Number(card.dataset.price),
-            pricingMode: card.dataset.ticketType === "general" ? "single" : "phases",
-            phaseName: card.dataset.phaseName
-          });
-        }
-      });
-
-      if (selectedTickets.length === 0) {
+      if (selectedCards.length === 0) {
         alert("Select at least one ticket.");
         return;
       }
+
+      if (selectedCards.length > 1) {
+        alert("Please select one ticket type at a time.");
+        return;
+      }
+
+      const card = selectedCards[0];
+      const quantity = Number(card.querySelector(".quantity")?.textContent || 0);
+
+      const selectedTickets = [
+        {
+          ticketTypeId: card.dataset.ticketTypeId || null,
+          ticketType: card.dataset.ticketTypeKind || card.dataset.ticketType || "general",
+          ticketTypeKind: card.dataset.ticketTypeKind || card.dataset.ticketType || "general",
+          ticketTitle: card.dataset.ticketTitle || "Ticket",
+          ticketGender: normalizeTicketGender(card.dataset.ticketGender) || null,
+          ticketVolumeId: card.dataset.ticketVolumeId || null,
+          ticketVolumeLabel: card.dataset.ticketVolumeLabel || null,
+          quantity,
+
+          // For the next page display only. Server recalculates price.
+          unitPriceCents: readInt(card.dataset.unitPriceCents, 0),
+          unitPrice: readInt(card.dataset.unitPriceCents, 0) / 100,
+
+          pricingSource: card.dataset.pricingSource || "legacy",
+          phaseName: card.dataset.phaseName || null
+        }
+      ];
 
       sessionStorage.setItem("checkout_tickets", JSON.stringify(selectedTickets));
       sessionStorage.setItem("checkout_event_id", eventId);
@@ -602,12 +1432,18 @@ function attachTicketHandlers() {
             expiresAt: parseFirestoreDate(activePhase.expiresAt)?.toISOString()
           })
         );
+      } else {
+        sessionStorage.removeItem("checkout_phase");
       }
 
       window.location.href = "/checkout-info.html";
     };
   }
 }
+
+// ------------------------------------------------------------
+// Load
+// ------------------------------------------------------------
 
 async function loadCheckout() {
   if (!eventId) {
@@ -651,10 +1487,11 @@ async function loadCheckout() {
     await trackCheckoutStart();
 
     const rows = getTicketRows(event);
+    const selectableRows = rows.filter((row) => row.kind === "paid" || row.kind === "free");
 
     if (ticketCount) {
-      ticketCount.textContent = rows.length
-        ? `${rows.length} option${rows.length > 1 ? "s" : ""}`
+      ticketCount.textContent = selectableRows.length
+        ? `${selectableRows.length} option${selectableRows.length > 1 ? "s" : ""}`
         : "";
     }
 
@@ -668,11 +1505,7 @@ async function loadCheckout() {
     }
 
     if (container) {
-      container.innerHTML = rows
-        .map((row, index) =>
-          row.kind === "free" ? renderFreeRow(row) : renderPaidRow(row, index)
-        )
-        .join("");
+      container.innerHTML = renderTicketGroups(rows);
     }
 
     attachTicketHandlers();

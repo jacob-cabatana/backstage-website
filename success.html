@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Payment Successful</title>
+  <title>Ticket Secured | Backstage</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="css/success.css">
@@ -35,9 +35,9 @@
 
     <main class="success-layout">
       <section class="hero-card">
-        <h1>
-          Payment<br>
-          <span class="gradient-text">Successful</span>
+        <h1 id="success-title">
+          Ticket<br>
+          <span class="gradient-text">Secured</span>
         </h1>
 
         <div id="message">Verifying your ticket...</div>
@@ -55,7 +55,49 @@
   const isAndroid = /Android/i.test(navigator.userAgent);
 
   const params = new URLSearchParams(window.location.search);
+
   const sessionId = params.get("session_id");
+  const isFree = params.get("free") === "1" || params.get("free") === "true";
+
+  const reservationId =
+    params.get("reservation_id") ||
+    params.get("reservationId") ||
+    params.get("reservation");
+
+  const partyId =
+    params.get("partyId") ||
+    params.get("party_id") ||
+    params.get("eventId") ||
+    params.get("id");
+
+  const messageEl = document.getElementById("message");
+  const titleEl = document.getElementById("success-title");
+
+  function clearCheckoutStorage({ keepFreeTickets = false } = {}) {
+    try {
+      sessionStorage.removeItem("checkout_tickets");
+      sessionStorage.removeItem("checkout_event_id");
+      sessionStorage.removeItem("checkout_phase");
+
+      if (!keepFreeTickets) {
+        sessionStorage.removeItem("checkout_free_tickets");
+      }
+    } catch (error) {
+      console.warn("Could not clear checkout storage:", error);
+    }
+  }
+
+  function getStoredFreeTickets() {
+    try {
+      const raw = sessionStorage.getItem("checkout_free_tickets");
+      const parsed = JSON.parse(raw || "[]");
+
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.warn("Could not read free tickets:", error);
+      return [];
+    }
+  }
 
   function showAppSheet() {
     if (isAndroid) return;
@@ -79,6 +121,208 @@
     window.location.href = "https://apps.apple.com/us/app/backstage-events/id6751863780";
   }
 
+  function appDownloadMarkup() {
+    if (isAndroid) return "";
+
+    return `
+      <p>
+        Want it saved inside BCKSTGE? Download the app and claim it there.
+      </p>
+
+      <a
+        class="appstore"
+        href="https://apps.apple.com/us/app/backstage-events/id6751863780"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="/assets/app-store-badge.svg"
+          alt="Download on the App Store"
+        />
+      </a>
+    `;
+  }
+
+  function setSuccessTitle(top, gradient) {
+    if (!titleEl) return;
+
+    titleEl.innerHTML = `
+      ${top}<br>
+      <span class="gradient-text">${gradient}</span>
+    `;
+  }
+
+  function qrUrlFromPayload(payload) {
+    return (
+      "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+      encodeURIComponent(payload)
+    );
+  }
+
+  function fallbackFreeTicket() {
+    if (!reservationId || !partyId) return null;
+
+    const qrPayload = btoa(
+      JSON.stringify({
+        ticketId: `${reservationId}_01`,
+        partyId,
+        reservationId,
+        source: "web"
+      })
+    );
+
+    return {
+      ticketId: `${reservationId}_01`,
+      partyId,
+      reservationId,
+      qrPayload,
+      displayCode: ""
+    };
+  }
+
+  function renderTickets(tickets, options = {}) {
+    const {
+      free = false
+    } = options;
+
+    clearCheckoutStorage({ keepFreeTickets: false });
+
+    setSuccessTitle("Ticket", tickets.length > 1 ? "Secured" : "Secured");
+
+    const copy = free
+      ? "Your free ticket has been claimed. Show this QR at the door, or open BCKSTGE to view your ticket inside the app."
+      : "Your ticket is ready. Show this QR at the door, or open BCKSTGE to keep it saved.";
+
+    messageEl.innerHTML = `
+      <div id="tickets-container" class="codes"></div>
+
+      <p>${copy}</p>
+
+      ${appDownloadMarkup()}
+    `;
+
+    const ticketsContainer = document.getElementById("tickets-container");
+
+    tickets.forEach((ticket) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "ticket-card";
+
+      const qrImg = document.createElement("img");
+
+      const qrPayload =
+        ticket.qrPayload ||
+        btoa(
+          JSON.stringify({
+            ticketId: ticket.ticketId,
+            partyId: ticket.partyId || partyId || "",
+            reservationId: ticket.reservationId || reservationId || "",
+            source: "web"
+          })
+        );
+
+      qrImg.src = qrUrlFromPayload(qrPayload);
+
+      qrImg.onerror = () => {
+        console.error("QR image failed to load:", qrImg.src);
+      };
+
+      qrImg.className = "qr-image";
+      qrImg.alt = "Ticket QR code";
+
+      wrapper.appendChild(qrImg);
+
+      if (ticket.displayCode) {
+        const code = document.createElement("div");
+        code.className = "ticket-code";
+        code.textContent = String(ticket.displayCode).toUpperCase();
+        wrapper.appendChild(code);
+      }
+
+      ticketsContainer.appendChild(wrapper);
+    });
+
+    setTimeout(() => {
+      showAppSheet();
+    }, 700);
+  }
+
+  function renderFreeSuccess() {
+    const storedTickets = getStoredFreeTickets();
+
+    if (storedTickets.length > 0) {
+      renderTickets(storedTickets, { free: true });
+      return;
+    }
+
+    const fallback = fallbackFreeTicket();
+
+    if (fallback) {
+      renderTickets([fallback], { free: true });
+      return;
+    }
+
+    clearCheckoutStorage();
+
+    setSuccessTitle("Ticket", "Secured");
+
+    messageEl.innerHTML = `
+      <p>
+        Your free ticket has been claimed. Open BCKSTGE to view your ticket, or check your email if one was provided.
+      </p>
+
+      ${appDownloadMarkup()}
+    `;
+
+    setTimeout(() => {
+      showAppSheet();
+    }, 700);
+  }
+
+  async function verifyPaidCheckoutSession() {
+    if (!sessionId) {
+      messageEl.innerText = "Missing session. Please check your email.";
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId })
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("VERIFY RESPONSE:", data);
+
+      if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
+        renderTickets(data.tickets, { free: false });
+        return;
+      }
+
+      if (data.pending === true) {
+        messageEl.innerText = "Finalizing your ticket… this may take a moment.";
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+
+        return;
+      }
+
+      messageEl.innerText =
+        "Payment confirmed, but your ticket is still finalizing. Please refresh in a moment.";
+    } catch (error) {
+      console.error("SUCCESS PAGE ERROR:", error);
+
+      messageEl.innerText =
+        "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
+    }
+  }
+
   if (isAndroid) {
     const sheet = document.getElementById("appSheetOverlay");
     if (sheet) {
@@ -86,82 +330,10 @@
     }
   }
 
-  if (!sessionId) {
-    document.getElementById("message").innerText =
-      "Missing session. Please check your email.";
+  if (isFree) {
+    renderFreeSuccess();
   } else {
-    fetch("https://us-central1-backstageapp-27cb3.cloudfunctions.net/verifyCheckoutSession", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId })
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log("VERIFY RESPONSE:", data);
-
-      if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
-        document.getElementById("message").innerHTML = `
-          <div id="tickets-container" class="codes"></div>
-
-          ${isAndroid ? "" : `
-            <p>
-              Want it saved inside BCKSTGE? Download the app and claim it there.
-            </p>
-
-            <a
-              class="appstore"
-              href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="/assets/app-store-badge.svg"
-                alt="Download on the App Store"
-              />
-            </a>
-          `}
-        `;
-
-        const ticketsContainer = document.getElementById("tickets-container");
-
-        data.tickets.forEach((ticket) => {
-          const wrapper = document.createElement("div");
-          wrapper.className = "ticket-card";
-
-          const qrImg = document.createElement("img");
-
-          qrImg.src =
-            "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
-            encodeURIComponent(ticket.qrPayload);
-
-          qrImg.onerror = () => {
-            console.error("QR image failed to load:", qrImg.src);
-          };
-
-          qrImg.className = "qr-image";
-
-          wrapper.appendChild(qrImg);
-          ticketsContainer.appendChild(wrapper);
-        });
-
-        setTimeout(() => {
-          showAppSheet();
-        }, 700);
-      } else {
-        document.getElementById("message").innerText =
-          "Finalizing your ticket… this may take a moment.";
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      }
-    })
-    .catch((err) => {
-      console.error("SUCCESS PAGE ERROR:", err);
-
-      document.getElementById("message").innerText =
-        "Payment confirmed, but we had trouble displaying your QR code. Please refresh.";
-    });
+    verifyPaidCheckoutSession();
   }
 </script>
 </body>
