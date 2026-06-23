@@ -824,6 +824,168 @@ body.menu-open #menuOverlay{
   font-size:14px !important;
   font-weight:800;
 }
+
+/* FAQ */
+
+.faq-section{
+  background:#000000;
+}
+
+.faq-wrap{
+  max-width: 900px;
+  margin: 56px auto 0;
+  text-align:left;
+}
+
+.faq-list{
+  display:grid;
+  gap:14px;
+}
+
+.faq-item{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--hair);
+  border-radius:22px;
+  overflow:hidden;
+  transition:border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.faq-item:hover{
+  border-color:rgba(176,108,255,0.28);
+  background:rgba(255,255,255,0.055);
+}
+
+.faq-item[open]{
+  border-color:rgba(176,108,255,0.36);
+  background:rgba(255,255,255,0.06);
+}
+
+.faq-item summary{
+  list-style:none;
+  cursor:pointer;
+  padding:22px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  font-size:17px;
+  font-weight:800;
+  letter-spacing:-0.01em;
+}
+
+.faq-item summary::-webkit-details-marker{
+  display:none;
+}
+
+.faq-icon{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  color:white;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  transition:transform .25s ease;
+}
+
+.faq-icon::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-right:2px solid white;
+  border-bottom:2px solid white;
+  transform:rotate(45deg) translate(-1px,-1px);
+}
+
+.faq-item[open] .faq-icon{
+  transform:rotate(180deg);
+}
+
+.faq-answer{
+  padding:0 24px 24px;
+  color:rgba(255,255,255,0.68);
+  font-size:15px;
+  line-height:1.65;
+}
+
+.faq-answer p{
+  max-width:none;
+  margin:0;
+  text-align:left;
+  font-size:15px;
+  color:rgba(255,255,255,0.68);
+}
+
+.faq-note{
+  margin-top:12px !important;
+  font-size:13px !important;
+  color:rgba(255,255,255,0.50) !important;
+}
+
+.faq-table-wrap{
+  width:100%;
+  overflow-x:auto;
+  margin-top:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:18px;
+}
+
+.faq-fee-table{
+  width:100%;
+  min-width:620px;
+  border-collapse:collapse;
+  background:rgba(0,0,0,0.24);
+}
+
+.faq-fee-table th,
+.faq-fee-table td{
+  padding:15px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  text-align:right;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+.faq-fee-table th:first-child,
+.faq-fee-table td:first-child{
+  text-align:left;
+  font-weight:800;
+  color:var(--text);
+}
+
+.faq-fee-table th{
+  color:rgba(255,255,255,0.72);
+  font-weight:800;
+  background:rgba(255,255,255,0.04);
+}
+
+.faq-fee-table td{
+  color:rgba(255,255,255,0.68);
+  font-weight:650;
+}
+
+.faq-fee-table tr:last-child td{
+  border-bottom:none;
+  color:var(--text);
+  font-weight:900;
+}
+
+@media(max-width:700px){
+  .faq-item summary{
+    padding:20px;
+    font-size:16px;
+  }
+
+  .faq-answer{
+    padding:0 20px 22px;
+  }
+
+  .faq-wrap{
+    margin-top:42px;
+  }
+}
+
   </style>
 </head>
 
@@ -848,6 +1010,7 @@ body.menu-open #menuOverlay{
   <a href="events.html">Events</a>
   <a href="signup.html">Bar Dashboard</a>
   <a href="admin-login.html">Admin Login</a>
+  <a href="#faqs">FAQ</a>
 </div>
 
   <!-- HERO -->
@@ -1059,6 +1222,207 @@ body.menu-open #menuOverlay{
 
 
 
+  <!-- FAQ -->
+
+  <section class="section alt faq-section" id="faqs">
+    <h2>Frequently Asked Questions</h2>
+    <p>Everything guests, hosts, and venues need to know about BCKSTGE.</p>
+
+    <div class="faq-wrap">
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>
+            What is BCKSTGE?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>BCKSTGE is a mobile-first ticketing and event platform built for nightlife, live music, and social events. We help hosts create events, sell tickets, manage guests, and run check-in through one streamlined platform.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Who is BCKSTGE for?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>BCKSTGE is built for event hosts, promoters, venues, artists, DJs, nightlife brands, and anyone looking for a simple way to manage ticketed events.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            How does ticketing work?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Hosts can create an event, set ticket types and pricing, and share the event page with guests. Guests purchase tickets online and receive digital tickets for entry.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            What are your ticketing fees?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>BCKSTGE uses a transparent fee structure. Our ticketing fee includes BCKSTGE's service fee and standard credit card processing of 2.9% + $0.30. Guests always see the final total before checkout.</p>
+
+            <div class="faq-table-wrap">
+              <table class="faq-fee-table">
+                <thead>
+                  <tr>
+                    <th>BCKSTGE</th>
+                    <th>$25 Ticket</th>
+                    <th>$50 Ticket</th>
+                    <th>$75 Ticket</th>
+                    <th>$100 Ticket</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Face Value</td>
+                    <td>$25.00</td>
+                    <td>$50.00</td>
+                    <td>$75.00</td>
+                    <td>$100.00</td>
+                  </tr>
+                  <tr>
+                    <td>BCKSTGE Fee</td>
+                    <td>$5.68</td>
+                    <td>$9.01</td>
+                    <td>$12.33</td>
+                    <td>$15.65</td>
+                  </tr>
+                  <tr>
+                    <td>Guest Total</td>
+                    <td>$30.68</td>
+                    <td>$59.01</td>
+                    <td>$87.33</td>
+                    <td>$115.65</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="faq-note">Examples are based on one ticket purchased in a single order. Final pricing may vary depending on ticket quantity, discounts, credits, taxes, and event settings.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Does BCKSTGE take a cut of host ticket sales?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>No. Hosts keep the face value revenue from their ticket sales. BCKSTGE's guest-paid ticketing fee covers the platform service fee and payment processing.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            How does check-in work at the event?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Tickets are digital and can be checked in at the door using BCKSTGE's guest list and ticket scanning tools. This helps make entry faster and easier for hosts, venues, and guests.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Can hosts view ticket sales and guest information?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. Hosts can track ticket sales, guest counts, and event performance through BCKSTGE's host tools. Event data can also support planning, staffing, settlement, and reporting.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            When are ticket sales paid out?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Ticket payouts are processed after the event ends. This helps protect guests, hosts, and venues while keeping event settlement clear and organized.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Can BCKSTGE support venues?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. BCKSTGE can provide event pages, digital ticketing, guest check-in, ticket reporting, and event visibility. We are open to working with venues to make sure their operational needs are met.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Can BCKSTGE provide ticket reporting?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. BCKSTGE can provide ticket counts, guest information, sales performance, and other event data to help hosts and venue teams stay informed before and after the event.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Does BCKSTGE help promote events?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>BCKSTGE gives hosts a clean event page and shareable ticket link that can be used across social media, ads, text campaigns, and other marketing channels. Select events may also receive additional promotional support through BCKSTGE.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Can guests receive digital tickets?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. Guests receive digital tickets after purchase and can use them for entry at the event.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Can hosts offer complimentary tickets?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. Hosts can manage guest access through BCKSTGE, including paid tickets, guest list access, and complimentary entry options depending on the event setup.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            Can BCKSTGE handle different ticket types?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. Hosts can create different ticket options such as general admission, early-entry tickets, anytime access, VIP options, gender-based pricing, and volume-based ticket releases depending on the event.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            How do guests contact support?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-answer">
+            <p>Guests can contact BCKSTGE for help with ticket-related questions, order issues, or event access support.</p>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </section>
 
 
 <footer>
