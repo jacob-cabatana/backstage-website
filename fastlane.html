@@ -464,8 +464,12 @@
       .steps, .stat-grid { grid-template-columns: 1fr; }
       .hero-actions { flex-direction: column; align-items: stretch; }
       .btn-primary, .btn-text { justify-content: center; }
-      /* scale the phone mockups so they never overflow narrow screens */
-      .phone { width: 88vw; max-width: 300px; height: auto; aspect-ratio: 300 / 610; }
+      /* scale the phone mockups down with an explicit (not aspect-ratio) height,
+         so iOS Safari keeps the screen + video inside the frame */
+      .phone {
+        width: min(88vw, 300px);
+        height: calc(min(88vw, 300px) * 610 / 300);
+      }
       .live-activity { width: 100% !important; max-width: 320px; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -499,7 +503,6 @@
   <header class="hero">
     <div class="hero-inner">
       <div data-reveal>
-        <span class="eyebrow" data-typewriter="BCKSTGE MOBILE DRINK ORDERING" aria-label="Backstage Fast Lane"></span>
         <h1>Skip the line.<br><span class="accent">Order from your phone.</span></h1>
         <p class="hero-sub">No more yelling vodka cran over three people. Order, pay, and get notified the second your drink hits the bar.</p>
         <div class="hero-actions">
