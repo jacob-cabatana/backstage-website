@@ -3,1491 +3,1168 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Backstage</title>
+  <title>Backstage | Modern Ticketing for Nightlife</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#000000;
-      --section:#0a0a0a;
-      --card:#111111;
-      --text:#f5f5f7;
-      --muted:rgba(255,255,255,0.65);
-      --hair:rgba(255,255,255,0.08);
-      --accent1:#6b4eff;
-      --accent2:#b06cff;
+    :root {
+      /* ── DARK THEME ── */
+      --white: #1c1c1e;          /* raised surface (cards) */
+      --black: #f5f5f7;          /* primary text */
+      --secondary: #a1a1a6;      /* secondary text */
+      --tertiary: #6e6e73;       /* muted text */
+      --hairline: #2c2c2e;       /* borders / dividers */
+      --hairline-light: #232325; /* faint dividers */
+      --blue: #0a84ff;           /* accent (brighter for dark) */
+      --blue-dark: #409cff;
+      --bg: #0a0a0b;             /* page background */
+      --bg-secondary: #141416;   /* alt section background */
+      --max: 980px;
     }
 
-    *{margin:0;padding:0;box-sizing:border-box;}
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body{
-      font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
 
-    a{text-decoration:none;color:inherit;}
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
 
-    /* NAV */
+    /* ── NAV ── */
 
-    .nav{
-      position:sticky;
-      top:0;
-      z-index:100;
-      background:rgba(0,0,0,0.7);
-      backdrop-filter:blur(14px);
-      border-bottom:1px solid var(--hair);
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--hairline);
     }
 
-    .nav-inner{
-      max-width:1200px;
-      margin:auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:16px 24px;
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
     }
 
-    .nav img{
-      height:38px;
+    .brand {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
     }
 
-    .nav a{
-      font-weight:600;
-      font-size:14px;
-      opacity:0.8;
-      transition:opacity .2s ease;
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 5px 6px;
+      border-radius: 999px;
+      /* purple → blue gradient border with dark fill */
+      background:
+        linear-gradient(#0e0e12, #0e0e12) padding-box,
+        linear-gradient(120deg, #9c4ff2 0%, #6d6ff2 50%, #0a84ff 100%) border-box;
+      border: 1.5px solid transparent;
+      box-shadow: 0 4px 24px rgba(108, 80, 242, 0.18);
     }
 
-    .nav a:hover{
-      opacity:1;
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+      padding: 7px 14px;
+      border-radius: 999px;
+      transition: color 0.2s ease, background 0.2s ease;
     }
 
-    /* HERO */
-
-    .hero{
-      text-align:center;
-      padding:140px 20px 100px;
+    .nav-links a:hover {
+      color: var(--black);
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    .hero h1{
-      font-size:clamp(44px,6vw,76px);
-      font-weight:800;
-      letter-spacing:-0.02em;
-      margin-bottom:20px;
-      line-height:1.05;
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue) !important;
+      letter-spacing: -0.01em;
     }
 
-    .hero-line{
-  display:block;
-  opacity:0;
-  animation: fadeUp 1.9s ease forwards;
-}
+    .nav-cta:hover { color: var(--blue-dark) !important; background: rgba(10, 132, 255, 0.10); }
 
-.hero-white{
-  color: var(--text);
-  animation-delay: 0.5s;
-}
+    /* ── HERO ── */
 
-.hero-accent{
-  color: var(--accent2);
-  animation-delay: 1.5s;
-}
-
-@keyframes fadeUp{
-  from{
-    opacity:0;
-    transform: translateY(14px);
-  }
-  to{
-    opacity:1;
-    transform: translateY(0);
-  }
-}
-
-
-    .hero p{
-      font-size:20px;
-      color:var(--muted);
-      max-width:700px;
-      margin:0 auto 32px;
+    .hero {
+      position: relative;
+      padding: 140px 32px 160px;
+      text-align: center;
+      border-bottom: 1px solid var(--hairline-light);
+      overflow: hidden;
     }
 
-    .hero .cta{
-      display:inline-block;
-      padding:14px 28px;
-      border-radius:999px;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      color:white;
-      font-weight:600;
-      transition:transform .2s ease, box-shadow .2s ease;
+    /* soft blue glow behind hero for nightlife depth */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      width: 760px;
+      height: 760px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(10,132,255,0.18) 0%, rgba(10,132,255,0) 62%);
+      pointer-events: none;
+      z-index: 0;
     }
 
-.hero-ctas{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  align-items:center;
-}
+    .hero > * { position: relative; z-index: 1; }
 
-
-.hero .cta.secondary{
-  background:#225CDA;
-  padding:12px 26px;
-  border-radius:999px;
-  font-weight:600;
-  opacity:0.9;
-}
-
-
-
-    .hero .cta.secondary:hover{
-      transform:translateY(-2px);
-      box-shadow:0 10px 26px rgba(34,92,218,0.35);
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 16px;
+      margin-bottom: 24px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #efeaff;
+      /* purple → blue gradient border with dark fill */
+      background:
+        linear-gradient(#0e0e12, #0e0e12) padding-box,
+        linear-gradient(120deg, #9c4ff2 0%, #6d6ff2 50%, #0a84ff 100%) border-box;
+      border: 1.5px solid transparent;
+      box-shadow: 0 4px 24px rgba(108, 80, 242, 0.28);
     }
 
-
-    .hero .cta:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 30px rgba(107,78,255,0.35);
+    /* typewriter caret */
+    .type-caret {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-left: 3px;
+      background: var(--blue);
+      animation: caret-blink 1s steps(1) infinite;
     }
 
-    /* SECTION */
+    .type-caret.done { animation: caret-blink 1s steps(1) infinite; }
 
-    .section{
-      padding:110px 20px;
-      text-align:center;
-      background:var(--section);
-      border-top:1px solid var(--hair);
+    @keyframes caret-blink {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
     }
 
-    .section.alt{
-      background:#000000;
+    .hero h1 {
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.04;
+      color: var(--black);
+      max-width: 820px;
+      margin: 0 auto;
     }
 
-    .section h2{
-      font-size:42px;
-      font-weight:800;
-      margin-bottom:18px;
-      letter-spacing:-0.02em;
+    .hero-sub {
+      margin: 24px auto 0;
+      max-width: 480px;
+      font-size: 19px;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+      color: var(--secondary);
     }
 
-    .section p{
-      font-size:20px;
-      color:var(--muted);
-      max-width:720px;
-      margin:0 auto 28px;
+    .hero-actions {
+      margin-top: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
     }
 
-    .section .stat{
-      font-size:72px;
-      font-weight:800;
-      margin:12px 0;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      -webkit-background-clip:text;
-      color:transparent;
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      height: 44px;
+      padding: 0 24px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 980px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 0 rgba(10,132,255,0);
     }
 
-    .section .sub{
-      font-size:16px;
-      color:var(--muted);
-    }
-    .nothing{
-  opacity:0;
-  color: var(--accent2);
-  font-weight:800;
-  animation: nothingIn 1.6s ease forwards;
-  animation-delay: 1.9s;
-}
-
-@keyframes nothingIn{
-  from{
-    opacity:0;
-    transform: translateY(6px);
-  }
-  to{
-    opacity:1;
-    transform: translateY(0);
-  }
-}
-
-
-    /* PROMOTERS */
-
-    .grid{
-      max-width:1000px;
-      margin:70px auto 0;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:40px;
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(10,132,255,0.35);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--hair);
-      border-radius:24px;
-      padding:40px;
-      text-align:left;
-      box-shadow:0 20px 60px rgba(0,0,0,0.4);
-      transition:transform .3s ease, box-shadow .3s ease;
+    .btn-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--blue);
+      letter-spacing: -0.015em;
+      transition: gap 0.2s ease;
     }
 
-    .card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 30px 80px rgba(0,0,0,0.6);
+    .btn-text::after {
+      content: "›";
+      font-size: 18px;
+      line-height: 1;
     }
 
-    .card h3{
-      font-size:24px;
-      margin-bottom:14px;
-      font-weight:700;
+    .btn-text:hover { gap: 10px; }
+
+    /* ── SECTIONS ── */
+
+    .section {
+      padding: 120px 32px;
+      border-bottom: 1px solid var(--hairline-light);
     }
 
-    .card p{
-      font-size:16px;
-      color:var(--muted);
-      margin-bottom:18px;
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
     }
 
-.earn-amount{
-  opacity:0;
-  color:#3DFF8F;
-  font-weight:800;
-}
+    .section.alt-bg { background: var(--bg-secondary); }
 
-
-@keyframes earnIn{
-  from{
-    opacity:0;
-    transform: translateY(14px);
-  }
-  to{
-    opacity:1;
-    transform: translateY(0);
-  }
-}
-
-
-
-    .card .big{
-      font-size:36px;
-      font-weight:800;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      -webkit-background-clip:text;
-      color:transparent;
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 16px;
     }
 
-    /* TAP TO PAY */
+    .section-heading {
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.06;
+      color: var(--black);
+      max-width: 720px;
+    }
 
-    .iphone-mock{
-  width:260px;
-  display:block;
-  margin:0 auto;
-  filter: drop-shadow(0 30px 90px rgba(0,0,0,0.65));
-}
+    .section-heading.center { margin: 0 auto; text-align: center; }
 
+    .section-sub {
+      margin-top: 16px;
+      font-size: 19px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.5;
+      color: var(--secondary);
+      max-width: 520px;
+    }
 
-.tap-visual{
-  text-align:center;
-}
+    .section-sub.center { margin: 16px auto 0; text-align: center; }
 
+    /* ── ZERO CUT ── */
 
-.screen::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:-60%;
-  height:55%;
-  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.12), transparent);
-  opacity: 0;
-  animation: scanDown 3.6s ease-in-out infinite;
-  pointer-events:none;
-}
+    .zero-section {
+      padding: 140px 32px;
+      text-align: center;
+      border-bottom: 1px solid var(--hairline-light);
+    }
 
+    .zero-number {
+      font-size: clamp(120px, 22vw, 240px);
+      font-weight: 800;
+      letter-spacing: -0.07em;
+      line-height: 0.85;
+      color: var(--black);
+      font-variant-numeric: tabular-nums;
+    }
 
+    .zero-unit {
+      font-size: clamp(60px, 11vw, 120px);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      color: var(--tertiary);
+      vertical-align: top;
+      line-height: 1;
+      margin-top: 0.15em;
+      display: inline-block;
+    }
 
-.tap-label{
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  margin-top: 6px;
-}
+    .zero-label {
+      margin-top: 28px;
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--secondary);
+      letter-spacing: -0.02em;
+    }
 
-.tap-sub{
-  margin-top: 6px;
-  font-size: 14px;
-  color: rgba(255,255,255,0.60);
-  font-weight: 650;
-}
+    .zero-label strong {
+      color: var(--black);
+      font-weight: 600;
+    }
 
-.tap-list{
-  display:grid;
-  gap: 12px;
-  margin-top: 18px;
-}
+    /* ── FEATURE GRID ── */
 
-.tap-item{
-  display:flex;
-  gap: 10px;
-  align-items:flex-start;
-  color: rgba(255,255,255,0.68);
-  font-weight: 650;
-  line-height: 1.45;
-}
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--hairline);
+      margin-top: 80px;
+      border: 1px solid var(--hairline);
+      border-radius: 20px;
+      overflow: hidden;
+    }
 
-.tap-item::before{
-  content:"";
-  width:10px;
-  height:10px;
-  border-radius:999px;
-  margin-top: 6px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  flex: 0 0 auto;
-}
+    .feature-card {
+      background: var(--white);
+      padding: 44px 40px;
+    }
 
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
 
-    @media(max-width:900px){
-      .grid{
-        grid-template-columns:1fr;
+    .feature-icon svg { width: 20px; height: 20px; }
+
+    .feature-title {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── SPLIT SECTION ── */
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      margin-top: 80px;
+    }
+
+    .split.reverse { direction: rtl; }
+    .split.reverse > * { direction: ltr; }
+
+    .split-text { max-width: 420px; }
+
+    .split-list {
+      margin-top: 28px;
+      display: grid;
+      gap: 12px;
+      list-style: none;
+    }
+
+    .split-list li {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .split-list li::before {
+      content: "";
+      flex: 0 0 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--blue);
+      margin-top: 2px;
+    }
+
+    /* ── SONG LIST ── */
+
+    .song-list {
+      background: var(--bg-secondary);
+      border: 1px solid var(--hairline);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .song-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .song-row:last-child { border-bottom: none; }
+
+    .song-row img {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex: 0 0 50px;
+    }
+
+    .song-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+
+    .song-meta {
+      margin-top: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--tertiary);
+    }
+
+    .song-badge {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      background: rgba(10, 132, 255, 0.16);
+      border-radius: 980px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    /* ── IPHONE MOCK ── */
+
+    .phone-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .iphone-mock {
+      width: 260px;
+      filter: drop-shadow(0 24px 48px rgba(0,0,0,0.55));
+    }
+
+    /* ── FEE TABLE ── */
+
+    .fee-table-wrap {
+      margin-top: 56px;
+      border: 1px solid var(--hairline);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .fee-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .fee-table th,
+    .fee-table td {
+      padding: 18px 28px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--secondary);
+      border-bottom: 1px solid var(--hairline);
+      white-space: nowrap;
+    }
+
+    .fee-table tr:last-child th,
+    .fee-table tr:last-child td { border-bottom: none; }
+
+    .fee-table th:first-child,
+    .fee-table td:first-child {
+      text-align: left;
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    .fee-table thead th {
+      background: var(--bg-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+    }
+
+    .fee-table thead th:first-child { color: var(--black); }
+
+    .fee-table tbody tr:hover td { background: var(--bg-secondary); }
+
+    .fee-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--tertiary);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── FAQ ── */
+
+    .faq-list {
+      margin-top: 64px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .faq-item { border-top: 1px solid var(--hairline); }
+    .faq-item:last-child { border-bottom: 1px solid var(--hairline); }
+
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: var(--black);
+      user-select: none;
+      transition: color 0.15s ease;
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--secondary); }
+
+    .faq-chevron {
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      border-right: 1.5px solid var(--tertiary);
+      border-bottom: 1.5px solid var(--tertiary);
+      transform: rotate(45deg) translate(-2px, -2px);
+      transition: transform 0.22s ease;
+    }
+
+    .faq-item[open] .faq-chevron {
+      transform: rotate(225deg) translate(-2px, -2px);
+    }
+
+    .faq-body {
+      padding: 0 0 24px;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── CTA BAND ── */
+
+    .cta-section {
+      position: relative;
+      padding: 120px 32px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(10,132,255,0.22) 0%, rgba(10,132,255,0) 55%),
+        #050507;
+      overflow: hidden;
+    }
+
+    .cta-section .eyebrow { color: rgba(255,255,255,0.5); }
+
+    .cta-heading {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.06;
+      color: #fff;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .cta-sub {
+      margin: 20px auto 0;
+      font-size: 19px;
+      color: rgba(255,255,255,0.6);
+      max-width: 400px;
+      letter-spacing: -0.02em;
+      line-height: 1.5;
+    }
+
+    .cta-section .hero-actions { margin-top: 48px; }
+
+    .cta-section .btn-primary {
+      background: #fff;
+      color: #000;
+    }
+
+    .cta-section .btn-primary:hover {
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 8px 30px rgba(255,255,255,0.18);
+    }
+
+    .cta-section .btn-text {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .cta-section .btn-text:hover {
+      color: #fff;
+    }
+
+    /* ── FOOTER ── */
+
+    footer {
+      padding: 32px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--tertiary);
+      letter-spacing: -0.01em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--tertiary);
+      letter-spacing: -0.01em;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover { color: var(--black); }
+
+    /* ── REVEAL ── */
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.72s ease, transform 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-reveal].visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+
+    @media (max-width: 860px) {
+      .nav-inner { padding: 0 20px; }
+
+      .nav-links { gap: 2px; }
+      .nav-links a { padding: 7px 11px; }
+
+      .hero { padding: 100px 24px 120px; }
+
+      .section { padding: 88px 24px; }
+      .zero-section { padding: 100px 24px; }
+      .cta-section { padding: 88px 24px; }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 1px;
       }
+
+      .split {
+        grid-template-columns: 1fr;
+        gap: 56px;
+        margin-top: 56px;
+      }
+
+      .split.reverse { direction: ltr; }
+
+      .split-text { max-width: 100%; }
+
+      .fee-table th, .fee-table td { padding: 14px 16px; font-size: 13px; }
     }
 
-    footer{
-      padding:70px 20px;
-      text-align:center;
-      font-size:14px;
-      color:var(--muted);
-      border-top:1px solid var(--hair);
-      background:#000;
+    @media (max-width: 580px) {
+      .nav-links { gap: 1px; }
+      .nav-links a { font-size: 12px; padding: 6px 9px; }
+
+      .hero h1 { font-size: clamp(40px, 14vw, 64px); }
+
+      .btn-primary, .btn-text { font-size: 14px; }
+
+      .hero-actions { flex-direction: column; gap: 12px; }
+
+      .section-heading { font-size: clamp(30px, 9vw, 48px); }
     }
-/* SKIP THE LINE PASSES */
 
-.pass-visual{
-  text-align:center;
-}
-
-.pass-shell{
-  width: 320px;
-  margin: 0 auto;
-  border-radius: 26px;
-  padding: 2px;
-  background: linear-gradient(
-    135deg,
-    #D4AF37,
-    #FFD700,
-    #C9A227
-  );
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
-}
-
-
-.pass-inner{
-  border-radius: 24px;
-  padding: 26px 22px;
-  background:
-    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.18), transparent 55%),
-    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.14), transparent 55%),
-    #0f0f12;
-  border: 1px solid rgba(255,255,255,0.10);
-  text-align:left;
-  position: relative;
-}
-
-.pass-glow{
-  position:absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.22), transparent 60%);
-  opacity: 0.35;
-  animation: passGlow 2.8s ease-in-out infinite;
-  pointer-events:none;
-}
-
-@keyframes passGlow{
-  0%,100%{ transform: scale(0.92); opacity: 0.22; }
-  50%{ transform: scale(1.05); opacity: 0.40; }
-}
-
-.pass-kicker{
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  color: rgba(255,255,255,0.70);
-}
-
-.pass-title{
-  margin-top: 10px;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-}
-
-.pass-meta{
-  margin-top: 8px;
-  font-size: 14px;
-  color: rgba(255,255,255,0.62);
-  font-weight: 650;
-}
-
-.pass-price{
-  margin-top: 18px;
-  display: inline-block;
-  font-size: 44px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: priceBreath 2.2s ease-in-out infinite;
-}
-
-@keyframes priceBreath{
-  0%,100%{ transform: scale(1); }
-  50%{ transform: scale(1.03); }
-}
-
-.pass-foot{
-  margin-top: 18px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.55);
-  font-weight: 650;
-}
-
-/* GEOFENCE MARKETING */
-
-.geo-visual{
-  text-align:center;
-}
-
-.geo-phone{
-  width: 310px;
-  margin: 0 auto;
-  border-radius: 30px;
-  padding: 16px;
-  background: #0b0b0c;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
-  position: relative;
-  overflow: hidden;
-}
-
-.geo-notch{
-  width: 90px;
-  height: 18px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  margin: 0 auto 14px;
-}
-
-.geo-map{
-  height: 190px;
-  border-radius: 22px;
-  background:
-    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.22), transparent 55%),
-    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.18), transparent 55%),
-    #0f0f12;
-  border: 1px solid rgba(255,255,255,0.10);
-  position: relative;
-  overflow: hidden;
-  display:grid;
-  place-items:center;
-}
-
-.geo-ring{
-  position:absolute;
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 2px solid rgba(255,255,255,0.18);
-  opacity: 0;
-  animation: geoPulse 2.8s ease-out infinite;
-}
-
-.geo-ring.r1{ animation-delay: 0s; }
-.geo-ring.r2{ animation-delay: 0.9s; }
-.geo-ring.r3{ animation-delay: 1.8s; }
-
-@keyframes geoPulse{
-  0%{ transform: scale(0.35); opacity: 0; }
-  15%{ opacity: 0.55; }
-  100%{ transform: scale(3.2); opacity: 0; }
-}
-
-.geo-pin{
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  box-shadow: 0 0 0 14px rgba(176,108,255,0.12);
-  animation: pinBreathe 1.8s ease-in-out infinite;
-}
-
-@keyframes pinBreathe{
-  0%,100%{ transform: scale(1); box-shadow: 0 0 0 14px rgba(176,108,255,0.12); }
-  50%{ transform: scale(1.12); box-shadow: 0 0 0 20px rgba(176,108,255,0.18); }
-}
-
-.geo-notif{
-  margin-top: 14px;
-  border-radius: 20px;
-  padding: 14px 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.10);
-  transform: translateY(10px);
-  opacity: 0;
-  animation: notifIn 2.8s ease-in-out infinite;
-}
-
-@keyframes notifIn{
-  0%{ transform: translateY(14px); opacity: 0; }
-  18%{ transform: translateY(0); opacity: 1; }
-  70%{ transform: translateY(0); opacity: 1; }
-  100%{ transform: translateY(-4px); opacity: 0; }
-}
-
-.geo-badge{
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  color: rgba(255,255,255,0.70);
-}
-
-.geo-title{
-  margin-top: 6px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-}
-
-.geo-copy{
-  margin-top: 6px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.62);
-  font-weight: 650;
-  line-height: 1.45;
-}
-
-
-    /* SONG REQUESTS */
-
-.song-visual{
-  text-align:center;
-}
-
-.sr-phone{
-  width: 310px;
-  margin: 0 auto;
-  border-radius: 28px;
-  padding: 18px;
-  background:
-    radial-gradient(600px 420px at 30% 20%, rgba(107,78,255,0.20), transparent 55%),
-    radial-gradient(600px 420px at 75% 85%, rgba(176,108,255,0.16), transparent 55%),
-    #0f0f12;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 30px 90px rgba(0,0,0,0.65);
-  text-align:left;
-  position: relative;
-  overflow: hidden;
-}
-
-.sr-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-
-.sr-pill{
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.70);
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-}
-
-.sr-title{
-  font-size: 18px;
-  font-weight: 800;
-  margin-top: 4px;
-}
-
-.sr-artist{
-  font-size: 14px;
-  color: rgba(255,255,255,0.62);
-  font-weight: 650;
-  margin-top: 6px;
-}
-
-.sr-queue{
-  margin-top: 18px;
-  display:grid;
-  gap: 10px;
-}
-
-.sr-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-  transform: translateY(10px);
-  opacity: 0;
-  animation: srIn 700ms ease forwards;
-}
-
-.sr-row:nth-child(1){ animation-delay: 120ms; }
-.sr-row:nth-child(2){ animation-delay: 260ms; }
-.sr-row:nth-child(3){ animation-delay: 400ms; }
-
-@keyframes srIn{
-  to{ transform: translateY(0); opacity: 1; }
-}
-
-.sr-left{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-}
-
-.sr-album{
-  width:48px;
-  height:48px;
-  border-radius:12px;
-  object-fit:cover;
-  box-shadow:0 10px 24px rgba(0,0,0,0.35);
-  flex:0 0 auto;
-}
-
-
-.sr-song{
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.sr-meta{
-  margin-top: 4px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.60);
-  font-weight: 650;
-}
-
-
-.sr-hint{
-  margin-top: 14px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.55);
-  font-weight: 650;
-}
-
-/* SLIDE MENU */
-
-#menuOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .3s ease;
-  z-index:200;
-}
-
-#sideMenu{
-  position:fixed;
-  top:0;
-  right:0;
-  height:100%;
-  width:260px;
-  background:#0b0b0b;
-  border-left:1px solid var(--hair);
-  transform:translateX(100%);
-  transition:transform .35s ease;
-  z-index:201;
-  display:flex;
-  flex-direction:column;
-  padding:80px 24px;
-  gap:22px;
-}
-
-#sideMenu a{
-  font-size:18px;
-  font-weight:700;
-}
-
-body.menu-open #sideMenu{
-  transform:translateX(0);
-}
-
-body.menu-open #menuOverlay{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.gateScreen{
-  min-height:100vh;
-  display:grid;
-  place-items:center;
-  padding:24px;
-  background:
-    radial-gradient(circle at top, rgba(176,108,255,0.22), transparent 36%),
-    linear-gradient(135deg, #000000, #07070d 60%, #000000);
-}
-
-.gateCard{
-  width:100%;
-  max-width:420px;
-  padding:34px 28px;
-  border-radius:28px;
-  background:rgba(255,255,255,0.07);
-  border:1px solid rgba(255,255,255,0.12);
-  box-shadow:0 30px 90px rgba(0,0,0,0.65);
-  text-align:center;
-}
-
-.gateLogo{
-  height:52px;
-  margin-bottom:22px;
-}
-
-.gateKicker{
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-  color:var(--accent2);
-  margin-bottom:12px;
-}
-
-.gateCard h1{
-  font-size:38px;
-  font-weight:800;
-  letter-spacing:-0.02em;
-  margin-bottom:10px;
-}
-
-.gateCard p{
-  color:var(--muted);
-  font-size:16px;
-  margin-bottom:20px;
-}
-
-#gateCodeInput{
-  width:100%;
-  padding:15px 16px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.08);
-  color:white;
-  font-size:16px;
-  outline:none;
-}
-
-#gateCodeInput::placeholder{
-  color:rgba(255,255,255,0.42);
-}
-
-#gateUnlockBtn{
-  width:100%;
-  margin-top:14px;
-  padding:15px 18px;
-  border:none;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--accent1),var(--accent2));
-  color:white;
-  font-size:16px;
-  font-weight:800;
-  cursor:pointer;
-  transition:transform .2s ease, box-shadow .2s ease;
-}
-
-#gateUnlockBtn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(107,78,255,0.35);
-}
-
-.gateMessage{
-  min-height:20px;
-  margin-top:14px;
-  color:#ff5a5a !important;
-  font-size:14px !important;
-  font-weight:800;
-}
-
-/* FAQ */
-
-.faq-section{
-  background:#000000;
-}
-
-.faq-wrap{
-  max-width: 900px;
-  margin: 56px auto 0;
-  text-align:left;
-}
-
-.faq-list{
-  display:grid;
-  gap:14px;
-}
-
-.faq-item{
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--hair);
-  border-radius:22px;
-  overflow:hidden;
-  transition:border-color .2s ease, background .2s ease, transform .2s ease;
-}
-
-.faq-item:hover{
-  border-color:rgba(176,108,255,0.28);
-  background:rgba(255,255,255,0.055);
-}
-
-.faq-item[open]{
-  border-color:rgba(176,108,255,0.36);
-  background:rgba(255,255,255,0.06);
-}
-
-.faq-item summary{
-  list-style:none;
-  cursor:pointer;
-  padding:22px 24px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:18px;
-  font-size:17px;
-  font-weight:800;
-  letter-spacing:-0.01em;
-}
-
-.faq-item summary::-webkit-details-marker{
-  display:none;
-}
-
-.faq-icon{
-  width:28px;
-  height:28px;
-  border-radius:999px;
-  display:grid;
-  place-items:center;
-  flex:0 0 auto;
-  color:white;
-  background:linear-gradient(135deg,var(--accent1),var(--accent2));
-  transition:transform .25s ease;
-}
-
-.faq-icon::before{
-  content:"";
-  width:8px;
-  height:8px;
-  border-right:2px solid white;
-  border-bottom:2px solid white;
-  transform:rotate(45deg) translate(-1px,-1px);
-}
-
-.faq-item[open] .faq-icon{
-  transform:rotate(180deg);
-}
-
-.faq-answer{
-  padding:0 24px 24px;
-  color:rgba(255,255,255,0.68);
-  font-size:15px;
-  line-height:1.65;
-}
-
-.faq-answer p{
-  max-width:none;
-  margin:0;
-  text-align:left;
-  font-size:15px;
-  color:rgba(255,255,255,0.68);
-}
-
-.faq-note{
-  margin-top:12px !important;
-  font-size:13px !important;
-  color:rgba(255,255,255,0.50) !important;
-}
-
-.faq-table-wrap{
-  width:100%;
-  overflow-x:auto;
-  margin-top:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:18px;
-}
-
-.faq-fee-table{
-  width:100%;
-  min-width:620px;
-  border-collapse:collapse;
-  background:rgba(0,0,0,0.24);
-}
-
-.faq-fee-table th,
-.faq-fee-table td{
-  padding:15px 16px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  text-align:right;
-  font-size:14px;
-  white-space:nowrap;
-}
-
-.faq-fee-table th:first-child,
-.faq-fee-table td:first-child{
-  text-align:left;
-  font-weight:800;
-  color:var(--text);
-}
-
-.faq-fee-table th{
-  color:rgba(255,255,255,0.72);
-  font-weight:800;
-  background:rgba(255,255,255,0.04);
-}
-
-.faq-fee-table td{
-  color:rgba(255,255,255,0.68);
-  font-weight:650;
-}
-
-.faq-fee-table tr:last-child td{
-  border-bottom:none;
-  color:var(--text);
-  font-weight:900;
-}
-
-@media(max-width:700px){
-  .faq-item summary{
-    padding:20px;
-    font-size:16px;
-  }
-
-  .faq-answer{
-    padding:0 20px 22px;
-  }
-
-  .faq-wrap{
-    margin-top:42px;
-  }
-}
-
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+      [data-reveal] { opacity: 1; transform: none; }
+      .type-caret { display: none; }
+    }
   </style>
 </head>
 
 <body>
 
-<div id="siteContent">
-
-  <nav class="nav">
-<div class="nav-inner">
-  <img src="assets/LOGO-A4.png" alt="Backstage logo">
-<button id="menuBtn" aria-label="Open menu" style="background:none;border:none;cursor:pointer;">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-    <path d="M3 6h18M3 12h18M3 18h18" stroke="white" stroke-width="2" stroke-linecap="round"/>
-  </svg>
-</button>
-</div>
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="brand" href="index.html">BCKSTGE</a>
+      <div class="nav-links">
+        <a href="events.html">Events</a>
+        <a href="fastlane.html">Mobile Drink Ordering</a>
+        <a href="signup.html">Bar Dashboard</a>
+        <a href="admin-login.html">Admin</a>
+        <a href="#faqs">FAQ</a>
+        <a href="signup.html" class="nav-cta">Get Access</a>
+      </div>
+    </div>
   </nav>
 
-  <div id="menuOverlay"></div>
+  <main>
 
-<div id="sideMenu">
-  <a href="events.html">Events</a>
-  <a href="signup.html">Bar Dashboard</a>
-  <a href="admin-login.html">Admin Login</a>
-  <a href="#faqs">FAQ</a>
-</div>
-
-  <!-- HERO -->
-
-  <section class="hero">
-    <h1>
-      <span class="hero-line hero-white">Know the vibe</span>
-      <span class="hero-line hero-accent">before you go</span>
-    </h1>
-    <p>Real time nightlife intelligence, ticketing, promoter tools, built for modern venues</p>
-    <div class="hero-ctas">
-      <a
-  href="https://apps.apple.com/us/app/backstage-events/id6751863780"
-  class="cta"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  Download Now
-</a>
-      <a href="events.html" class="cta secondary">View events</a>
-    </div>
-
-  </section>
-
-  <!-- ZERO CUT -->
-
-  <section class="section">
-    <h2>BCKSTGE does not take a cut off your ticket sales</h2>
-    <p>You set the price, you sell the tickets, you keep the revenue.</p>
-    <div class="stat" id="cutStat">30%</div>
-   <div class="sub">Backstage takes <span class="nothing">nothing</span></div>
-  </section>
-
-  <!-- PROMOTERS -->
-
-<section class="section alt">
-  <h2>Promoters commission</h2>
-  <p>Simple splits, transparent tracking, built per event</p>
-
-  <div class="grid">
-    <div class="card">
-      <h3>Example</h3>
-      <p>Ticket sold for $25</p>
-      <div class="big">$0.50 + 5%</div>
-      <p>
-        Promoter earns
-        <span class="earn-amount">$1.75</span>
-        per ticket.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>Your control</h3>
-      <p>Approve or deny promoters</p>
-      <div class="big">Insight</div>
-      <p>Track performance live inside Backstage.</p>
-    </div>
-  </div>
-</section>
-
-    <!-- TAP TO PAY -->
-
-  <section class="section">
-    <h2>Tap to Pay</h2>
-    <p>Accept payments at the door with Tap to Pay on iPhone, no terminals, just your phone</p>
-
-    <div class="grid">
-      <div class="card tap-visual">
-<img src="assets/IphoneTapToPay.png" class="iphone-mock" alt="Tap to Pay on iPhone">
-
-      </div>
-
-      <div class="card tap-copy">
-        <h3>Door checkout</h3>
-        <p>Fast entry. Clean payouts. Less friction.</p>
-
-        <div class="tap-list">
-          <div class="tap-item">Works with iPhone</div>
-          <div class="tap-item">Uses Apples built in Tap to Pay flow</div>
-          <div class="tap-item">Perfect for tickets and cover</div>
-          <div class="tap-item">No extra hardware</div>
+    <!-- HERO -->
+    <section class="hero">
+      <div data-reveal>
+        <span class="hero-eyebrow" data-typewriter="Modern Nightlife Ticketing" aria-label="Modern Nightlife Ticketing"></span>
+        <h1>Run the night.<br>In real time.</h1>
+        <p class="hero-sub">The ticketing and venue platform built for bars, clubs, and the people who fill them.</p>
+        <div class="hero-actions">
+          <a href="events.html" class="btn-primary">View Events</a>
+          <a href="signup.html" class="btn-text">Get Bar Dashboard</a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- ZERO CUT -->
+    <section class="zero-section">
+      <div data-reveal>
+        <div class="zero-number">0<span class="zero-unit">%</span></div>
+        <p class="zero-label">
+          <strong>No cut from host ticket sales.</strong> You set the price. You keep the face value.
+        </p>
+      </div>
+    </section>
+
+    <!-- PROMOTER FEATURES -->
+    <section class="section">
+      <div class="section-inner">
+        <div data-reveal>
+          <p class="eyebrow">Promoters</p>
+          <h2 class="section-heading">See who moves the crowd.</h2>
+          <p class="section-sub">Approve promoters. Track sales. Pay with clarity.</p>
+        </div>
+
+        <div class="feature-grid" data-reveal>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z"/>
+              </svg>
+            </div>
+            <div class="feature-title">Commission</div>
+            <p class="feature-desc">Set per-event splits and keep promoter payouts transparent from day one.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="2,14 7,9 11,12 18,5"/>
+              </svg>
+            </div>
+            <div class="feature-title">Performance</div>
+            <p class="feature-desc">Know who is selling before doors open. No surprises on the night.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="10" r="8"/>
+                <path d="M10 6v4l3 3"/>
+              </svg>
+            </div>
+            <div class="feature-title">Control</div>
+            <p class="feature-desc">Approve, deny, and track every promoter live throughout the event.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REAL-TIME FEATURES -->
+    <section class="section alt-bg">
+      <div class="section-inner">
+        <div data-reveal style="text-align:center">
+          <p class="eyebrow">Nightly Decisions</p>
+          <h2 class="section-heading center">Move faster.</h2>
+          <p class="section-sub center">Less guessing. More signal.</p>
+        </div>
+
+        <div class="feature-grid" style="margin-top:64px" data-reveal>
+          <div class="feature-card" style="background:var(--bg-secondary)">
+            <div class="feature-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="10" width="3" height="8" rx="1"/>
+                <rect x="8.5" y="6" width="3" height="12" rx="1"/>
+                <rect x="15" y="2" width="3" height="16" rx="1"/>
+              </svg>
+            </div>
+            <div class="feature-title">Sales</div>
+            <p class="feature-desc">Watch demand happen in real time. Act on it while it matters.</p>
+          </div>
+          <div class="feature-card" style="background:var(--bg-secondary)">
+            <div class="feature-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="7" r="4"/>
+                <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+              </svg>
+            </div>
+            <div class="feature-title">Guests</div>
+            <p class="feature-desc">Know who is coming before they arrive. Build your list with confidence.</p>
+          </div>
+          <div class="feature-card" style="background:var(--bg-secondary)">
+            <div class="feature-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="16" height="13" rx="2"/>
+                <path d="M2 8h16"/>
+                <path d="M6 12h2M10 12h4"/>
+              </svg>
+            </div>
+            <div class="feature-title">Payouts</div>
+            <p class="feature-desc">Clean settlement after every event. No spreadsheets, no confusion.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAST LANE -->
+    <section class="section">
+      <div class="section-inner">
+        <div class="split">
+          <div data-reveal>
+            <p class="eyebrow">Fast Lane</p>
+            <h2 class="section-heading">Skip the line.</h2>
+            <p class="section-sub">Mobile drink ordering, built into the night. Guests order from their phone, pay in-app, and get notified the second it's ready.</p>
+            <ul class="split-list" style="margin-top:28px">
+              <li>Order &amp; pay with Apple Pay — no tab, no waiting</li>
+              <li>Live order tracking on the lock screen</li>
+              <li>Every order builds the bar's audience</li>
+            </ul>
+            <div class="hero-actions" style="margin-top:36px; justify-content:flex-start;">
+              <a href="fastlane.html" class="btn-primary">Explore Fast Lane</a>
+            </div>
+          </div>
+
+          <div data-reveal>
+            <div class="song-list">
+              <div class="song-row">
+                <div class="feature-icon" style="margin:0;">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2h8v16H6z"/><path d="M9 15h2"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="song-title">Order placed</div>
+                  <div class="song-meta">Espresso Martini · Main Bar</div>
+                </div>
+                <span class="song-badge">In app</span>
+              </div>
+              <div class="song-row">
+                <div class="feature-icon" style="margin:0;">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 2"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="song-title">Making your drink</div>
+                  <div class="song-meta">Tracked live · #A4F2</div>
+                </div>
+                <span class="song-badge">2 min</span>
+              </div>
+              <div class="song-row">
+                <div class="feature-icon" style="margin:0;">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 10l4 4 8-8"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="song-title">Ready for pickup</div>
+                  <div class="song-meta">Show code at Main Bar</div>
+                </div>
+                <span class="song-badge" style="color:#30d158; background:rgba(48,209,88,0.16)">Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- SONG REQUESTS -->
-
-  <section class="section alt">
-    <h2>Song requests</h2>
-    <p>Guests request songs for your event</p>
-
-    <div class="grid">
-      <div class="card song-visual">
-        <div class="sr-phone">
-          <div class="sr-top">
-  
+    <section class="section alt-bg">
+      <div class="section-inner">
+        <div class="split">
+          <div data-reveal>
+            <p class="eyebrow">Guest Signal</p>
+            <h2 class="section-heading">Know the vibe.</h2>
+            <p class="section-sub">Guests request. You decide.</p>
+            <ul class="split-list" style="margin-top:28px">
+              <li>Requests tied to each event</li>
+              <li>Live crowd preference, updated in real time</li>
+              <li>Built for DJs and venues</li>
+            </ul>
           </div>
 
-
-          <div class="sr-queue">
-            <div class="sr-row">
-              <div class="sr-left">
-                <img src="assets/ZeddClarity.png" class="sr-album" alt="Zedd Clarity album cover">
+          <div data-reveal>
+            <div class="song-list">
+              <div class="song-row">
+                <img src="assets/ZeddClarity.png" alt="Zedd – Clarity">
                 <div>
-                  <div class="sr-song">Zedd - Clarity</div>
-                  <div class="sr-meta">2 requests</div>
+                  <div class="song-title">Zedd — Clarity</div>
+                  <div class="song-meta">Requested</div>
                 </div>
+                <span class="song-badge">2 requests</span>
+              </div>
+              <div class="song-row">
+                <img src="assets/RihannaLove.png" alt="Rihanna – We Found Love">
+                <div>
+                  <div class="song-title">Rihanna — We Found Love</div>
+                  <div class="song-meta">Requested</div>
+                </div>
+                <span class="song-badge">1 request</span>
+              </div>
+              <div class="song-row">
+                <img src="assets/UsherYeah!.png" alt="Usher – Yeah!">
+                <div>
+                  <div class="song-title">Usher — Yeah!</div>
+                  <div class="song-meta">Requested</div>
+                </div>
+                <span class="song-badge">3 requests</span>
               </div>
             </div>
-
-            <div class="sr-row">
-              <div class="sr-left">
-                <img src="assets/RihannaLove.png" class="sr-album" alt="Rihanna We Found Love album cover">
-                <div>
-                  <div class="sr-song">Rihanna - We found love</div>
-                  <div class="sr-meta">1 request</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="sr-row">
-              <div class="sr-left">
-                <img src="assets/UsherYeah!.png" class="sr-album" alt="Usher Yeah album cover">
-                <div>
-                  <div class="sr-song">USHER - Year!</div>
-                  <div class="sr-meta">3 requests</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="card song-copy">
-        <h3>Control the vibe</h3>
-        <p>Guests submit. You choose. No chaos.</p>
-
-        <div class="tap-list">
-          <div class="tap-item">Requests tied to the event</div>
-          <div class="tap-item">See what is trending live</div>
+    <!-- GEO MARKETING -->
+    <section class="section">
+      <div class="section-inner">
+        <div class="split reverse">
+          <div data-reveal>
+            <p class="eyebrow">Inside the Venue</p>
+            <h2 class="section-heading">Reach guests at the right moment.</h2>
+            <p class="section-sub">Night-specific promos, delivered when they matter.</p>
+            <ul class="split-list">
+              <li>Trigger promos on entry</li>
+              <li>Run offers by event</li>
+              <li>Drive conversion inside the room</li>
+            </ul>
+          </div>
+          <div class="phone-wrap" data-reveal>
+            <img src="assets/GeoMarketing.png" class="iphone-mock" alt="Geofence marketing on iPhone">
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- FEES -->
+    <section class="section alt-bg" id="fees">
+      <div class="section-inner">
+        <div data-reveal style="text-align:center">
+
+          <h2 class="section-heading center">Transparent fees.<br>No surprises.</h2>
+        </div>
+
+        <div class="fee-table-wrap" data-reveal>
+          <table class="fee-table">
+            <thead>
+              <tr>
+                <th>Ticket price</th>
+                <th>$25</th>
+                <th>$50</th>
+                <th>$75</th>
+                <th>$100</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Face value (you keep)</td>
+                <td>$25.00</td>
+                <td>$50.00</td>
+                <td>$75.00</td>
+                <td>$100.00</td>
+              </tr>
+              <tr>
+                <td>BCKSTGE fee (guest pays)</td>
+                <td>$5.68</td>
+                <td>$9.01</td>
+                <td>$12.33</td>
+                <td>$15.65</td>
+              </tr>
+              <tr>
+                <td>Guest total</td>
+                <td>$30.68</td>
+                <td>$59.01</td>
+                <td>$87.33</td>
+                <td>$115.65</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="fee-note" style="text-align:center">Based on one ticket per order. Processing fees included.</p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faqs">
+      <div class="section-inner">
+        <div data-reveal style="text-align:center">
+          <p class="eyebrow">FAQ</p>
+          <h2 class="section-heading center">Quick answers.</h2>
+        </div>
+
+        <div class="faq-list" data-reveal>
+          <details class="faq-item">
+            <summary>What is BCKSTGE?<span class="faq-chevron" aria-hidden="true"></span></summary>
+            <div class="faq-body">A nightlife ticketing and event platform for hosts, promoters, bars, clubs, and venues. Built to run the whole night from a single dashboard.</div>
+          </details>
+          <details class="faq-item">
+            <summary>What is Bar Dashboard?<span class="faq-chevron" aria-hidden="true"></span></summary>
+            <div class="faq-body">A live dashboard for event sales, guests, promoters, payouts, and venue performance — all in one place, in real time.</div>
+          </details>
+          <details class="faq-item">
+            <summary>What is Fast Lane?<span class="faq-chevron" aria-hidden="true"></span></summary>
+            <div class="faq-body">Mobile drink ordering built into Backstage. Guests order and pay from their phone, track the order live, and pick it up at a chosen spot — and every purchase adds them to the venue's audience.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Does BCKSTGE take a cut of ticket sales?<span class="faq-chevron" aria-hidden="true"></span></summary>
+            <div class="faq-body">No. Hosts keep the full face value of every ticket sold. Guest-paid fees cover the platform and payment processing.</div>
+          </details>
+          <details class="faq-item">
+            <summary>When are sales paid out?<span class="faq-chevron" aria-hidden="true"></span></summary>
+            <div class="faq-body">Payouts are processed after the event ends so settlement stays clean and accurate.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Can venues use BCKSTGE?<span class="faq-chevron" aria-hidden="true"></span></summary>
+            <div class="faq-body">Yes. BCKSTGE supports event pages, digital ticketing, guest check-in, promoter tracking, and reporting for any venue size.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div data-reveal>
+        <p class="eyebrow">Get Started</p>
+        <h2 class="cta-heading">Your nightlife command center.</h2>
+        <p class="cta-sub">Simple. Fast. Live. Built for the people who run the room.</p>
+        <div class="hero-actions">
+          <a href="signup.html" class="btn-primary">Get Bar Dashboard</a>
+          <a href="events.html" class="btn-text" style="color:rgba(255,255,255,0.6)">View Events</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span class="footer-copy">© 2026 Backstage</span>
+    <div class="footer-links">
+      <a href="terms_and_conditions.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
     </div>
-  </section>
+  </footer>
 
-    <!-- SKIP THE LINE PASSES -->
+  <script>
+    (() => {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  <section class="section">
-    <h2>Skip the line passes.</h2>
-    <p>Priority entry tickets that keep the door moving and the vibe clean.</p>
+      /* ── SCROLL REVEALS ── */
+      if (!prefersReduced) {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 
-    <div class="grid">
-      <div class="card pass-visual">
-        <div class="pass-shell" aria-hidden="true">
-          <div class="pass-glow"></div>
+        document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+      }
 
-          <div class="pass-inner">
-            <div class="pass-kicker">PRIORITY ENTRY</div>
-            <div class="pass-title">Skip the line pass</div>
-            <div class="pass-meta">Valid for this event</div>
+      /* ── TYPEWRITER (left → right) ── */
+      document.querySelectorAll('[data-typewriter]').forEach(el => {
+        const text = el.getAttribute('data-typewriter');
 
-            <div class="pass-price">$10</div>
+        if (prefersReduced) {
+          el.textContent = text;
+          return;
+        }
 
-            <div class="pass-foot">Limited quantity</div>
-          </div>
-        </div>
-      </div>
+        // text span + blinking caret
+        const span = document.createElement('span');
+        const caret = document.createElement('span');
+        caret.className = 'type-caret';
+        el.appendChild(span);
+        el.appendChild(caret);
 
-      <div class="card pass-copy">
-        <h3>Make entry faster</h3>
-        <p>Sell passes when demand spikes. Keep lines under control.</p>
+        let i = 0;
+        const speed = 70;        // ms per character
+        const startDelay = 350;  // wait before typing begins
 
-        <div class="tap-list">
-          <div class="tap-item">Sell priority entry tickets</div>
-          <div class="tap-item">Limit quantity per event</div>
-          <div class="tap-item">Reduce crowding at the door</div>
-          <div class="tap-item">Simple for guests</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-    <!-- GEOFENCE MARKETING -->
-
-  <section class="section alt">
-    <h2>Geofence marketing.</h2>
-    <p>When guests walk in, they get notified with the deals you are running that night.</p>
-
-    <div class="grid">
-<div class="card geo-visual">
-  <img src="assets/GeoMarketing.png" class="iphone-mock" alt="Geofence marketing on iPhone">
-</div>
-
-
-      <div class="card geo-copy">
-        <h3>Hit them at the right time</h3>
-        <p>Marketing that feels like it belongs. No spam. Only when they are inside.</p>
-
-        <div class="tap-list">
-          <div class="tap-item">Trigger deals on entry</div>
-          <div class="tap-item">Run night specific promos</div>
-          <div class="tap-item">Increase conversion at the door</div>
-          <div class="tap-item">Works for bars, clubs, events</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-
-  <!-- FAQ -->
-
-  <section class="section alt faq-section" id="faqs">
-    <h2>Frequently Asked Questions</h2>
-    <p>Everything guests, hosts, and venues need to know about BCKSTGE.</p>
-
-    <div class="faq-wrap">
-      <div class="faq-list">
-
-        <details class="faq-item">
-          <summary>
-            What is BCKSTGE?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>BCKSTGE is a mobile-first ticketing and event platform built for nightlife, live music, and social events. We help hosts create events, sell tickets, manage guests, and run check-in through one streamlined platform.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Who is BCKSTGE for?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>BCKSTGE is built for event hosts, promoters, venues, artists, DJs, nightlife brands, and anyone looking for a simple way to manage ticketed events.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            How does ticketing work?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Hosts can create an event, set ticket types and pricing, and share the event page with guests. Guests purchase tickets online and receive digital tickets for entry.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            What are your ticketing fees?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>BCKSTGE uses a transparent fee structure. Our ticketing fee includes BCKSTGE's service fee and standard credit card processing of 2.9% + $0.30. Guests always see the final total before checkout.</p>
-
-            <div class="faq-table-wrap">
-              <table class="faq-fee-table">
-                <thead>
-                  <tr>
-                    <th>BCKSTGE</th>
-                    <th>$25 Ticket</th>
-                    <th>$50 Ticket</th>
-                    <th>$75 Ticket</th>
-                    <th>$100 Ticket</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Face Value</td>
-                    <td>$25.00</td>
-                    <td>$50.00</td>
-                    <td>$75.00</td>
-                    <td>$100.00</td>
-                  </tr>
-                  <tr>
-                    <td>BCKSTGE Fee</td>
-                    <td>$5.68</td>
-                    <td>$9.01</td>
-                    <td>$12.33</td>
-                    <td>$15.65</td>
-                  </tr>
-                  <tr>
-                    <td>Guest Total</td>
-                    <td>$30.68</td>
-                    <td>$59.01</td>
-                    <td>$87.33</td>
-                    <td>$115.65</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p class="faq-note">Examples are based on one ticket purchased in a single order. Final pricing may vary depending on ticket quantity, discounts, credits, taxes, and event settings.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Does BCKSTGE take a cut of host ticket sales?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>No. Hosts keep the face value revenue from their ticket sales. BCKSTGE's guest-paid ticketing fee covers the platform service fee and payment processing.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            How does check-in work at the event?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Tickets are digital and can be checked in at the door using BCKSTGE's guest list and ticket scanning tools. This helps make entry faster and easier for hosts, venues, and guests.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Can hosts view ticket sales and guest information?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Yes. Hosts can track ticket sales, guest counts, and event performance through BCKSTGE's host tools. Event data can also support planning, staffing, settlement, and reporting.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            When are ticket sales paid out?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Ticket payouts are processed after the event ends. This helps protect guests, hosts, and venues while keeping event settlement clear and organized.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Can BCKSTGE support venues?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Yes. BCKSTGE can provide event pages, digital ticketing, guest check-in, ticket reporting, and event visibility. We are open to working with venues to make sure their operational needs are met.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Can BCKSTGE provide ticket reporting?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Yes. BCKSTGE can provide ticket counts, guest information, sales performance, and other event data to help hosts and venue teams stay informed before and after the event.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Does BCKSTGE help promote events?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>BCKSTGE gives hosts a clean event page and shareable ticket link that can be used across social media, ads, text campaigns, and other marketing channels. Select events may also receive additional promotional support through BCKSTGE.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Can guests receive digital tickets?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Yes. Guests receive digital tickets after purchase and can use them for entry at the event.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Can hosts offer complimentary tickets?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Yes. Hosts can manage guest access through BCKSTGE, including paid tickets, guest list access, and complimentary entry options depending on the event setup.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            Can BCKSTGE handle different ticket types?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Yes. Hosts can create different ticket options such as general admission, early-entry tickets, anytime access, VIP options, gender-based pricing, and volume-based ticket releases depending on the event.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>
-            How do guests contact support?
-            <span class="faq-icon" aria-hidden="true"></span>
-          </summary>
-          <div class="faq-answer">
-            <p>Guests can contact BCKSTGE for help with ticket-related questions, order issues, or event access support.</p>
-          </div>
-        </details>
-
-      </div>
-    </div>
-  </section>
-
-
-<footer>
-  © 2026 Backstage ·
-  <a href="terms_and_conditions.html">Terms & Conditions</a> ·
-  <a href="privacy.html">Privacy Policy</a>
-</footer>
-
-</div>
-
-<script>
-  const statEl = document.getElementById("cutStat");
-  let started = false;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !started) {
-        started = true;
-
-        let value = 30;
-        statEl.textContent = value + "%";
-
-        const interval = setInterval(() => {
-          value--;
-          statEl.textContent = value + "%";
-
-          if (value <= 0) {
-            clearInterval(interval);
-            statEl.textContent = "0%";
+        const type = () => {
+          if (i <= text.length) {
+            span.textContent = text.slice(0, i);
+            i++;
+            setTimeout(type, speed);
+          } else {
+            // keep caret blinking a moment, then fade it out
+            setTimeout(() => caret.style.opacity = '0', 1600);
           }
-        }, 60);
-      }
-    });
-  }, { threshold: 0.6 });
+        };
 
-  observer.observe(statEl);
-</script>
-
-<script>
-  const earnEl = document.querySelector(".earn-amount");
-
-  const earnObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        earnEl.style.animation = "earnIn 0.6s ease forwards";
-        earnObserver.disconnect();
-      }
-    });
-  }, { threshold: 0.6 });
-
-  earnObserver.observe(earnEl);
-</script>
-
-<script>
-  const menuBtn = document.getElementById("menuBtn");
-  const overlay = document.getElementById("menuOverlay");
-
-  menuBtn.onclick = () => {
-    document.body.classList.add("menu-open");
-  };
-
-  overlay.onclick = () => {
-    document.body.classList.remove("menu-open");
-  };
-</script>
+        setTimeout(type, startDelay);
+      });
+    })();
+  </script>
 
 </body>
 </html>

@@ -3,17 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Backstage Events • Log In</title>
+  <title>Backstage | Log In</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg:#000;
-      --card:#0b0b0b;
-      --border:#1f1f1f;
-      --text:#fff;
-      --muted:#a7a7a7;
-      --accent:#3b82f6;
-      --danger:#ef4444;
+      --white: #1c1c1e;
+      --black: #f5f5f7;
+      --secondary: #a1a1a6;
+      --tertiary: #6e6e73;
+      --hairline: #2c2c2e;
+      --hairline-light: #232325;
+      --blue: #0a84ff;
+      --blue-dark: #409cff;
+      --bg: #0a0a0b;
+      --bg-secondary: #141416;
+      --danger: #ff6b6b;
+
+      /* aliases kept so nothing downstream breaks */
+      --card: #1c1c1e;
+      --border: #2c2c2e;
+      --text: #f5f5f7;
+      --muted: #a1a1a6;
+      --accent: #0a84ff;
     }
 
     * { box-sizing: border-box; }
@@ -22,108 +36,211 @@
       margin: 0;
       min-height: 100vh;
       background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--black);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
+      overflow-x: hidden;
     }
 
+    a { color: inherit; text-decoration: none; }
+
+    /* ── LAYOUT / GLOW ── */
+
     .wrap {
+      position: relative;
       width: 100%;
       max-width: 420px;
+      z-index: 1;
+    }
+
+    .wrap::before {
+      content: "";
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      width: 540px;
+      height: 540px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(10,132,255,0.16) 0%, rgba(10,132,255,0) 62%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .brand-mark {
+      display: inline-block;
+      margin-bottom: 18px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .type-caret {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-left: 3px;
+      background: var(--blue);
+      animation: caret-blink 1s steps(1) infinite;
+    }
+
+    @keyframes caret-blink {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
     }
 
     h1 {
-      margin: 0 0 6px;
-      font-size: 26px;
+      margin: 0 0 8px;
+      font-size: clamp(28px, 6vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      color: var(--black);
     }
 
     p {
-      margin: 0 0 18px;
-      font-size: 14px;
-      color: var(--muted);
+      margin: 0 0 24px;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+      line-height: 1.5;
     }
 
+    /* ── CARD ── */
+
     .card {
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      background: var(--white);
+      border: 1px solid var(--hairline);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.5);
     }
 
     label {
       display: block;
-      margin-top: 14px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      color: var(--muted);
+      margin-top: 16px;
+      margin-bottom: 7px;
+      font-size: 11px;
+      color: var(--tertiary);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
+
+    label:first-of-type { margin-top: 0; }
 
     input {
       width: 100%;
-      padding: 12px;
+      height: 48px;
+      padding: 0 14px;
       border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      font-size: 14px;
+      border: 1px solid var(--hairline);
+      background: var(--bg-secondary);
+      color: var(--black);
+      font-size: 15px;
+      font-family: inherit;
+      letter-spacing: -0.01em;
       outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
     }
 
+    input::placeholder { color: var(--tertiary); }
+
     input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(59,130,246,.18);
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(10,132,255,.18);
     }
 
     button {
       width: 100%;
-      margin-top: 18px;
-      padding: 12px;
+      height: 48px;
+      margin-top: 22px;
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: rgba(255,255,255,.1);
-      color: var(--text);
+      border: 1px solid transparent;
+      background: var(--blue);
+      color: #fff;
       font-weight: 600;
+      font-family: inherit;
+      font-size: 15px;
+      letter-spacing: -0.015em;
       cursor: pointer;
+      transition: transform .15s ease, background .2s ease, box-shadow .2s ease, opacity .16s ease;
+    }
+
+    button:hover {
+      background: var(--blue-dark);
+      transform: scale(1.01);
+      box-shadow: 0 8px 30px rgba(10,132,255,.35);
     }
 
     button:disabled {
       opacity: .6;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .error {
       display: none;
-      margin-top: 12px;
-      padding: 10px 12px;
+      margin-top: 16px;
+      padding: 12px 14px;
       border-radius: 12px;
-      border: 1px solid rgba(239,68,68,.35);
-      background: rgba(239,68,68,.08);
-      color: #ffd4d4;
-      font-size: 13px;
+      border: 1px solid rgba(255,107,107,.35);
+      background: rgba(255,107,107,.08);
+      color: #ffd6d6;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
     .footer {
-      margin-top: 14px;
+      margin-top: 18px;
       text-align: center;
-      font-size: 12px;
-      color: var(--muted);
+      font-size: 13px;
+      color: var(--secondary);
     }
 
     .footer a {
-      color: #d6d6d6;
-      text-decoration: none;
+      color: var(--black);
+      font-weight: 600;
+      border-bottom: 1px solid var(--hairline);
+      transition: border-color .15s ease, color .15s ease;
+    }
+
+    .footer a:hover { color: var(--blue); border-color: var(--blue); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .type-caret { display: none; }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>Backstage Events</h1>
-    <p>Log in to manage your hosted events.</p>
+
+
+    <span class="eyebrow" data-typewriter="Host Login" aria-label="Host Login"></span>
+    <h1>Welcome back.</h1>
+
 
     <div class="card">
       <form id="loginForm">
@@ -146,28 +263,29 @@
 
   <script type="module">
     import { auth, db } from "/js/firebase.js";
-    import { 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged, 
-  setPersistence, 
-  browserLocalPersistence 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const form = document.getElementById("loginForm");
     await setPersistence(auth, browserLocalPersistence);
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const snap = await getDoc(doc(db, "businessUsers", user.uid));
-    if (snap.exists()) {
-      window.location.href = "/dashboard.html";
-    } else {
-      await signOut(auth);
-    }
-  }
-});
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const snap = await getDoc(doc(db, "businessUsers", user.uid));
+        if (snap.exists()) {
+          window.location.href = "/dashboard.html";
+        } else {
+          await signOut(auth);
+        }
+      }
+    });
+
     const btn = document.getElementById("submitBtn");
     const errorBox = document.getElementById("errorBox");
 
@@ -210,16 +328,43 @@ onAuthStateChanged(auth, async (user) => {
 
         const data = snap.data();
 
-window.location.href = "/dashboard.html";
+        window.location.href = "/dashboard.html";
 
       } catch (err) {
-  console.error(err);
-  showError("Login failed. Check your email and password.");
-} finally {
+        console.error(err);
+        showError("Login failed. Check your email and password.");
+      } finally {
         btn.disabled = false;
         btn.textContent = "Log in";
       }
     });
+  </script>
+
+  <!-- vibe layer: typewriter eyebrow (matches index.html) -->
+  <script>
+    (() => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelectorAll('[data-typewriter]').forEach(el => {
+        const text = el.getAttribute('data-typewriter');
+        if (reduce) { el.textContent = text; return; }
+        const span = document.createElement('span');
+        const caret = document.createElement('span');
+        caret.className = 'type-caret';
+        el.appendChild(span);
+        el.appendChild(caret);
+        let i = 0;
+        const type = () => {
+          if (i <= text.length) {
+            span.textContent = text.slice(0, i);
+            i++;
+            setTimeout(type, 70);
+          } else {
+            setTimeout(() => caret.style.opacity = '0', 1600);
+          }
+        };
+        setTimeout(type, 350);
+      });
+    })();
   </script>
 </body>
 </html>

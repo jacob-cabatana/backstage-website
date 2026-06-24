@@ -2,181 +2,599 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Backstage Events</title>
+  <title>Backstage | Events</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="assets/styles.css">
 
   <style>
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #000000;
-  color: white;
-  min-height: 100vh;
-  padding: 40px 16px;
-}
+    :root {
+      --white: #1c1c1e;
+      --black: #f5f5f7;
+      --secondary: #a1a1a6;
+      --tertiary: #6e6e73;
+      --hairline: #2c2c2e;
+      --hairline-light: #232325;
+      --blue: #0a84ff;
+      --blue-dark: #409cff;
+      --bg: #0a0a0b;
+      --bg-secondary: #141416;
+    }
 
-    .page-container {
-      max-width: 420px;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ── NAV (matches index.html) ── */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand { font-size: 17px; font-weight: 700; letter-spacing: -0.03em; color: var(--black); }
+
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+
+    .nav-links a {
+      font-size: 13px; font-weight: 500; color: var(--secondary);
+      letter-spacing: -0.01em; transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--black); }
+    .nav-links a.active { color: var(--black); }
+
+    .nav-cta { font-size: 13px; font-weight: 600; color: var(--blue) !important; letter-spacing: -0.01em; }
+    .nav-cta:hover { color: var(--blue-dark) !important; }
+
+    /* ── HERO HEADER ── */
+
+    .events-hero {
+      position: relative;
+      text-align: center;
+      padding: 96px 24px 56px;
+      overflow: hidden;
+    }
+
+    .events-hero::before {
+      content: "";
+      position: absolute;
+      top: -30%;
+      left: 50%;
+      width: 620px;
+      height: 620px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(10,132,255,0.18) 0%, rgba(10,132,255,0) 62%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .events-hero > * { position: relative; z-index: 1; }
+
+    .events-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 16px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .type-caret {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-left: 3px;
+      background: var(--blue);
+      animation: caret-blink 1s steps(1) infinite;
+    }
+
+    @keyframes caret-blink {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+
+    .events-hero h1 {
+      font-size: clamp(40px, 9vw, 64px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.04;
+      color: var(--black);
+      max-width: 720px;
       margin: 0 auto;
     }
 
-h1 {
-  margin: 0 0 24px;
-  font-size: 26px;
-  font-weight: 700;
-  text-align: center;
-  background: linear-gradient(90deg, #9c4ff2, #225cda);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.events-card {
-  background: transparent;
-  padding: 0;
-  box-shadow: none;
-}
+    .events-hero p {
+      margin: 16px auto 0;
+      max-width: 420px;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+      color: var(--secondary);
+    }
 
+    /* ── EVENTS FEED ── */
+
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8px 0 80px;
+    }
+
+    .events-card {
+      position: relative;
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    /* horizontal scroller */
     #events-container {
       display: flex;
-      flex-direction: column;
-      gap: 14px;
+      flex-direction: row;
+      gap: 44px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      padding: 4px 24px 24px;
+      /* hide scrollbar across browsers */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
-    /* CLICK FIX */
-.event-card {
-  cursor: pointer;
-  pointer-events: auto;
-  background: rgba(255,255,255,0.06);
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(156,79,242,0.6);
-  box-shadow: 0 0 0 1px rgba(156,79,242,0.25);
-}
+    #events-container::-webkit-scrollbar { display: none; }
 
-    .event-card * {
+    /* ── ARROW NAV (forced to override assets/styles.css button rules) ── */
+
+    .scroll-arrow {
+      position: absolute !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      z-index: 20 !important;
+      width: 44px !important;
+      height: 44px !important;
+      min-width: 0 !important;
+      max-width: 44px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 50% !important;
+      border: 1px solid var(--hairline) !important;
+      background: rgba(28,28,30,0.9) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--black) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important;
+      -webkit-appearance: none;
+      appearance: none;
+      opacity: 0;
       pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.2s ease, background 0.2s ease;
     }
 
-.event-image-wrap{
-  position: relative;
-}
+    .scroll-arrow.show { opacity: 1; pointer-events: auto; }
 
-.event-image{
-  width: 100%;
-  height: 370px;
-  object-fit: cover;
-  display: block;
-}
-
-.event-image-wrap::after{
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 80px;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0),
-    rgba(0,0,0,0.85)
-  );
-}
-
-    .event-content {
-      padding: 14px;
+    .scroll-arrow:hover {
+      background: var(--blue) !important;
+      border-color: var(--blue) !important;
+      color: #fff !important;
     }
+
+    .scroll-arrow:active { transform: translateY(-50%) scale(0.94) !important; }
+
+    .scroll-arrow svg { width: 20px !important; height: 20px !important; }
+
+    /* arrows sit just outside the card row */
+    .scroll-arrow.next { right: -22px !important; }
+    .scroll-arrow.prev { left: -22px !important; }
+
+    @media (max-width: 700px) {
+      .scroll-arrow.next { right: 8px !important; }
+      .scroll-arrow.prev { left: 8px !important; }
+    }
+
+    /* CLICK FIX (preserved) */
+    .event-card {
+      cursor: pointer;
+      pointer-events: auto;
+      flex: 0 0 320px;
+      width: 320px;
+      scroll-snap-align: start;
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--hairline);
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1),
+                  border-color 0.25s ease,
+                  box-shadow 0.25s ease;
+    }
+
+    .event-card * { pointer-events: none; }
+
+    .event-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(10,132,255,0.5);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(10,132,255,0.25);
+    }
+
+    .event-image-wrap { position: relative; }
+
+    .event-image {
+      width: 100%;
+      height: 370px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .event-card:hover .event-image { transform: scale(1.04); }
+
+    .event-image-wrap::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, rgba(28,28,30,0), rgba(28,28,30,0.92));
+    }
+
+    .event-content { padding: 18px 18px 20px; }
 
     .event-content h2 {
       margin: 0 0 6px;
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
     }
 
-    .event-date,
-.event-date{
-  margin: 10px 0 0;
-}
+    .event-date {
+      margin: 10px 0 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
 
-.event-location{
-  margin: 14px 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+    .event-location {
+      margin: 16px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
 
-.event-location .label{
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
-}
+    .event-location .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+    }
 
-.event-location .value{
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.35;
-  color: rgba(255,255,255,0.80);
-}
+    .event-location .value {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
 
-.empty-state {
-  position: relative;
-  height: 65vh;
-  border-radius: 22px;
-  overflow: hidden;
-  background-image: url("assets/SignUpImage.jpg");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    /* optional pill if events.js renders a price/status badge */
+    .event-badge {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      background: rgba(10,132,255,0.16);
+      border-radius: 980px;
+      padding: 4px 10px;
+    }
 
-.empty-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.35),
-    rgba(0,0,0,0.9)
-  );
-}
+    /* ── EMPTY STATE ── */
 
-.empty-content {
-  position: relative;
-  text-align: center;
-  padding: 24px;
-  max-width: 320px;
-}
+    .empty-state {
+      position: relative;
+      flex: 1 1 100%;
+      width: 100%;
+      min-width: 0;
+      height: 62vh;
+      scroll-snap-align: start;
+      border-radius: 22px;
+      overflow: hidden;
+      background-image: url("assets/SignUpImage.jpg");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--hairline);
+    }
 
-.empty-content h2 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  background: linear-gradient(90deg, #9c4ff2, #225cda);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+    .empty-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(5,5,7,0.92));
+    }
 
-.empty-content p {
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255,255,255,0.8);
-}
+    .empty-content {
+      position: relative;
+      text-align: center;
+      padding: 24px;
+      max-width: 320px;
+    }
+
+    .empty-content h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .empty-content p {
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .empty-content .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      height: 42px;
+      margin-top: 20px;
+      padding: 0 22px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 980px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      pointer-events: auto;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .empty-content .btn-primary:hover {
+      background: var(--blue-dark);
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(10,132,255,0.35);
+    }
+
+    /* ── REVEAL ── */
+
+    .event-card,
+    .empty-state {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1),
+                  border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .event-card.in,
+    .empty-state.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* keep hover transform working after reveal */
+    .event-card.in:hover { transform: translateY(-4px); }
+
+    /* ── FOOTER ── */
+
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy { font-size: 13px; color: var(--tertiary); letter-spacing: -0.01em; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a {
+      font-size: 13px; color: var(--tertiary); letter-spacing: -0.01em;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover { color: var(--black); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .event-card, .empty-state { opacity: 1; transform: none; }
+      .type-caret { display: none; }
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="page-container">
-    <h1>UPCOMING EVENTS</h1>
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="brand" href="index.html">BCKSTGE</a>
+      <div class="nav-links">
+        <a href="events.html" class="active">Events</a>
+        <a href="signup.html">Bar Dashboard</a>
+        <a href="admin-login.html">Admin</a>
+        <a href="index.html#faqs">FAQ</a>
+        <a href="signup.html" class="nav-cta">Get Access</a>
+      </div>
+    </div>
+  </nav>
 
+  <!-- HERO -->
+  <header class="events-hero">
+    <span class="events-eyebrow" data-typewriter="What's Going On?" aria-label="What's On Tonight"></span>
+    <h1>Upcoming events.</h1>
+    <p>Every night, every room. Find your next one and grab a ticket.</p>
+  </header>
+
+  <!-- FEED -->
+  <div class="page-container">
     <div class="events-card">
+      <button class="scroll-arrow prev" id="scroll-prev" aria-label="Previous events" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
       <div id="events-container"></div>
+      <button class="scroll-arrow next" id="scroll-next" aria-label="Next events" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
     </div>
   </div>
 
+  <footer>
+    <span class="footer-copy">© 2026 Backstage</span>
+    <div class="footer-links">
+      <a href="terms_and_conditions.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </footer>
+
+  <!-- events.js renders cards into #events-container -->
   <script type="module" src="assets/events.js"></script>
+
+  <!-- vibe layer: typewriter + reveal-on-scroll for rendered cards -->
+  <script>
+    (() => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* Typewriter on the eyebrow */
+      document.querySelectorAll('[data-typewriter]').forEach(el => {
+        const text = el.getAttribute('data-typewriter');
+        if (reduce) { el.textContent = text; return; }
+
+        const span = document.createElement('span');
+        const caret = document.createElement('span');
+        caret.className = 'type-caret';
+        el.appendChild(span);
+        el.appendChild(caret);
+
+        let i = 0;
+        const type = () => {
+          if (i <= text.length) {
+            span.textContent = text.slice(0, i);
+            i++;
+            setTimeout(type, 70);
+          } else {
+            setTimeout(() => caret.style.opacity = '0', 1600);
+          }
+        };
+        setTimeout(type, 350);
+      });
+
+      /* Reveal cards as events.js injects them (it runs async/after fetch).
+         A MutationObserver watches the container, then an IntersectionObserver
+         staggers each card in. */
+      if (reduce) return;
+
+      const container = document.getElementById('events-container');
+      if (!container) return;
+
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+
+      const observe = (node) => {
+        if (node.nodeType !== 1) return;
+        if (node.classList.contains('event-card') || node.classList.contains('empty-state')) {
+          io.observe(node);
+        }
+        node.querySelectorAll?.('.event-card, .empty-state').forEach(el => io.observe(el));
+      };
+
+      // catch anything already present, then watch for new injections
+      container.childNodes.forEach(observe);
+      new MutationObserver(muts => {
+        muts.forEach(m => m.addedNodes.forEach(observe));
+        updateArrows();
+      }).observe(container, { childList: true, subtree: true });
+
+      /* ── ARROW NAVIGATION (left + right) ── */
+      const prev = document.getElementById('scroll-prev');
+      const next = document.getElementById('scroll-next');
+      if (!next || !prev) return;
+
+      // scroll by one card width + gap
+      const step = () => {
+        const card = container.querySelector('.event-card');
+        const gap = parseInt(getComputedStyle(container).columnGap) || 44;
+        return card ? card.offsetWidth + gap : 360;
+      };
+
+      const updateArrows = () => {
+        const max = container.scrollWidth - container.clientWidth;
+        const x = container.scrollLeft;
+        const canScroll = max > 4;
+        prev.classList.toggle('show', canScroll && x > 4);          // show once scrolled right
+        next.classList.toggle('show', canScroll && x < max - 4);    // show while more remains
+      };
+
+      prev.addEventListener('click', () =>
+        container.scrollBy({ left: -step(), behavior: 'smooth' })
+      );
+      next.addEventListener('click', () =>
+        container.scrollBy({ left: step(), behavior: 'smooth' })
+      );
+
+      container.addEventListener('scroll', updateArrows, { passive: true });
+      window.addEventListener('resize', updateArrows);
+      // initial + delayed check (events load async)
+      updateArrows();
+      setTimeout(updateArrows, 800);
+    })();
+  </script>
 
 </body>
 </html>

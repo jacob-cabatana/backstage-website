@@ -3,125 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Backstage Fast Lane • Sign Up</title>
+  <title>Backstage | Bar Dashboard Sign Up</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #000000;
-      --card: #0b0b0f;
-      --card2: #111118;
-      --border: #23232b;
-      --text: #ffffff;
-      --muted: #9b9ba5;
-      --muted2: #686873;
-      --purple: #9c4ff2;
-      --blue: #225cda;
-      --pink: #ff2fb3;
+      --white: #1c1c1e;
+      --black: #f5f5f7;
+      --secondary: #a1a1a6;
+      --tertiary: #6e6e73;
+      --hairline: #2c2c2e;
+      --hairline-light: #232325;
+      --blue: #0a84ff;
+      --blue-dark: #409cff;
+      --bg: #0a0a0b;
+      --bg-secondary: #141416;
       --error: #ff6b6b;
+
+      /* aliases kept so nothing downstream breaks */
+      --card: #141416;
+      --card2: #1c1c1e;
+      --border: #2c2c2e;
+      --text: #f5f5f7;
+      --muted: #a1a1a6;
+      --muted2: #6e6e73;
     }
 
-    .card {
-  transition: transform .18s ease;
-}
-
-input,
-select,
-button {
-  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, opacity .16s ease;
-}
-
-.step.active {
-  animation: stepFade .22s ease both;
-}
-
-@keyframes stepFade {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
       background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--black);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 48px;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── NAV (matches index.html) ── */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      background: rgba(10, 10, 11, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 52px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 24px;
+      justify-content: space-between;
+      gap: 24px;
     }
 
-.gradient-title {
-  background: linear-gradient(
-    135deg,
-    #c084fc 0%,
-    #9c4ff2 35%,
-    #6f1eff 65%,
-    #c084fc 100%
-  );
+    .brand { font-size: 17px; font-weight: 700; letter-spacing: -0.03em; color: var(--black); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a {
+      font-size: 13px; font-weight: 500; color: var(--secondary);
+      letter-spacing: -0.01em; transition: color 0.2s ease;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--black); }
+    .nav-cta { font-size: 13px; font-weight: 600; color: var(--blue) !important; letter-spacing: -0.01em; }
+    .nav-cta:hover { color: var(--blue-dark) !important; }
 
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+    /* ── LAYOUT / GLOW ── */
 
     .wrap {
+      position: relative;
       width: 100%;
-      max-width: 460px;
+      max-width: 480px;
+      padding: 56px 24px 0;
+      z-index: 1;
     }
 
-    .badge {
+    .wrap::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      width: 560px;
+      height: 560px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(10,132,255,0.16) 0%, rgba(10,132,255,0) 62%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ── HEADER ── */
+
+    .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      min-height: 16px;
       margin-bottom: 14px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(156,79,242,.10);
-      border: 1px solid rgba(156,79,242,.25);
-      color: #d8c1ff;
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .type-caret {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-left: 3px;
+      background: var(--blue);
+      animation: caret-blink 1s steps(1) infinite;
+    }
+
+    @keyframes caret-blink {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+
+    h1, .gradient-title {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 6vw, 40px);
+      line-height: 1.04;
       font-weight: 700;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--pink), var(--blue));
-    }
-
-    h1 {
-      margin: 0 0 7px;
-      font-size: 30px;
-      line-height: 1.05;
       letter-spacing: -0.04em;
+      color: var(--black);
+      background: none;
+      -webkit-text-fill-color: currentColor;
     }
 
     .sub {
-      margin: 0 0 20px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.45;
+      margin: 0 0 26px;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--secondary);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
     }
 
+    /* ── CARD ── */
+
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      background: var(--white);
+      border: 1px solid var(--hairline);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.5);
+      transition: transform .18s ease;
     }
 
     .top {
@@ -129,225 +171,246 @@ button {
       justify-content: space-between;
       align-items: flex-end;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .step-title {
       margin: 0;
       font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
     }
 
     .step-count {
-      color: var(--muted);
+      color: var(--tertiary);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       white-space: nowrap;
     }
 
     .progress {
       width: 100%;
-      height: 7px;
+      height: 6px;
       border-radius: 999px;
-      background: #1a1a22;
+      background: var(--bg-secondary);
       overflow: hidden;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .progress-fill {
       height: 100%;
       width: 25%;
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
-      transition: width .25s ease;
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      transition: width .3s cubic-bezier(0.16,1,0.3,1);
     }
 
-    .step {
-      display: none;
-    }
+    /* ── STEPS ── */
 
+    .step { display: none; }
     .step.active {
       display: block;
+      animation: stepFade .26s ease both;
+    }
+
+    @keyframes stepFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .step-copy {
-      margin: 0 0 16px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
+      margin: 0 0 18px;
+      color: var(--secondary);
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
     }
 
     label {
       display: block;
-      margin-top: 14px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      color: var(--muted);
+      margin-top: 16px;
+      margin-bottom: 7px;
+      font-size: 11px;
+      color: var(--tertiary);
       font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
-    input,
-    select {
+    input, select {
       width: 100%;
-      height: 46px;
-      padding: 0 12px;
+      height: 48px;
+      padding: 0 14px;
       border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--card2);
-      color: var(--text);
-      font-size: 14px;
+      border: 1px solid var(--hairline);
+      background: var(--bg-secondary);
+      color: var(--black);
+      font-size: 15px;
+      font-family: inherit;
+      letter-spacing: -0.01em;
       outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
     }
 
-    input::placeholder {
-      color: var(--muted2);
+    input::placeholder { color: var(--tertiary); }
+
+    input:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(10,132,255,.18);
     }
 
-    input:focus,
-    select:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(156,79,242,.16);
-    }
+    select { cursor: pointer; }
 
-    select {
-      cursor: pointer;
-    }
+    /* ── REVIEW ── */
 
     .review {
       display: grid;
-      gap: 10px;
-      padding: 14px;
+      gap: 12px;
+      padding: 16px;
       border-radius: 14px;
-      background: var(--card2);
-      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      border: 1px solid var(--hairline);
     }
 
     .review-row {
       display: flex;
       justify-content: space-between;
       gap: 16px;
-      font-size: 13px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--hairline);
     }
 
-    .review-row:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
+    .review-row:last-child { border-bottom: 0; padding-bottom: 0; }
 
-    .review-label {
-      color: var(--muted);
-      font-weight: 700;
-    }
+    .review-label { color: var(--secondary); font-weight: 600; letter-spacing: -0.01em; }
 
     .review-value {
-      color: var(--text);
+      color: var(--black);
       text-align: right;
-      font-weight: 700;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       max-width: 62%;
       overflow-wrap: anywhere;
     }
 
+    /* ── ACTIONS / BUTTONS ── */
+
     .actions {
       display: flex;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 20px;
     }
 
     button {
-      height: 46px;
+      height: 48px;
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      color: var(--text);
-      font-weight: 800;
+      border: 1px solid transparent;
+      color: var(--black);
+      font-weight: 600;
+      font-family: inherit;
+      font-size: 15px;
+      letter-spacing: -0.015em;
       cursor: pointer;
-      font-size: 14px;
+      transition: transform .15s ease, background .2s ease, box-shadow .2s ease, opacity .16s ease;
     }
 
     .back-btn {
       display: none;
       width: 54px;
-      background: #15151d;
+      background: var(--bg-secondary);
+      border: 1px solid var(--hairline);
+      color: var(--black);
+      font-size: 20px;
     }
+
+    .back-btn:hover { background: #232328; transform: translateY(-1px); }
 
     .next-btn {
       flex: 1;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
+      background: var(--blue);
+      color: #fff;
     }
 
-    button:disabled {
-      opacity: .65;
-      cursor: not-allowed;
+    .next-btn:hover {
+      background: var(--blue-dark);
+      transform: scale(1.01);
+      box-shadow: 0 8px 30px rgba(10,132,255,.35);
     }
+
+    button:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── ERROR / NOTE / LINKS ── */
 
     .error {
       display: none;
-      margin-top: 14px;
-      padding: 11px 12px;
+      margin-top: 16px;
+      padding: 12px 14px;
       border-radius: 12px;
       border: 1px solid rgba(255,107,107,.35);
       background: rgba(255,107,107,.08);
       color: #ffd6d6;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.4;
     }
 
     .note {
-      margin-top: 14px;
-      color: var(--muted2);
+      margin-top: 16px;
+      color: var(--tertiary);
       font-size: 12px;
-      line-height: 1.45;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
       text-align: center;
     }
 
     .login-link {
-      margin-top: 14px;
+      margin-top: 18px;
       text-align: center;
-      font-size: 12px;
-      color: var(--muted);
+      font-size: 13px;
+      color: var(--secondary);
     }
 
     .login-link a {
-      color: var(--text);
-      text-decoration: underline;
+      color: var(--black);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid var(--hairline);
       cursor: pointer;
+      transition: border-color .15s ease;
     }
 
-    .back-home-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 18px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--card2);
-  color: var(--text);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-}
+    .login-link a:hover { border-color: var(--blue); color: var(--blue); }
 
-.back-home-btn:hover {
-  background: #171720;
-  border-color: #343443;
-  transform: translateY(-1px);
-}
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .type-caret { display: none; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-<a href="/index.html" class="back-home-btn">
-  ← Back to Backstage
-</a>
 
-    <h1 class="gradient-title">Create your bar dashboard</h1>
-    <p class="sub">
-      Set up your venue profile, add drinks, connect payouts, and start accepting drink orders.
-    </p>
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="brand" href="/index.html">BCKSTGE</a>
+      <div class="nav-links">
+        <a href="/events.html">Events</a>
+        <a href="/signup.html" class="active">Bar Dashboard</a>
+        <a href="/admin-login.html">Admin</a>
+        <a href="/index.html#faqs">FAQ</a>
+        <a href="/signup.html" class="nav-cta">Get Access</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <span class="eyebrow" data-typewriter="Bar Dashboard Setup" aria-label="Bar Dashboard Setup"></span>
+
+    <h1 class="gradient-title">Sign up to start accepting orders</h1>
+
 
     <div class="card">
       <div class="top">
@@ -397,15 +460,15 @@ button {
           />
 
           <label for="phone">Phone number</label>
-<input
-  id="phone"
-  type="tel"
-  placeholder="(904) 555-1234"
-  maxlength="14"
-  inputmode="numeric"
-  autocomplete="tel"
-  required
-/>
+          <input
+            id="phone"
+            type="tel"
+            placeholder="(904) 555-1234"
+            maxlength="14"
+            inputmode="numeric"
+            autocomplete="tel"
+            required
+          />
         </div>
 
         <div class="step" data-step="2">
@@ -799,41 +862,69 @@ button {
       await submitSignup();
     });
 
-function formatPhoneNumber(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
+    function formatPhoneNumber(value) {
+      const digits = value.replace(/\D/g, "").slice(0, 10);
 
-  if (digits.length <= 3) {
-    return digits;
-  }
+      if (digits.length <= 3) {
+        return digits;
+      }
 
-  if (digits.length <= 6) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-  }
+      if (digits.length <= 6) {
+        return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+      }
 
-  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-}
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
 
-phoneInput.addEventListener("input", () => {
-  phoneInput.value = formatPhoneNumber(phoneInput.value);
-  updateReview();
-});
+    phoneInput.addEventListener("input", () => {
+      phoneInput.value = formatPhoneNumber(phoneInput.value);
+      updateReview();
+    });
 
-[
-  managerNameInput,
-  emailInput,
-  passwordInput,
-  venueNameInput,
-  venueAddressInput,
-  venueTypeInput
-].forEach((input) => {
-  input.addEventListener("input", updateReview);
-  input.addEventListener("change", updateReview);
-});
+    [
+      managerNameInput,
+      emailInput,
+      passwordInput,
+      venueNameInput,
+      venueAddressInput,
+      venueTypeInput
+    ].forEach((input) => {
+      input.addEventListener("input", updateReview);
+      input.addEventListener("change", updateReview);
+    });
 
-phoneInput.addEventListener("change", updateReview);
+    phoneInput.addEventListener("change", updateReview);
 
     renderStep();
   </script>
+
+  <!-- vibe layer: typewriter eyebrow (matches index.html) -->
+  <script>
+    (() => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelectorAll('[data-typewriter]').forEach(el => {
+        const text = el.getAttribute('data-typewriter');
+        if (reduce) { el.textContent = text; return; }
+        const span = document.createElement('span');
+        const caret = document.createElement('span');
+        caret.className = 'type-caret';
+        el.appendChild(span);
+        el.appendChild(caret);
+        let i = 0;
+        const type = () => {
+          if (i <= text.length) {
+            span.textContent = text.slice(0, i);
+            i++;
+            setTimeout(type, 70);
+          } else {
+            setTimeout(() => caret.style.opacity = '0', 1600);
+          }
+        };
+        setTimeout(type, 350);
+      });
+    })();
+  </script>
+
+  <script src="/assets/signup-animations.js"></script>
 </body>
-<script src="/assets/signup-animations.js"></script>
 </html>
