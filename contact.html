@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact | Backstage</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --white: #1c1c1e;
+      --black: #f5f5f7;
+      --secondary: #a1a1a6;
+      --tertiary: #6e6e73;
+      --hairline: #2c2c2e;
+      --hairline-light: #232325;
+      --blue: #0a84ff;
+      --blue-dark: #409cff;
+      --bg: #0a0a0b;
+      --bg-secondary: #141416;
+      --max: 980px;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    /* ── NAV ── */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 5px 6px;
+      border-radius: 999px;
+      background:
+        linear-gradient(#0e0e12, #0e0e12) padding-box,
+        linear-gradient(120deg, #9c4ff2 0%, #6d6ff2 50%, #0a84ff 100%) border-box;
+      border: 1.5px solid transparent;
+      box-shadow: 0 4px 24px rgba(108, 80, 242, 0.18);
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+      padding: 7px 14px;
+      border-radius: 999px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--black);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue) !important;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-cta:hover {
+      color: var(--blue-dark) !important;
+      background: rgba(10, 132, 255, 0.10);
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--black);
+      transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+
+    .nav-toggle[aria-expanded="true"] span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle[aria-expanded="true"] span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-toggle[aria-expanded="true"] span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ── CONTACT PAGE ── */
+
+    .contact-page {
+      position: relative;
+      min-height: calc(100vh - 52px);
+      padding: 120px 32px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--hairline-light);
+    }
+
+    .contact-page::before {
+      content: "";
+      position: absolute;
+      top: -280px;
+      left: 50%;
+      width: 820px;
+      height: 820px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(10,132,255,0.20) 0%, rgba(10,132,255,0) 62%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .contact-page::after {
+      content: "";
+      position: absolute;
+      bottom: -360px;
+      right: -220px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(156,79,242,0.18) 0%, rgba(156,79,242,0) 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .contact-inner {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .contact-heading {
+      font-size: clamp(44px, 7vw, 84px);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 1.04;
+      color: var(--black);
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .contact-sub {
+      margin: 22px auto 0;
+      max-width: 520px;
+      font-size: 19px;
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+      color: var(--secondary);
+      text-align: center;
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 72px;
+      align-items: start;
+      margin-top: 72px;
+    }
+
+    .contact-card {
+      background: var(--white);
+      border: 1px solid var(--hairline);
+      border-radius: 22px;
+      padding: 32px;
+    }
+
+    .contact-card-title {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+
+    .contact-card-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .contact-methods {
+      margin-top: 28px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .contact-method {
+      padding-top: 14px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .contact-method-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin-bottom: 5px;
+    }
+
+    .contact-method-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--black);
+      line-height: 1.45;
+    }
+
+    .contact-method-value a {
+      color: var(--blue);
+      transition: color 0.15s ease;
+    }
+
+    .contact-method-value a:hover {
+      color: var(--blue-dark);
+    }
+
+    .contact-form {
+      background:
+        linear-gradient(#111114, #111114) padding-box,
+        linear-gradient(120deg, #9c4ff2 0%, #6d6ff2 50%, #0a84ff 100%) border-box;
+      border: 1.5px solid transparent;
+      border-radius: 24px;
+      padding: 34px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.32);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      letter-spacing: -0.01em;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--hairline);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      color: var(--black);
+      font-family: inherit;
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .form-group select {
+      appearance: none;
+      cursor: pointer;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--tertiary) 50%),
+        linear-gradient(135deg, var(--tertiary) 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) 20px,
+        calc(100% - 13px) 20px;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 38px;
+    }
+
+    .form-group select option {
+      background: #111114;
+      color: var(--black);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--tertiary);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: rgba(10,132,255,0.75);
+      background-color: rgba(255,255,255,0.06);
+      box-shadow: 0 0 0 4px rgba(10,132,255,0.12);
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 24px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 980px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(10,132,255,0.35);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .contact-actions {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .contact-status {
+      font-size: 13px;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .contact-honeypot {
+      display: none !important;
+    }
+
+    /* ── FOOTER ── */
+
+    footer {
+      padding: 32px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--tertiary);
+      letter-spacing: -0.01em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--tertiary);
+      letter-spacing: -0.01em;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--black);
+    }
+
+    /* ── REVEAL ── */
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.72s ease, transform 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-reveal].visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+
+    @media (max-width: 860px) {
+      .nav-inner {
+        padding: 0 20px;
+      }
+
+      .nav-links a {
+        padding: 7px 11px;
+      }
+
+      .contact-page {
+        padding: 88px 24px;
+      }
+
+      .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        margin-top: 52px;
+      }
+
+      .contact-form {
+        padding: 26px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .nav-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 16px;
+        right: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 10px;
+        border-radius: 18px;
+        display: none;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        font-size: 15px;
+        padding: 13px 14px;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .contact-page {
+        padding: 76px 20px;
+      }
+
+      .contact-heading {
+        font-size: clamp(40px, 13vw, 62px);
+      }
+
+      .contact-sub {
+        font-size: 17px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-card,
+      .contact-form {
+        padding: 22px;
+        border-radius: 20px;
+      }
+
+      .contact-actions {
+        align-items: stretch;
+      }
+
+      .contact-actions .btn-primary {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+
+      [data-reveal] {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="brand" href="index.html">BCKSTGE</a>
+
+      <div class="nav-links">
+        <a href="events.html">Events</a>
+        <a href="fastlane.html">Mobile Drink Ordering</a>
+        <a href="signup.html">Bar Dashboard</a>
+        <a href="admin-login.html">Admin</a>
+        <a href="index.html#faqs">FAQ</a>
+        <a href="contact.html" class="active">Contact</a>
+        <a href="signup.html" class="nav-cta">Get Access</a>
+      </div>
+
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="contact-page">
+      <div class="contact-inner">
+        <div data-reveal>
+          <p class="eyebrow">Contact</p>
+          <h1 class="contact-heading">Let’s build the night.</h1>
+          <p class="contact-sub">
+            Questions, venue onboarding, partnerships, or support — reach out and we’ll get back to you.
+          </p>
+        </div>
+
+        <div class="contact-layout">
+          <aside class="contact-card" data-reveal>
+            <h2 class="contact-card-title">Talk to BCKSTGE</h2>
+            <p class="contact-card-text">
+              Whether you run a bar, promote events, manage a venue, or want to learn more about Fast Lane, send us a message.
+            </p>
+
+            <div class="contact-methods">
+              <div class="contact-method">
+                <div class="contact-method-label">Email</div>
+                <div class="contact-method-value">
+                  <a href="mailto:jacobcabatana@backstageaccess.app">jacobcabatana@backstageaccess.app</a>
+                </div>
+              </div>
+
+              <div class="contact-method">
+                <div class="contact-method-label">Phone</div>
+                <div class="contact-method-value">
+                  <a href="tel:+19045448366">(904) 544-8366</a>
+                </div>
+              </div>
+
+              <div class="contact-method">
+                <div class="contact-method-label">For venues</div>
+                <div class="contact-method-value">Dashboard access, ticketing, drink ordering</div>
+              </div>
+
+              <div class="contact-method">
+                <div class="contact-method-label">For guests</div>
+                <div class="contact-method-value">Events, tickets, support</div>
+              </div>
+            </div>
+          </aside>
+
+      <form class="contact-form" id="contactForm" data-endpoint="https://us-central1-backstageapp-27cb3.cloudfunctions.net/sendContactEmail" data-reveal>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="contactName">Name</label>
+                <input id="contactName" name="name" type="text" placeholder="Your name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="contactEmail">Email</label>
+                <input id="contactEmail" name="email" type="email" placeholder="you@example.com" required>
+              </div>
+
+              <div class="form-group">
+                <label for="contactPhone">Phone</label>
+                <input id="contactPhone" name="phone" type="tel" placeholder="Optional">
+              </div>
+
+              <div class="form-group">
+                <label for="contactCompany">Venue / Company</label>
+                <input id="contactCompany" name="company" type="text" placeholder="Optional">
+              </div>
+
+              <div class="form-group">
+                <label for="contactCity">City</label>
+                <input id="contactCity" name="city" type="text" placeholder="Jacksonville, FL">
+              </div>
+
+              <div class="form-group full">
+                <label for="contactInterest">I’m interested in</label>
+                <select id="contactInterest" name="interest" required>
+                  <option value="" selected disabled>Select one</option>
+                  <option value="Bar Dashboard">Bar Dashboard</option>
+                  <option value="Mobile Drink Ordering">Mobile Drink Ordering</option>
+                  <option value="Event Ticketing">Event Ticketing</option>
+                  <option value="Partnership">Partnership</option>
+                  <option value="Support">Support</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group full">
+                <label for="contactSubject">Subject</label>
+                <input id="contactSubject" name="subject" type="text" placeholder="How can we help?" required>
+              </div>
+
+              <div class="form-group full">
+                <label for="contactMessage">Message</label>
+                <textarea id="contactMessage" name="message" placeholder="Tell us what you're looking for..." required></textarea>
+              </div>
+
+              <input class="contact-honeypot" type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="contact-actions">
+              <button type="submit" class="btn-primary">Send Message</button>
+              <p class="contact-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span class="footer-copy">© 2026 Backstage</span>
+    <div class="footer-links">
+      <a href="terms_and_conditions.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ── MOBILE NAV TOGGLE ── */
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+          const open = navLinks.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+
+        navLinks.querySelectorAll('a').forEach(a => {
+          a.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+            navToggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      /* ── SCROLL REVEALS ── */
+      if (!prefersReduced) {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+        document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+      }
+
+      /* ── CONTACT FORM ── */
+      const contactForm = document.getElementById('contactForm');
+
+      if (contactForm) {
+        contactForm.addEventListener('submit', async event => {
+          event.preventDefault();
+
+          const status = contactForm.querySelector('.contact-status');
+          const submitButton = contactForm.querySelector('button[type="submit"]');
+          const endpoint = contactForm.dataset.endpoint.trim();
+          const formData = new FormData(contactForm);
+
+          // Simple spam trap
+          if (formData.get('website')) return;
+
+          const payload = Object.fromEntries(formData.entries());
+          delete payload.website;
+
+          status.textContent = 'Sending...';
+          submitButton.disabled = true;
+
+          try {
+            if (endpoint) {
+              const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+              });
+
+              if (!response.ok) throw new Error('Form submission failed');
+
+              status.textContent = 'Message sent. We’ll get back to you soon.';
+              contactForm.reset();
+            } else {
+              const subject = encodeURIComponent(`BCKSTGE Contact — ${payload.subject}`);
+              const body = encodeURIComponent(
+                `Name: ${payload.name}\n` +
+                `Email: ${payload.email}\n` +
+                `Phone: ${payload.phone || 'N/A'}\n` +
+                `Venue / Company: ${payload.company || 'N/A'}\n` +
+                `Interest: ${payload.interest}\n\n` +
+                `Message:\n${payload.message}`
+              );
+
+              window.location.href = `mailto:jacobcabatana@backstageaccess.app?subject=${subject}&body=${body}`;
+              status.textContent = 'Your email app should open with the message ready.';
+              contactForm.reset();
+            }
+          } catch (error) {
+            status.textContent = 'Could not send. Please email jacobcabatana@backstageaccess.app directly or call (904) 544-8366.';
+          } finally {
+            submitButton.disabled = false;
+          }
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

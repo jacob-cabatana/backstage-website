@@ -1,12 +1,16 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/contact",
+        "function": "sendContactEmail"
+      },
       {
         "source": "/party/**",
         "destination": "/party/index.html"
