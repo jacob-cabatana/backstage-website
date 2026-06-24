@@ -78,6 +78,36 @@
     .nav-cta { font-size: 13px; font-weight: 600; color: var(--blue) !important; letter-spacing: -0.01em; }
     .nav-cta:hover { color: var(--blue-dark) !important; }
 
+    /* hamburger toggle (mobile only) */
+    .nav-toggle {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; width: 40px; height: 40px; padding: 0;
+      background: transparent; border: none; cursor: pointer;
+    }
+    .nav-toggle span {
+      display: block; width: 20px; height: 2px; border-radius: 2px;
+      background: var(--black); transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+    .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 700px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        position: absolute; top: calc(100% + 8px); left: 16px; right: 16px;
+        flex-direction: column; align-items: stretch; gap: 4px; padding: 10px;
+        border-radius: 18px;
+        background: rgba(20,20,22,0.97);
+        border: 1px solid var(--hairline);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        display: none;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 15px; padding: 13px 14px; border-radius: 12px; }
+      .nav-links a:hover { background: rgba(255,255,255,0.05); }
+    }
+
     /* ── HERO HEADER ── */
 
     .events-hero {
@@ -462,12 +492,15 @@
         <a href="index.html#faqs">FAQ</a>
         <a href="signup.html" class="nav-cta">Get Access</a>
       </div>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
   <!-- HERO -->
   <header class="events-hero">
-    <span class="events-eyebrow" data-typewriter="What's Going On?" aria-label="What's On Tonight"></span>
+    <span class="events-eyebrow" data-typewriter="What's On Tonight" aria-label="What's On Tonight"></span>
     <h1>Upcoming events.</h1>
     <p>Every night, every room. Find your next one and grab a ticket.</p>
   </header>
@@ -504,6 +537,20 @@
   <script>
     (() => {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* mobile nav toggle */
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinksEl = document.querySelector('.nav-links');
+      if (navToggle && navLinksEl) {
+        navToggle.addEventListener('click', () => {
+          const open = navLinksEl.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        navLinksEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+          navLinksEl.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }));
+      }
 
       /* Typewriter on the eyebrow */
       document.querySelectorAll('[data-typewriter]').forEach(el => {

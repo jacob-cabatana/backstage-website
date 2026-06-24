@@ -72,6 +72,20 @@
     .nav-cta { font-size: 13px; font-weight: 600; color: var(--blue) !important; }
     .nav-cta:hover { color: var(--blue-dark) !important; background: rgba(10,132,255,0.10); }
 
+    /* hamburger toggle (mobile only) */
+    .nav-toggle {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; width: 40px; height: 40px; padding: 0;
+      background: transparent; border: none; cursor: pointer;
+    }
+    .nav-toggle span {
+      display: block; width: 20px; height: 2px; border-radius: 2px;
+      background: var(--black); transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+    .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     /* ── BUTTONS ── */
     .btn-primary {
       display: inline-flex; align-items: center; height: 46px; padding: 0 26px;
@@ -420,16 +434,36 @@
       .split { grid-template-columns: 1fr; gap: 48px; }
       .split.reverse { direction: ltr; }
       .pitch { grid-template-columns: 1fr; }
-      .nav-links { gap: 1px; }
-      .nav-links a { padding: 7px 11px; }
     }
+
+    /* ── MOBILE NAV (hamburger) ── */
+    @media (max-width: 700px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 16px;
+        right: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 10px;
+        border-radius: 18px;
+        display: none;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 15px; padding: 13px 14px; }
+    }
+
     @media (max-width: 560px) {
-      .nav-links a:not(.nav-cta) { display: none; }
       .hero { padding: 72px 22px 90px; }
       .section { padding: 80px 22px; }
       .steps, .stat-grid { grid-template-columns: 1fr; }
       .hero-actions { flex-direction: column; align-items: stretch; }
       .btn-primary, .btn-text { justify-content: center; }
+      /* scale the phone mockups so they never overflow narrow screens */
+      .phone { width: 88vw; max-width: 300px; height: auto; aspect-ratio: 300 / 610; }
+      .live-activity { width: 100% !important; max-width: 320px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -447,11 +481,14 @@
       <a class="brand" href="index.html">BCKSTGE</a>
       <div class="nav-links">
         <a href="events.html">Events</a>
-        <a href="fastlane.html" class="active">Mobile Drink Ordering</a>
+        <a href="fastlane.html" class="active">Fast Lane</a>
         <a href="signup.html">Bar Dashboard</a>
         <a href="index.html#faqs">FAQ</a>
         <a href="signup.html" class="nav-cta">Get Access</a>
       </div>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
@@ -843,6 +880,20 @@
   <script>
     (() => {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* mobile nav toggle */
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+          const open = navLinks.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }));
+      }
 
       /* reveals */
       if (!reduce) {

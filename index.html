@@ -108,6 +108,32 @@
 
     .nav-cta:hover { color: var(--blue-dark) !important; background: rgba(10, 132, 255, 0.10); }
 
+    /* hamburger toggle (mobile only) */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--black);
+      transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+    .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     /* ── HERO ── */
 
     .hero {
@@ -719,10 +745,26 @@
       .fee-table th, .fee-table td { padding: 14px 16px; font-size: 13px; }
     }
 
-    @media (max-width: 580px) {
-      .nav-links { gap: 1px; }
-      .nav-links a { font-size: 12px; padding: 6px 9px; }
+    /* ── MOBILE NAV (hamburger) ── */
+    @media (max-width: 700px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 16px;
+        right: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 10px;
+        border-radius: 18px;
+        display: none;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 15px; padding: 13px 14px; }
+    }
 
+    @media (max-width: 580px) {
       .hero h1 { font-size: clamp(40px, 14vw, 64px); }
 
       .btn-primary, .btn-text { font-size: 14px; }
@@ -758,6 +800,9 @@
         <a href="#faqs">FAQ</a>
         <a href="signup.html" class="nav-cta">Get Access</a>
       </div>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
@@ -1115,6 +1160,20 @@
   <script>
     (() => {
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ── MOBILE NAV TOGGLE ── */
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+          const open = navLinks.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }));
+      }
 
       /* ── SCROLL REVEALS ── */
       if (!prefersReduced) {
