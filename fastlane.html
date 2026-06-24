@@ -169,6 +169,8 @@
         radial-gradient(120% 80% at 50% -10%, rgba(10,132,255,0.22), transparent 60%),
         linear-gradient(180deg, #0e0e12 0%, #050507 100%);
       display: flex; flex-direction: column;
+      isolation: isolate;
+      transform: translateZ(0);  /* new stacking context so Safari clips the video */
     }
     /* app demo video fills the screen */
     .phone-video {
@@ -176,6 +178,7 @@
       width: 100%; height: 100%;
       object-fit: cover; display: block;
       background: #000;
+      border-radius: 40px;            /* round the video itself (Safari fix) */
     }
 
     .lock-time {
