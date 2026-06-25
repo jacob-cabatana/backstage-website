@@ -8,22 +8,40 @@
   <title>Checkout | Backstage</title>
   <link rel="stylesheet" href="assets/styles.css" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #0d0718;
-      --surface: rgba(8, 8, 13, 0.92);
-      --surface-2: rgba(255, 255, 255, 0.055);
-      --text: #ffffff;
-      --muted: rgba(255, 255, 255, 0.70);
-      --muted-2: rgba(255, 255, 255, 0.48);
-      --border: rgba(255, 255, 255, 0.11);
-      --line: rgba(255, 255, 255, 0.08);
-      --accent: #a855f7;
-      --accent-2: #22d3ee;
-      --male: #38bdf8;
-      --female: #ec4899;
-      --cyan: #04d9ff;
+      /* ── Aligned with index.html dark theme ── */
+      --white: #1c1c1e;          /* raised surface (cards) */
+      --black: #f5f5f7;          /* primary text */
+      --secondary: #a1a1a6;      /* secondary text */
+      --tertiary: #6e6e73;       /* muted text */
+      --hairline: #2c2c2e;       /* borders / dividers */
+      --hairline-light: #232325; /* faint dividers */
+      --blue: #0a84ff;           /* accent */
+      --blue-dark: #409cff;
+      --bg: #0a0a0b;             /* page background */
+      --bg-secondary: #141416;   /* alt surface */
+
+      /* semantic aliases kept for existing markup */
+      --surface: var(--white);
+      --surface-2: var(--bg-secondary);
+      --text: var(--black);
+      --muted: var(--secondary);
+      --muted-2: var(--tertiary);
+      --border: var(--hairline);
+      --line: var(--hairline-light);
+
+      /* gender accents tuned to the index palette */
+      --male: #0a84ff;
+      --female: #c06cf0;
+      --cyan: #0a84ff;           /* selected-state accent → blue */
       --danger: #ff5f57;
+
+      /* purple → blue accent gradient from index.html */
+      --accent-gradient: linear-gradient(120deg, #9c4ff2 0%, #6d6ff2 50%, #0a84ff 100%);
     }
 
     * {
@@ -35,8 +53,9 @@
       margin: 0;
       min-height: 100%;
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -49,10 +68,7 @@
 
     body {
       overflow-x: hidden;
-      background:
-        radial-gradient(circle at 16% 18%, rgba(236, 72, 153, 0.35), transparent 30%),
-        radial-gradient(circle at 82% 84%, rgba(34, 211, 238, 0.20), transparent 34%),
-        linear-gradient(160deg, #1a0828 0%, #21124a 52%, #0b1636 100%);
+      background: var(--bg);
     }
 
     .checkout-shell {
@@ -70,12 +86,12 @@
       aspect-ratio: 16 / 9;
       max-height: 250px;
       margin: 0 auto 26px;
-      background: #000;
-      border-radius: 26px;
+      background: var(--bg-secondary);
+      border-radius: 24px;
       overflow: hidden;
       isolation: isolate;
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+      border: 1px solid var(--hairline);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
     }
 
     .checkout-hero::after {
@@ -84,7 +100,7 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      background: linear-gradient(180deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.18) 58%, rgba(0,0,0,0.70) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.16) 58%, rgba(0,0,0,0.66) 100%);
     }
 
     .checkout-image,
@@ -94,14 +110,14 @@
       display: block;
       object-fit: cover;
       object-position: center;
-      border-radius: 26px;
+      border-radius: 24px;
     }
 
     .checkout-image-fallback {
       min-height: 180px;
       background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.10), transparent 30%),
-        linear-gradient(135deg, #090909 0%, #161616 50%, #0a0a0a 100%);
+        radial-gradient(circle at 50% 0%, rgba(10,132,255,0.18) 0%, rgba(10,132,255,0) 60%),
+        linear-gradient(135deg, #0e0e12 0%, #161618 50%, #0a0a0b 100%);
     }
 
     .top-nav {
@@ -119,12 +135,12 @@
     .back-button,
     .brand-pill {
       min-height: 38px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.50);
-      color: #fff;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      box-shadow: 0 12px 26px rgba(0,0,0,0.26);
+      border: 1px solid var(--hairline);
+      background: rgba(10, 10, 11, 0.72);
+      color: var(--black);
+      backdrop-filter: saturate(180%) blur(18px);
+      -webkit-backdrop-filter: saturate(180%) blur(18px);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.3);
       pointer-events: auto;
     }
 
@@ -135,21 +151,21 @@
       align-items: center;
       justify-content: center;
       text-decoration: none;
-      font-size: 25px;
+      font-size: 24px;
       line-height: 1;
-      font-weight: 350;
+      font-weight: 400;
     }
 
     .brand-pill {
-      padding: 0 13px;
+      padding: 0 14px;
       border-radius: 999px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: rgba(255,255,255,0.86);
+      color: var(--secondary);
       font-size: 12px;
-      font-weight: 750;
-      letter-spacing: 0.01em;
+      font-weight: 600;
+      letter-spacing: -0.01em;
     }
 
     .checkout-main {
@@ -157,7 +173,7 @@
     }
 
     .checkout-step-header {
-      margin: 0 0 22px;
+      margin: 0 0 24px;
     }
 
     .step-title-row {
@@ -170,36 +186,36 @@
 
     .step-title {
       margin: 0;
-      color: #fff;
-      font-size: clamp(34px, 8vw, 42px);
-      line-height: 0.95;
-      font-weight: 900;
-      letter-spacing: -0.055em;
+      color: var(--black);
+      font-size: clamp(32px, 8vw, 40px);
+      line-height: 1.02;
+      font-weight: 700;
+      letter-spacing: -0.04em;
     }
 
     .step-label {
       flex: 0 0 auto;
-      color: rgba(255,255,255,0.72);
-      font-size: 17px;
+      color: var(--secondary);
+      font-size: 14px;
       line-height: 1;
-      font-weight: 850;
-      letter-spacing: -0.02em;
-      padding-bottom: 5px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      padding-bottom: 6px;
     }
 
     .progress-track {
       width: 100%;
-      height: 10px;
+      height: 8px;
       border-radius: 999px;
       overflow: hidden;
-      background: rgba(255,255,255,0.15);
+      background: var(--hairline);
     }
 
     .progress-fill {
       width: 25%;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, #ec4899 0%, #7c3aed 55%, #22d3ee 100%);
+      background: var(--accent-gradient);
     }
 
     .event-summary {
@@ -209,36 +225,37 @@
 
     .event-title {
       margin: 0;
-      color: #ffffff;
-      font-size: 28px;
-      line-height: 1.02;
-      font-weight: 900;
-      letter-spacing: -0.045em;
+      color: var(--black);
+      font-size: 26px;
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.04em;
     }
 
     .event-date-line {
       margin: 10px 0 0;
-      color: var(--event-accent-color, #c084fc);
+      color: var(--event-accent-color, var(--blue));
       font-size: 15px;
       line-height: 1.35;
-      font-weight: 800;
+      font-weight: 600;
+      letter-spacing: -0.01em;
     }
 
     .quick-info {
       display: flex;
       flex-wrap: wrap;
       gap: 18px;
-      margin: 8px 0 0;
+      margin: 10px 0 0;
     }
 
     .info-line {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--secondary);
       font-size: 13px;
       line-height: 1.3;
-      font-weight: 650;
+      font-weight: 500;
     }
 
     .location-icon {
@@ -247,7 +264,7 @@
       justify-content: center;
       width: 16px;
       height: 16px;
-      color: #ffffff;
+      color: var(--blue);
       flex: 0 0 auto;
     }
 
@@ -258,7 +275,7 @@
     }
 
     .section {
-      margin-top: 22px;
+      margin-top: 26px;
       padding-top: 0;
       border-top: none;
     }
@@ -273,18 +290,18 @@
 
     .section-title {
       margin: 0;
-      color: #fff;
+      color: var(--black);
       font-size: 19px;
-      font-weight: 850;
-      letter-spacing: -0.035em;
+      font-weight: 700;
+      letter-spacing: -0.03em;
     }
 
     .section-caption {
       margin: 4px 0 0;
-      color: var(--muted-2);
+      color: var(--tertiary);
       font-size: 13px;
       line-height: 1.35;
-      font-weight: 650;
+      font-weight: 500;
     }
 
     .ticket-list {
@@ -307,25 +324,26 @@
 
     .gender-title {
       margin: 0;
-      font-size: 20px;
+      font-size: 19px;
       line-height: 1;
-      font-weight: 900;
-      letter-spacing: -0.035em;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
     }
 
     .gender-helper {
       margin: 7px 0 0;
-      color: rgba(255,255,255,0.50);
+      color: var(--tertiary);
       font-size: 12px;
       line-height: 1.25;
-      font-weight: 700;
+      font-weight: 500;
     }
 
     .gender-count {
       flex: 0 0 auto;
-      color: rgba(255,255,255,0.56);
+      color: var(--tertiary);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 600;
     }
 
     .gender-options {
@@ -337,11 +355,10 @@
       position: relative;
       min-height: auto;
       display: block;
-      padding: 20px 26px;
-      border-radius: 24px;
-      border: 1.5px solid rgba(255,255,255,0.11);
-      background: rgba(11, 11, 18, 0.74);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+      padding: 22px 26px;
+      border-radius: 20px;
+      border: 1px solid var(--hairline);
+      background: var(--white);
       overflow: hidden;
       transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
     }
@@ -351,8 +368,8 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ticket-color, #a855f7) 16%, transparent), transparent 38%);
-      opacity: 0.80;
+      background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ticket-color, var(--blue)) 12%, transparent), transparent 42%);
+      opacity: 0.9;
     }
 
     .ticket-row > * {
@@ -362,13 +379,13 @@
 
     .ticket-row:hover {
       transform: translateY(-1px);
-      border-color: rgba(255,255,255,0.20);
+      border-color: #3a3a3d;
     }
 
     .ticket-row.is-selected {
-      border-color: var(--cyan);
-      background: rgba(22, 22, 28, 0.88);
-      box-shadow: 0 0 0 1px rgba(4, 217, 255, 0.24), 0 20px 48px rgba(0,0,0,0.22);
+      border-color: var(--blue);
+      background: #18181b;
+      box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.35), 0 20px 48px rgba(10, 132, 255, 0.12);
     }
 
     .ticket-row.is-sold-out {
@@ -407,11 +424,11 @@
 
     .ticket-name {
       margin: 0;
-      color: #fff;
-      font-size: 20px;
-      line-height: 1.05;
-      font-weight: 900;
-      letter-spacing: -0.04em;
+      color: var(--black);
+      font-size: 19px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
     }
 
     .ticket-volume-badge {
@@ -421,30 +438,30 @@
       min-height: 24px;
       padding: 0 10px;
       border-radius: 999px;
-      background: rgba(34, 211, 238, 0.16);
-      color: #22d3ee;
+      background: rgba(10, 132, 255, 0.16);
+      color: var(--blue);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 600;
       letter-spacing: -0.01em;
       white-space: nowrap;
     }
 
     .ticket-price-label {
       flex: 0 0 auto;
-      color: #fff;
+      color: var(--black);
       font-size: 20px;
       line-height: 1;
-      font-weight: 950;
-      letter-spacing: -0.045em;
+      font-weight: 700;
+      letter-spacing: -0.04em;
       white-space: nowrap;
       text-align: right;
     }
 
     .ticket-price-label small {
       margin-left: 3px;
-      color: rgba(255,255,255,0.70);
+      color: var(--secondary);
       font-size: 11px;
-      font-weight: 850;
+      font-weight: 500;
       letter-spacing: 0;
     }
 
@@ -453,23 +470,23 @@
     .ticket-timer,
     .free-disclaimer {
       margin: 9px 0 0;
-      color: rgba(255,255,255,0.66);
+      color: var(--secondary);
       font-size: 14px;
-      line-height: 1.25;
-      font-weight: 850;
-      letter-spacing: -0.015em;
+      line-height: 1.35;
+      font-weight: 400;
+      letter-spacing: -0.01em;
     }
 
     .ticket-subtext,
     .ticket-timer,
     .free-disclaimer {
       margin-top: 8px;
-      color: rgba(255,255,255,0.56);
+      color: var(--tertiary);
       font-size: 13px;
     }
 
     .free-disclaimer {
-      color: rgba(255, 95, 87, 0.88);
+      color: rgba(255, 95, 87, 0.85);
     }
 
     .ticket-badges {
@@ -483,31 +500,34 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 28px;
+      min-height: 26px;
       padding: 0 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.13);
-      color: rgba(255,255,255,0.84);
+      background: var(--bg-secondary);
+      color: var(--secondary);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 600;
       letter-spacing: -0.01em;
       white-space: nowrap;
+      border: 1px solid var(--hairline);
     }
 
     .ticket-badge.popular {
-      background: linear-gradient(135deg, #fb923c 0%, #ec4899 100%);
+      background: var(--accent-gradient);
       color: #fff;
+      border-color: transparent;
     }
 
     .ticket-badge.gender {
-      background: color-mix(in srgb, var(--ticket-color, #a855f7) 22%, rgba(255,255,255,0.12));
+      background: color-mix(in srgb, var(--ticket-color, var(--blue)) 20%, var(--bg-secondary));
       color: #fff;
+      border-color: transparent;
     }
 
     .qty-control {
       margin-top: 20px;
       display: grid;
-      grid-template-columns: 54px 1fr 54px;
+      grid-template-columns: 52px 1fr 52px;
       align-items: center;
       justify-items: center;
       gap: 16px;
@@ -518,23 +538,28 @@
     }
 
     .qty-button {
-      width: 54px;
-      height: 54px;
-      border: 0;
+      width: 52px;
+      height: 52px;
+      border: 1px solid var(--hairline);
       border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      font-size: 29px;
+      background: var(--bg-secondary);
+      color: var(--black);
+      font-size: 28px;
       line-height: 1;
-      font-weight: 850;
+      font-weight: 500;
       cursor: pointer;
-      transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease;
+      transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
     }
 
     .qty-button.plus {
-      background: linear-gradient(135deg, #c241ff 0%, #7c3aed 100%);
+      background: var(--blue);
+      border-color: transparent;
       color: #fff;
-      box-shadow: 0 12px 32px rgba(168, 85, 247, 0.24);
+      box-shadow: 0 8px 24px rgba(10, 132, 255, 0.3);
+    }
+
+    .qty-button.plus:hover {
+      background: var(--blue-dark);
     }
 
     .qty-button.minus[disabled] {
@@ -549,35 +574,41 @@
     }
 
     .quantity {
-      color: #fff;
-      font-size: 38px;
+      color: var(--black);
+      font-size: 36px;
       line-height: 0.9;
-      font-weight: 950;
+      font-weight: 700;
       text-align: center;
       min-width: 38px;
       letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
     }
 
     .quantity-label {
-      color: rgba(255,255,255,0.66);
+      color: var(--tertiary);
       font-size: 12px;
       line-height: 1.2;
-      font-weight: 900;
+      font-weight: 600;
       text-align: center;
     }
 
     .free-claim-button {
       min-height: 42px;
-      padding: 0 16px;
+      padding: 0 18px;
       border: 0;
       border-radius: 999px;
-      background: linear-gradient(135deg, #ec4899 0%, #7c3aed 52%, #22d3ee 100%);
+      background: var(--blue);
       color: #fff;
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 12px 30px rgba(168, 85, 247, 0.22);
+      box-shadow: 0 8px 24px rgba(10, 132, 255, 0.28);
       white-space: nowrap;
+      transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .free-claim-button:hover {
+      background: var(--blue-dark);
     }
 
     .free-claim-button[disabled] {
@@ -596,13 +627,13 @@
     .empty-state {
       margin: 0;
       padding: 18px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.055);
-      color: var(--muted);
+      border-radius: 16px;
+      border: 1px solid var(--hairline);
+      background: var(--white);
+      color: var(--secondary);
       font-size: 14px;
       line-height: 1.45;
-      font-weight: 650;
+      font-weight: 400;
     }
 
     .checkout-bottom-bar {
@@ -614,10 +645,10 @@
       max-width: 520px;
       transform: translateX(-50%);
       padding: 14px 30px calc(14px + env(safe-area-inset-bottom));
-      background: rgba(8, 8, 14, 0.90);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border-top: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(10, 10, 11, 0.82);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+      border-top: 1px solid var(--hairline);
       display: grid;
       grid-template-columns: 1fr 156px;
       gap: 16px;
@@ -626,74 +657,79 @@
 
     .price-value {
       display: block;
-      color: #fff;
-      font-size: 26px;
+      color: var(--black);
+      font-size: 24px;
       line-height: 1;
-      font-weight: 900;
-      letter-spacing: -0.045em;
+      font-weight: 700;
+      letter-spacing: -0.04em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      font-variant-numeric: tabular-nums;
     }
 
     .price-caption {
       display: block;
       margin-top: 6px;
-      color: var(--muted-2);
+      color: var(--tertiary);
       font-size: 12px;
       line-height: 1.35;
-      font-weight: 750;
+      font-weight: 500;
     }
 
     .checkout-button {
       width: 100%;
-      min-height: 58px;
+      min-height: 54px;
       border: 0;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #ec4899 0%, #7c3aed 50%, #22d3ee 100%);
+      border-radius: 980px;
+      background: var(--blue);
       color: #ffffff;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: 0.01em;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
       cursor: pointer;
       text-transform: none;
-      transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease;
-      box-shadow: 0 16px 36px rgba(124, 58, 237, 0.28);
+      transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+      box-shadow: 0 0 0 rgba(10, 132, 255, 0);
     }
 
     .checkout-button:hover {
-      opacity: 1;
-      box-shadow: 0 18px 44px rgba(34, 211, 238, 0.22);
+      background: var(--blue-dark);
+      transform: scale(1.01);
+      box-shadow: 0 8px 30px rgba(10, 132, 255, 0.35);
     }
 
     .checkout-button[disabled] {
-      opacity: 0.46;
+      opacity: 0.4;
       cursor: default;
       box-shadow: none;
+      transform: none;
+      background: var(--blue);
     }
 
     .state-card {
       width: calc(100% - 32px);
       max-width: 520px;
       margin: 28px auto;
-      padding: 22px;
+      padding: 24px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1px solid var(--hairline);
     }
 
     .state-card h3 {
       margin: 0 0 8px;
       font-size: 20px;
-      font-weight: 850;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
     }
 
     .state-card p {
       margin: 0;
-      color: var(--muted);
-      line-height: 1.45;
-      font-weight: 650;
+      color: var(--secondary);
+      line-height: 1.5;
+      font-weight: 400;
     }
 
     @media (max-width: 560px) {
@@ -713,11 +749,11 @@
       }
 
       .ticket-row {
-        padding: 18px 24px;
+        padding: 20px 24px;
       }
 
       .ticket-name {
-        font-size: 19px;
+        font-size: 18px;
       }
 
       .ticket-price-label {
@@ -736,11 +772,11 @@
       }
 
       .step-title {
-        font-size: 32px;
+        font-size: 30px;
       }
 
       .step-label {
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .ticket-card-top {
@@ -767,60 +803,44 @@
       }
     }
 
-    /* Force checkout to black background */
-html,
-body {
-  background: #000 !important;
-}
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
 
-body {
-  background-image: none !important;
-}
+    /* ── Header cleanup (kept from prior layout) ── */
+    .section-topline {
+      display: none !important;
+    }
 
-.checkout-shell,
-.checkout-main,
-#checkout-root {
-  background: #000 !important;
-}
+    .ticket-gender-group {
+      margin-top: 26px;
+    }
 
-/* If the app-style version added a gradient layer, kill it */
-.checkout-shell::before,
-.checkout-shell::after,
-body::before,
-body::after {
-  background: none !important;
-}
+    .ticket-gender-group:first-child {
+      margin-top: 0;
+    }
 
-/* Clean up checkout ticket headers */
-.section-topline {
-  display: none !important;
-}
+    .gender-header {
+      display: block !important;
+      margin-bottom: 12px;
+    }
 
-.ticket-gender-group {
-  margin-top: 26px;
-}
+    .gender-title {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--black);
+    }
 
-.ticket-gender-group:first-child {
-  margin-top: 0;
-}
-
-.gender-header {
-  display: block !important;
-  margin-bottom: 12px;
-}
-
-.gender-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 850;
-  letter-spacing: -0.04em;
-  color: #fff;
-}
-
-.gender-helper,
-.gender-count {
-  display: none !important;
-}
+    .gender-helper,
+    .gender-count {
+      display: none !important;
+    }
   </style>
 </head>
 

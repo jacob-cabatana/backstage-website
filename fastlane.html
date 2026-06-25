@@ -343,6 +343,23 @@
     .spot-meta { font-size: 12px; color: var(--tertiary); margin-top: 2px; }
     .spot-check { margin-left: auto; color: var(--blue); font-weight: 800; }
 
+    /* venue dashboard screenshot */
+    .dash-shot {
+      margin: 0; width: 100%; max-width: 440px;
+      border: 1px solid var(--hairline); border-radius: 24px; overflow: hidden;
+      background: var(--white); box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+    }
+    .dash-shot img { width: 100%; height: auto; display: block; }
+    .dash-shot figcaption {
+      padding: 14px 18px; font-size: 13px; color: var(--tertiary);
+      letter-spacing: -0.01em; border-top: 1px solid var(--hairline);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dash-shot figcaption::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 0 4px rgba(48,209,88,0.18);
+    }
+
     /* live crowd avatars */
     .crowd { display: flex; align-items: center; margin-top: 22px; }
     .crowd .av {
@@ -437,6 +454,7 @@
       .split { grid-template-columns: 1fr; gap: 48px; }
       .split.reverse { direction: ltr; }
       .pitch { grid-template-columns: 1fr; }
+      .dash-shot { max-width: 380px; margin: 0 auto; }
     }
 
     /* ── MOBILE NAV (hamburger) ── */
@@ -798,8 +816,32 @@
     </div>
   </section>
 
-  <!-- ECONOMICS / NUMBERS -->
+  <!-- ORDERS ON YOUR DASHBOARD / KEEP YOUR POS -->
   <section class="section">
+    <div class="section-inner">
+      <div class="split reverse">
+        <div data-reveal>
+          <p class="sec-eyebrow">On the venue side</p>
+          <h2 class="sec-heading">Orders land on your dashboard.</h2>
+          <p class="sec-sub">Every mobile order drops straight into the BCKSTGE Mobile Drink Ordering dashboard.</p>
+          <ul class="feature-list">
+            <li>Live order feed with guest name, drinks, and wait time</li>
+            <li>Accept, print, and mark ready in a single tap</li>
+            <li>Runs alongside your current POS — keep what already works</li>
+            <li>No register to rip out, no new system to learn</li>
+          </ul>
+        </div>
+        <div data-reveal style="display:flex; justify-content:center;">
+          <figure class="dash-shot">
+            <img src="assets/dashboard-orders.png" alt="BCKSTGE Mobile Drink Ordering dashboard on a countertop display showing live drink orders with Accept and Ready actions" loading="lazy">
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ECONOMICS / NUMBERS -->
+  <section class="section alt">
     <div class="section-inner">
       <div data-reveal style="text-align:center">
         <p class="sec-eyebrow">The model</p>
@@ -829,7 +871,7 @@
   </section>
 
   <!-- INVESTOR -->
-  <section class="section alt">
+  <section class="section">
     <div class="section-inner">
       <div data-reveal style="text-align:center">
         <p class="sec-eyebrow">Why it wins</p>
