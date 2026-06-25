@@ -688,14 +688,6 @@ function ticketGenderPriceCents(ticket, volume, normalizedGender) {
   return null;
 }
 
-function eventGlobalRemaining(event) {
-  const cap = readInt(event?.capacityLimit ?? event?.capacity ?? event?.maxCapacity, 0);
-  if (cap <= 0) return null;
-
-  const sold = readInt(event?.soldCount ?? event?.ticketsSold ?? event?.peopleGoing, 0);
-  return Math.max(cap - sold, 0);
-}
-
 function isTicketAvailable(ticket, activeVolume) {
   const status = String(ticket?.status || "active").toLowerCase();
   if (status !== "active") return false;
@@ -739,9 +731,6 @@ function buildNewTicketRows(event) {
   const ticketTypes = Array.isArray(event.ticketTypes) ? event.ticketTypes : [];
   if (!ticketTypes.length) return [];
 
-  const globalRemaining = eventGlobalRemaining(event);
-  if (globalRemaining !== null && globalRemaining <= 0) return [];
-
   const rows = [];
   const sortedTickets = [...ticketTypes].sort(sortByTicketOrder);
 
@@ -751,14 +740,7 @@ function buildNewTicketRows(event) {
     if (!isTicketAvailable(ticket, activeVolume)) continue;
 
     const ticketAvailable = ticketAvailableCount(ticket, activeVolume);
-    const maxQuantity = Math.max(
-      Math.min(
-        10,
-        ticketAvailable ?? 10,
-        globalRemaining ?? 10
-      ),
-      0
-    );
+    const maxQuantity = Math.max(Math.min(10, ticketAvailable ?? 10), 0);
 
     if (maxQuantity <= 0) continue;
 
@@ -1000,7 +982,7 @@ function buildLegacyPaidRows(event) {
       0
     ));
 
-    if (generalPrice > 0) {
+if (generalPrice >= 0) {
       rows.push({
         kind: "paid",
         pricingSource: "legacy",
