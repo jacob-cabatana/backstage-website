@@ -427,6 +427,8 @@
   <div id="livePill" class="pill off">Offline</div>
   <div id="setupText" class="setupText">Finish setup to start accepting orders.</div>
   <button id="enableSoundBtn" class="quietBtn" type="button">Enable order sound</button>
+  <button id="setupCloudPrinterBtn" class="quietBtn" type="button">Setup Cloud Printer</button>
+<button id="testCloudPrinterBtn" class="quietBtn" type="button">Test Print</button>
 </section>
 
 <nav class="tabs">
@@ -818,6 +820,42 @@ let hasLoadedOrdersOnce = false;
 let soundUnlocked = false;
 const customerNameCache = {};
 
+async function setupMainCloudPrinter() {
+  const fn = httpsCallable(functions, "registerCloudPrinter");
+
+  const res = await fn({
+    venueId: userId,
+    printerId: "main",
+    name: "Main Bar Printer"
+  });
+
+  console.log("CloudPRNT printer registered:", res.data);
+
+  alert(
+    `Printer registered.\n\nCopy this URL into the TSP100IV CloudPRNT settings:\n\n${res.data.cloudprntUrl}`
+  );
+
+  return res.data;
+}
+
+async function queueCloudPrntTestReceipt() {
+  const fn = httpsCallable(functions, "createTestPrintJob");
+
+  const res = await fn({
+    venueId: userId,
+    printerId: "main"
+  });
+
+  console.log("Test receipt queued:", res.data);
+
+  alert("Test receipt queued. The printer should pick it up on its next poll.");
+
+  return res.data;
+}
+
+window.setupMainCloudPrinter = setupMainCloudPrinter;
+window.queueCloudPrntTestReceipt = queueCloudPrntTestReceipt;
+
 
     const venueName = document.getElementById("venueName");
     const venueAddress = document.getElementById("venueAddress");
@@ -972,6 +1010,8 @@ const analyticsMonthOrders = document.getElementById("analyticsMonthOrders");
     const connectStripeBtn = document.getElementById("connectStripeBtn");
     const payoutsMessage = document.getElementById("payoutsMessage");
     const enableSoundBtn = document.getElementById("enableSoundBtn");
+    const setupCloudPrinterBtn = document.getElementById("setupCloudPrinterBtn");
+const testCloudPrinterBtn = document.getElementById("testCloudPrinterBtn");
     const newOrderSound = new Audio("/assets/new-order.mp3");
 newOrderSound.preload = "auto";
 newOrderSound.volume = 1;
@@ -994,6 +1034,24 @@ async function unlockOrderSound() {
 }
 
 enableSoundBtn.addEventListener("click", unlockOrderSound);
+
+setupCloudPrinterBtn.addEventListener("click", async () => {
+  try {
+    await setupMainCloudPrinter();
+  } catch (err) {
+    console.error("Setup Cloud Printer failed:", err);
+    alert(err.message || "Could not setup cloud printer.");
+  }
+});
+
+testCloudPrinterBtn.addEventListener("click", async () => {
+  try {
+    await queueCloudPrntTestReceipt();
+  } catch (err) {
+    console.error("Test print failed:", err);
+    alert(err.message || "Could not queue test print.");
+  }
+});
 
 function playNewOrderSound() {
   if (!soundUnlocked) return;
@@ -1888,28 +1946,28 @@ async function getCustomerName(order) {
   }
 }
 
-const PRINTER_SERVER_URL = "http://127.0.0.1:3001"
-
 async function printOrderReceipt(order) {
   try {
-    const response = await fetch(`${PRINTER_SERVER_URL}/print-order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(order)
-    })
-
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.error || result.message || "Print failed")
+    if (!userId) {
+      throw new Error("Missing venue ID.")
     }
 
-    console.log("Receipt printed:", result.message)
+    const fn = httpsCallable(functions, "createVenuePrintJob")
+
+    const res = await fn({
+      venueId: userId,
+      printerId: "main",
+      orderId: order.orderId || null,
+      order: {
+        ...order,
+        venueName: venue?.venueName || order.venueName || "Backstage"
+      }
+    })
+
+    console.log("Receipt queued for CloudPRNT:", res.data)
   } catch (err) {
-    console.error("Print failed:", err)
-    alert(`Could not print receipt:\n\n${err.message}`)
+    console.error("CloudPRNT queue failed:", err)
+    alert(`Could not queue receipt:\n\n${err.message}`)
   }
 }
 
