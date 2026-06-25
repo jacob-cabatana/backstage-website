@@ -1895,7 +1895,7 @@ async function getCustomerName(order) {
 
 async function printOrderReceipt(order) {
   try {
-    const LOCAL_PRINT_SERVER_URL = "http://10.0.0.20:3001/print-order";
+   const LOCAL_PRINT_SERVER_URL = "http://10.0.0.34:3001/print-order";
 
     const payload = {
       ...order,
