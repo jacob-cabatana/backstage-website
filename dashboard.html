@@ -427,8 +427,6 @@
   <div id="livePill" class="pill off">Offline</div>
   <div id="setupText" class="setupText">Finish setup to start accepting orders.</div>
   <button id="enableSoundBtn" class="quietBtn" type="button">Enable order sound</button>
-  <button id="setupCloudPrinterBtn" class="quietBtn" type="button">Setup Cloud Printer</button>
-<button id="testCloudPrinterBtn" class="quietBtn" type="button">Test Print</button>
 </section>
 
 <nav class="tabs">
@@ -820,41 +818,8 @@ let hasLoadedOrdersOnce = false;
 let soundUnlocked = false;
 const customerNameCache = {};
 
-async function setupMainCloudPrinter() {
-  const fn = httpsCallable(functions, "registerCloudPrinter");
 
-  const res = await fn({
-    venueId: userId,
-    printerId: "main",
-    name: "Main Bar Printer"
-  });
 
-  console.log("CloudPRNT printer registered:", res.data);
-
-  alert(
-    `Printer registered.\n\nCopy this URL into the TSP100IV CloudPRNT settings:\n\n${res.data.cloudprntUrl}`
-  );
-
-  return res.data;
-}
-
-async function queueCloudPrntTestReceipt() {
-  const fn = httpsCallable(functions, "createTestPrintJob");
-
-  const res = await fn({
-    venueId: userId,
-    printerId: "main"
-  });
-
-  console.log("Test receipt queued:", res.data);
-
-  alert("Test receipt queued. The printer should pick it up on its next poll.");
-
-  return res.data;
-}
-
-window.setupMainCloudPrinter = setupMainCloudPrinter;
-window.queueCloudPrntTestReceipt = queueCloudPrntTestReceipt;
 
 
     const venueName = document.getElementById("venueName");
@@ -1010,8 +975,6 @@ const analyticsMonthOrders = document.getElementById("analyticsMonthOrders");
     const connectStripeBtn = document.getElementById("connectStripeBtn");
     const payoutsMessage = document.getElementById("payoutsMessage");
     const enableSoundBtn = document.getElementById("enableSoundBtn");
-    const setupCloudPrinterBtn = document.getElementById("setupCloudPrinterBtn");
-const testCloudPrinterBtn = document.getElementById("testCloudPrinterBtn");
     const newOrderSound = new Audio("/assets/new-order.mp3");
 newOrderSound.preload = "auto";
 newOrderSound.volume = 1;
@@ -1035,23 +998,7 @@ async function unlockOrderSound() {
 
 enableSoundBtn.addEventListener("click", unlockOrderSound);
 
-setupCloudPrinterBtn.addEventListener("click", async () => {
-  try {
-    await setupMainCloudPrinter();
-  } catch (err) {
-    console.error("Setup Cloud Printer failed:", err);
-    alert(err.message || "Could not setup cloud printer.");
-  }
-});
 
-testCloudPrinterBtn.addEventListener("click", async () => {
-  try {
-    await queueCloudPrntTestReceipt();
-  } catch (err) {
-    console.error("Test print failed:", err);
-    alert(err.message || "Could not queue test print.");
-  }
-});
 
 function playNewOrderSound() {
   if (!soundUnlocked) return;
@@ -1948,25 +1895,25 @@ async function getCustomerName(order) {
 
 async function printOrderReceipt(order) {
   try {
-const LOCAL_PRINT_SERVER_URL = "http://10.0.0.20:3030/print";
+    const LOCAL_PRINT_SERVER_URL = "http://10.0.0.20:3001/print-order";
+
+    const payload = {
+      ...order,
+      venueName: venue?.venueName || order.venueName || "Backstage"
+    };
 
     const res = await fetch(LOCAL_PRINT_SERVER_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        order: {
-          ...order,
-          venueName: venue?.venueName || order.venueName || "Backstage"
-        }
-      })
+      body: JSON.stringify(payload)
     });
 
     const data = await res.json();
 
-    if (!res.ok || !data.ok) {
-      throw new Error(data.error || "Local print server failed.");
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || data.message || "Local print server failed.");
     }
 
     console.log("Receipt printed through local server:", data);
