@@ -1948,26 +1948,31 @@ async function getCustomerName(order) {
 
 async function printOrderReceipt(order) {
   try {
-    if (!userId) {
-      throw new Error("Missing venue ID.")
+const LOCAL_PRINT_SERVER_URL = "http://10.0.0.20:3030/print";
+
+    const res = await fetch(LOCAL_PRINT_SERVER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        order: {
+          ...order,
+          venueName: venue?.venueName || order.venueName || "Backstage"
+        }
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || "Local print server failed.");
     }
 
-    const fn = httpsCallable(functions, "createVenuePrintJob")
-
-    const res = await fn({
-      venueId: userId,
-      printerId: "main",
-      orderId: order.orderId || null,
-      order: {
-        ...order,
-        venueName: venue?.venueName || order.venueName || "Backstage"
-      }
-    })
-
-    console.log("Receipt queued for CloudPRNT:", res.data)
+    console.log("Receipt printed through local server:", data);
   } catch (err) {
-    console.error("CloudPRNT queue failed:", err)
-    alert(`Could not queue receipt:\n\n${err.message}`)
+    console.error("Local print failed:", err);
+    alert(`Could not print receipt:\n\n${err.message}`);
   }
 }
 
