@@ -1010,11 +1010,14 @@ function getTicketRows(event) {
   const freeRows = buildLegacyFreeRows(event);
   const newRows = buildNewTicketRows(event);
 
-  if (newRows.some((row) => row.kind === "paid")) {
-    return [...freeRows, ...newRows];
-  }
+  const rows = newRows.some((row) => row.kind === "paid")
+    ? [...freeRows, ...newRows]
+    : [...freeRows, ...buildLegacyPaidRows(event)];
 
-  return [...freeRows, ...buildLegacyPaidRows(event)];
+  // Hide sold-out tickets for a cleaner, minimalist list.
+  return rows.filter(
+    (row) => row.kind !== "sold_out_volume" && !(row.kind === "free" && row.soldOut)
+  );
 }
 
 function groupKeyForRow(row) {
@@ -1029,23 +1032,23 @@ function groupKeyForRow(row) {
 function groupMetaForKey(key) {
   if (key === "women") {
     return {
-      title: "Women Tickets",
-      helper: "Use this section for Women pricing.",
+      title: "Women",
+      helper: "",
       empty: "No Women tickets are available."
     };
   }
 
   if (key === "men") {
     return {
-      title: "Men Tickets",
-      helper: "Use this section for Men pricing.",
+      title: "Men",
+      helper: "",
       empty: "No Men tickets are available."
     };
   }
 
   return {
     title: "All Tickets",
-    helper: "No gender selection needed for these.",
+    helper: "",
     empty: "No other tickets are available."
   };
 }
@@ -1109,11 +1112,8 @@ function renderTicketGroups(rows) {
       return `
         <section class="ticket-gender-group" data-ticket-group="${escapeHTML(key)}">
           <div class="gender-header">
-            <div>
-              <h3 class="gender-title">${escapeHTML(meta.title)}</h3>
-              <p class="gender-helper">${escapeHTML(meta.helper)}</p>
-            </div>
-            <span class="gender-count">${count} option${count === 1 ? "" : "s"}</span>
+            <h3 class="gender-title">${escapeHTML(meta.title)}</h3>
+            ${meta.helper ? `<p class="gender-helper">${escapeHTML(meta.helper)}</p>` : ""}
           </div>
 
           <div class="gender-options">

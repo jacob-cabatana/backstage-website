@@ -310,38 +310,60 @@
     .ticket-gender-group {
       display: grid;
       gap: 12px;
+      margin-top: 26px;
     }
 
+    .ticket-gender-group:first-child {
+      margin-top: 0;
+    }
+
+    .ticket-gender-group[data-ticket-group="women"] { --ticket-color: var(--female); }
+    .ticket-gender-group[data-ticket-group="men"] { --ticket-color: var(--male); }
+
+    /* Small per-gender hint shown above each group */
     .gender-header {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 14px;
+      align-items: baseline;
+      gap: 8px;
       padding: 0 2px;
+      margin-bottom: 2px;
+    }
+
+    .gender-header::before {
+      content: "";
+      align-self: center;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--ticket-color, var(--secondary));
+      flex: 0 0 auto;
     }
 
     .gender-title {
       margin: 0;
-      font-size: 19px;
+      font-size: 12px;
       line-height: 1;
       font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--black);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--secondary);
     }
 
     .gender-helper {
-      margin: 7px 0 0;
+      margin: 0;
       color: var(--tertiary);
       font-size: 12px;
-      line-height: 1.25;
+      line-height: 1;
       font-weight: 500;
     }
 
     .gender-count {
-      flex: 0 0 auto;
-      color: var(--tertiary);
-      font-size: 12px;
-      font-weight: 600;
+      display: none;
+    }
+
+    /* The non-gendered group needs no hint */
+    .ticket-gender-group[data-ticket-group="everyone"] .gender-header {
+      display: none;
     }
 
     .gender-options {
@@ -809,54 +831,19 @@
       }
     }
 
-    /* ── Header cleanup (kept from prior layout) ── */
+    /* ── Layout cleanups ── */
     .section-topline {
-      display: none !important;
+      display: none;
     }
 
-    .ticket-gender-group {
-      margin-top: 26px;
+    /* The per-gender hint above each group carries the context,
+       so the noisy per-ticket labels are hidden. */
+    .ticket-volume-badge,
+    .ticket-subtitle,
+    .ticket-subtext,
+    .ticket-badges {
+      display: none;
     }
-
-    .ticket-gender-group:first-child {
-      margin-top: 0;
-    }
-
-    .gender-header {
-      display: block !important;
-      margin-bottom: 12px;
-    }
-
-    .gender-title {
-      margin: 0;
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--black);
-    }
-
-    .gender-helper,
-    .gender-count {
-      display: none !important;
-    }
-
-/* Hide ticket extra labels */
-.ticket-volume-badge,
-.ticket-subtitle,
-.ticket-subtext,
-.ticket-badges {
-  display: none !important;
-}
-
-/* Remove "All Tickets" label */
-#checkout-event .gender-header,
-#checkout-event .gender-title {
-  display: none !important;
-}
-
-#checkout-event .ticket-gender-group {
-  margin-top: 0 !important;
-}
   </style>
 </head>
 
@@ -920,7 +907,7 @@
     <button id="checkout-button" class="checkout-button" disabled>Continue</button>
   </div>
 
-<script type="module" src="assets/checkout.js?v=14"></script>
+<script type="module" src="assets/checkout.js?v=16"></script>
 </body>
 
 </html>
