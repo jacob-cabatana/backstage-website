@@ -79,20 +79,18 @@
       background: transparent;
       padding: calc(26px + env(safe-area-inset-top)) 0 calc(128px + env(safe-area-inset-bottom));
     }
-
-    .checkout-hero {
-      position: relative;
-      width: calc(100% - 60px);
-      aspect-ratio: 16 / 9;
-      max-height: 250px;
-      margin: 0 auto 26px;
-      background: var(--bg-secondary);
-      border-radius: 24px;
-      overflow: hidden;
-      isolation: isolate;
-      border: 1px solid var(--hairline);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-    }
+.checkout-hero {
+  position: relative;
+  width: calc(100% - 60px);
+  height: 650px;
+  margin: 0 auto 26px;
+  background: var(--bg-secondary);
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--hairline);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
 
     .checkout-hero::after {
       content: "";
@@ -841,6 +839,24 @@
     .gender-count {
       display: none !important;
     }
+
+/* Hide ticket extra labels */
+.ticket-volume-badge,
+.ticket-subtitle,
+.ticket-subtext,
+.ticket-badges {
+  display: none !important;
+}
+
+/* Remove "All Tickets" label */
+#checkout-event .gender-header,
+#checkout-event .gender-title {
+  display: none !important;
+}
+
+#checkout-event .ticket-gender-group {
+  margin-top: 0 !important;
+}
   </style>
 </head>
 
