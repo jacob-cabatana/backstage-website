@@ -2,212 +2,919 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Outbreak 2035 Live | Backstage</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Outbreak 2035 Live</title>
+
   <style>
     :root {
-      --bg: #0a0a0b;
-      --surface: #1c1c1e;
-      --surface-2: #141416;
+      --bg: #050505;
+      --surface: #111113;
+      --surface-2: #1c1c1e;
+      --surface-3: #242427;
       --text: #f5f5f7;
       --muted: #a1a1a6;
       --muted-2: #6e6e73;
-      --line: #2c2c2e;
+      --line: rgba(255,255,255,.10);
+      --line-strong: rgba(255,255,255,.16);
       --blue: #0a84ff;
       --purple: #9c4ff2;
-      --good: #32d074;
-      --warn: #ffd166;
-      --bad: #ff5f57;
-      --radius: 24px;
+      --green: #30d158;
+      --yellow: #ffd60a;
+      --red: #ff453a;
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --shadow: 0 28px 80px rgba(0,0,0,.42);
+      --font: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
       color: var(--text);
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      font-family: var(--font);
       background:
-        radial-gradient(circle at 12% 8%, rgba(10,132,255,.22), transparent 34%),
-        radial-gradient(circle at 85% 0%, rgba(156,79,242,.18), transparent 30%),
-        var(--bg);
+        radial-gradient(circle at 14% 0%, rgba(10,132,255,.22), transparent 30%),
+        radial-gradient(circle at 86% 0%, rgba(156,79,242,.18), transparent 28%),
+        linear-gradient(180deg, #08080a 0%, var(--bg) 34%, #030303 100%);
       -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
     }
 
-    button, input, textarea, select { font: inherit; }
-    button { border: 0; cursor: pointer; color: inherit; }
-    button:disabled { opacity: .45; cursor: not-allowed; }
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
 
-    input, textarea, select {
+    button {
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .42;
+    }
+
+    input,
+    textarea,
+    select {
       width: 100%;
       color: var(--text);
-      background: rgba(0,0,0,.28);
+      background: rgba(255,255,255,.055);
       border: 1px solid var(--line);
-      border-radius: 15px;
+      border-radius: 16px;
       padding: 13px 14px;
       outline: none;
+      transition: border .16s ease, background .16s ease;
     }
 
-    textarea { min-height: 130px; line-height: 1.45; resize: vertical; }
-    select option { color: #111; }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(10,132,255,.72);
+      background: rgba(255,255,255,.075);
+    }
+
+    textarea {
+      min-height: 132px;
+      line-height: 1.45;
+      resize: vertical;
+    }
+
+    select option {
+      color: #111;
+    }
 
     label {
       display: block;
       margin-bottom: 8px;
       color: rgba(245,245,247,.78);
       font-size: 13px;
-      font-weight: 800;
-      letter-spacing: .01em;
+      font-weight: 700;
+      letter-spacing: -.01em;
     }
 
-    small { display: block; margin-top: 7px; color: var(--muted-2); line-height: 1.4; }
-    h1, h2, h3, p { margin-top: 0; }
-    h1 { margin: 0; font-size: clamp(22px, 3vw, 34px); letter-spacing: -.06em; line-height: 1; }
-    h2 { margin-bottom: 10px; font-size: clamp(30px, 4vw, 54px); letter-spacing: -.08em; line-height: .95; }
-    h3 { margin-bottom: 8px; letter-spacing: -.04em; }
+    small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.35;
+    }
 
-    .app { width: min(1280px, calc(100% - 28px)); margin: 0 auto; padding: 22px 0 46px; }
-    .hidden { display: none !important; }
-    .muted { color: var(--muted); line-height: 1.55; }
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 40px);
+      letter-spacing: -.06em;
+      line-height: .96;
+      font-weight: 800;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 64px);
+      letter-spacing: -.075em;
+      line-height: .94;
+      font-weight: 800;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -.04em;
+    }
+
+    p {
+      margin-bottom: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
 
     .topbar {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: -.04em;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      box-shadow: 0 12px 34px rgba(10,132,255,.22);
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      font-size: 22px;
+      letter-spacing: -.055em;
+      white-space: nowrap;
+    }
+
+    .brand-title p {
+      margin-top: 4px;
+      color: var(--muted-2);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 11px 15px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      transition: transform .16s ease, background .16s ease, border .16s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.11);
+      border-color: var(--line-strong);
+    }
+
+    .btn.primary {
+      background: #f5f5f7;
+      color: #050505;
+      border-color: transparent;
+    }
+
+    .btn.blue {
+      background: var(--blue);
+      color: white;
+      border-color: transparent;
+    }
+
+    .btn.green {
+      background: rgba(48,209,88,.14);
+      color: #bfffd0;
+      border-color: rgba(48,209,88,.28);
+    }
+
+    .btn.red {
+      background: rgba(255,69,58,.13);
+      color: #ffd0cd;
+      border-color: rgba(255,69,58,.28);
+    }
+
+    .btn.full {
+      width: 100%;
+    }
+
+    .btn.big {
+      min-height: 50px;
+      padding: 14px 19px;
+      font-size: 15px;
+    }
+
+    .card {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.078), rgba(255,255,255,.045)),
+        rgba(17,17,19,.82);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+
+    .panel {
+      padding: clamp(22px, 3vw, 34px);
+    }
+
+    .muted {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      color: rgba(245,245,247,.78);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .hero {
+      min-height: 570px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(28px, 7vw, 70px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      right: -180px;
+      bottom: -190px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(10,132,255,.20), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      max-width: 820px;
+      font-size: clamp(52px, 8vw, 104px);
+    }
+
+    .hero p {
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 44px;
+      max-width: 760px;
+    }
+
+    .flow-grid div {
+      padding: 16px;
+      min-height: 110px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.075);
+    }
+
+    .flow-grid strong {
+      display: block;
+      margin-bottom: 18px;
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .flow-grid span {
+      display: block;
+      color: rgba(245,245,247,.86);
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .two-col,
+    .dashboard-grid,
+    .player-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .join-wrap {
+      min-height: 580px;
+      display: grid;
+      place-items: center;
+    }
+
+    .join-card {
+      width: min(460px, 100%);
+    }
+
+    .field {
       margin-bottom: 18px;
     }
 
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .logo {
-      width: 50px; height: 50px; border-radius: 17px;
-      display: grid; place-items: center;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
-      color: white; font-weight: 900; letter-spacing: -.06em;
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-    .brand p { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
-    .nav { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 
-    .card {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.04));
-      border-radius: var(--radius);
-      box-shadow: 0 28px 80px rgba(0,0,0,.35);
+    .steps {
+      margin: 18px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.075);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .room-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 28px;
+      margin-bottom: 14px;
+      min-height: 154px;
+    }
+
+    .room-banner h2 {
+      margin-bottom: 6px;
+      font-size: clamp(42px, 6vw, 72px);
+    }
+
+    .link-text {
+      max-width: 760px;
+      word-break: break-all;
+      font-size: 13px;
+    }
+
+    .banner-actions,
+    .control-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      flex: 0 0 auto;
+    }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .mini {
+      padding: 16px;
+      border-radius: 22px;
+      box-shadow: none;
+    }
+
+    .mini span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted-2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .mini strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 22px;
+      letter-spacing: -.05em;
+    }
+
+    .split {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 22px;
+    }
+
+    .crisis-panel {
+      margin-bottom: 14px;
+    }
+
+    .crisis-panel h2 {
+      font-size: clamp(34px, 5vw, 58px);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.075);
+      color: rgba(245,245,247,.78);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tag.good {
+      color: #caffd7;
+      background: rgba(48,209,88,.09);
+      border-color: rgba(48,209,88,.18);
+    }
+
+    .tag.warn {
+      color: #fff4b8;
+      background: rgba(255,214,10,.09);
+      border-color: rgba(255,214,10,.18);
+    }
+
+    .tag.bad {
+      color: #ffd5d2;
+      background: rgba(255,69,58,.09);
+      border-color: rgba(255,69,58,.18);
+    }
+
+    .team-grid,
+    .leaderboard,
+    .picker-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .host-team-card {
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.075);
+    }
+
+    .host-team-card.submitted {
+      border-color: rgba(48,209,88,.25);
+      background:
+        radial-gradient(circle at 0 0, rgba(48,209,88,.10), transparent 28%),
+        rgba(255,255,255,.045);
+    }
+
+    .team-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .team-identity {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.085);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .team-identity h3 {
+      margin: 0 0 3px;
+      font-size: 17px;
+      letter-spacing: -.035em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-identity span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .team-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.075);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tb-good { color: var(--green); }
+    .tb-mid { color: var(--yellow); }
+    .tb-bad { color: var(--red); }
+
+    .argument-box {
+      margin: 14px 0;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.24);
+      border: 1px solid rgba(255,255,255,.07);
+      color: rgba(245,245,247,.74);
+      font-size: 14px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .rating-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 160px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .side {
+      position: sticky;
+      top: 18px;
+    }
+
+    .leaderboard {
+      margin-top: 14px;
+    }
+
+    .rank {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.075);
+    }
+
+    .rank-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .rank:first-child .rank-num {
+      background: #f5f5f7;
+      color: #050505;
+    }
+
+    .rank strong {
+      display: block;
+      font-size: 14px;
+      letter-spacing: -.025em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted-2);
+      font-size: 11px;
+    }
+
+    .rank-score {
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .team-pick {
+      width: 100%;
+      min-height: 84px;
+      padding: 16px;
+      text-align: left;
+      border-radius: 22px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.075);
+      transition: transform .16s ease, border .16s ease, background .16s ease;
+    }
+
+    .team-pick:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.065);
+      border-color: rgba(255,255,255,.14);
+    }
+
+    .team-pick.selected {
+      border-color: rgba(10,132,255,.65);
+      background:
+        radial-gradient(circle at 0 0, rgba(10,132,255,.16), transparent 32%),
+        rgba(255,255,255,.055);
+    }
+
+    .team-pick strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 17px;
+      letter-spacing: -.035em;
+    }
+
+    .team-pick span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .prompt-box {
+      margin: 20px 0;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(10,132,255,.10);
+      border: 1px solid rgba(10,132,255,.20);
+    }
+
+    .prompt-box h3 {
+      margin: 0 0 6px;
+      color: #dceaff;
+    }
+
+    .prompt-box p {
+      margin: 0;
+      color: rgba(245,245,247,.74);
+      line-height: 1.45;
+    }
+
+    .submitted-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(48,209,88,.09);
+      border: 1px solid rgba(48,209,88,.20);
+    }
+
+    .submitted-box h3 {
+      margin: 0 0 8px;
+      color: #caffd7;
+    }
+
+    .stat-list {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .stat-list div {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 13px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.075);
+    }
+
+    .stat-list span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .stat-list strong {
+      font-size: 13px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,.74);
       backdrop-filter: blur(18px);
     }
 
-    .panel { padding: 22px; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 12px 16px; border-radius: 999px;
-      background: rgba(255,255,255,.10); border: 1px solid var(--line);
-      font-weight: 800; transition: transform .16s ease, background .16s ease;
+    .modal-card {
+      width: min(680px, 100%);
+      padding: 34px;
+      border-radius: 34px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,214,10,.14), transparent 36%),
+        rgba(17,17,19,.96);
+      border: 1px solid var(--line-strong);
+      box-shadow: 0 40px 120px rgba(0,0,0,.60);
     }
-    .btn:hover:not(:disabled) { transform: translateY(-1px); background: rgba(255,255,255,.15); }
-    .btn.primary { background: linear-gradient(135deg, var(--purple), var(--blue)); border-color: transparent; }
-    .btn.good { color: #d8ffe8; background: rgba(50,208,116,.13); border-color: rgba(50,208,116,.35); }
-    .btn.danger { color: #ffe1de; background: rgba(255,95,87,.13); border-color: rgba(255,95,87,.35); }
-    .btn.full { width: 100%; }
-    .btn.big { padding: 15px 20px; font-size: 16px; }
 
-    .hero { min-height: 520px; padding: clamp(28px, 6vw, 58px); display: flex; flex-direction: column; justify-content: center; }
-    .hero h2 { max-width: 920px; font-size: clamp(46px, 8vw, 96px); }
-    .hero p { max-width: 760px; color: rgba(245,245,247,.74); line-height: 1.7; font-size: 17px; }
-    .eyebrow {
-      width: fit-content; display: inline-flex; align-items: center; gap: 8px;
-      margin-bottom: 16px; padding: 8px 12px; border-radius: 999px;
-      color: #d8ffe8; background: rgba(50,208,116,.10); border: 1px solid rgba(50,208,116,.25);
-      font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em;
+    .trophy {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 18px;
+      border-radius: 26px;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--line);
     }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
-    .flow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; margin-top: 28px; }
-    .flow-grid div { padding: 16px; border-radius: 18px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09); }
-    .flow-grid strong { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 11px; background: rgba(255,255,255,.10); margin-bottom: 10px; }
-    .flow-grid span { color: var(--muted); line-height: 1.35; }
 
-    .two-col, .dashboard-grid, .player-grid { display: grid; grid-template-columns: 1fr 380px; gap: 18px; align-items: start; }
-    .join-wrap { min-height: 540px; display: grid; place-items: center; }
-    .join-card { width: min(520px, 100%); }
-    .field { margin-bottom: 16px; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .note { margin-top: 16px; padding: 14px; border-radius: 18px; color: rgba(245,245,247,.72); border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.045); line-height: 1.5; }
-    .steps { color: rgba(245,245,247,.76); line-height: 1.7; padding-left: 22px; }
-
-    .room-banner { padding: 22px; display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 14px; }
-    .room-banner h2 { margin-bottom: 6px; }
-    .link-text { word-break: break-all; margin: 0; }
-    .banner-actions, .control-stack { display: flex; flex-direction: column; gap: 10px; }
-    .score-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-    .mini { padding: 15px; }
-    .mini span { display: block; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; font-size: 11px; font-weight: 900; margin-bottom: 5px; }
-    .mini strong { display: block; overflow: hidden; text-overflow: ellipsis; font-size: 20px; letter-spacing: -.05em; white-space: nowrap; }
-    .split { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
-    .crisis-panel { margin-bottom: 14px; background: radial-gradient(circle at 8% 0%, rgba(255,209,102,.14), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.04)); }
-    .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .tag { border-radius: 999px; padding: 7px 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.11); color: rgba(245,245,247,.82); font-size: 12px; font-weight: 800; }
-    .tag.good { color: #d8ffe8; background: rgba(50,208,116,.09); border-color: rgba(50,208,116,.25); }
-    .tag.warn { color: #fff1c8; background: rgba(255,209,102,.09); border-color: rgba(255,209,102,.25); }
-    .tag.bad { color: #ffe1de; background: rgba(255,95,87,.09); border-color: rgba(255,95,87,.25); }
-
-    .team-grid, .leaderboard, .picker-grid { display: grid; gap: 10px; }
-    .host-team-card, .player-team-card, .team-pick { padding: 16px; border-radius: 22px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09); }
-    .host-team-card.submitted { border-color: rgba(50,208,116,.28); background: radial-gradient(circle at 0 0, rgba(50,208,116,.10), transparent 24%), rgba(255,255,255,.055); }
-    .team-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
-    .team-identity { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .avatar { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 15px; display: grid; place-items: center; background: linear-gradient(135deg, var(--purple), var(--blue)); font-weight: 900; }
-    .team-identity h3 { margin: 0 0 3px; font-size: 17px; }
-    .team-identity span { color: var(--muted); font-size: 13px; }
-    .team-stats { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
-    .stat-pill { padding: 8px 10px; border-radius: 14px; background: rgba(0,0,0,.22); border: 1px solid rgba(255,255,255,.08); font-weight: 900; font-size: 13px; }
-    .tb-good { color: var(--good); } .tb-mid { color: var(--warn); } .tb-bad { color: var(--bad); }
-    .argument-box { padding: 13px; border-radius: 16px; background: rgba(0,0,0,.22); border: 1px solid rgba(255,255,255,.08); color: rgba(245,245,247,.76); line-height: 1.5; margin: 12px 0; white-space: pre-wrap; }
-    .rating-row { display: grid; grid-template-columns: 1fr 180px; gap: 10px; align-items: end; }
-
-    .rank { display: grid; grid-template-columns: 34px 1fr auto; gap: 9px; align-items: center; padding: 11px; border-radius: 16px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09); }
-    .rank-num { width: 30px; height: 30px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,.10); font-weight: 900; }
-    .rank:first-child .rank-num { background: linear-gradient(135deg, #ffd166, #ff9f43); color: #1b1000; }
-    .rank strong { display: block; font-size: 14px; letter-spacing: -.02em; }
-    .rank span { display: block; color: var(--muted); font-size: 12px; }
-    .rank-score { font-weight: 900; letter-spacing: -.03em; }
-    .side { position: sticky; top: 16px; }
-
-    .team-pick { width: 100%; text-align: left; }
-    .team-pick.selected { border-color: rgba(10,132,255,.55); background: radial-gradient(circle at 0 0, rgba(10,132,255,.18), transparent 30%), rgba(255,255,255,.065); }
-    .team-pick strong { display: block; font-size: 16px; margin-bottom: 4px; }
-    .team-pick span { color: var(--muted); }
-    .prompt-box, .submitted-box { padding: 16px; border-radius: 20px; background: rgba(10,132,255,.10); border: 1px solid rgba(10,132,255,.25); margin: 16px 0; }
-    .submitted-box { background: rgba(50,208,116,.09); border-color: rgba(50,208,116,.25); }
-    .submitted-box h3 { color: #d8ffe8; }
-    .prompt-box h3, .submitted-box h3 { margin: 0 0 7px; }
-    .prompt-box p, .submitted-box p { margin: 0; }
-    .stat-list { display: grid; gap: 8px; margin: 12px 0 16px; }
-    .stat-list div { display: flex; justify-content: space-between; gap: 10px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09); }
-    .stat-list span { color: var(--muted); }
-
-    .modal { position: fixed; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(0,0,0,.76); backdrop-filter: blur(14px); z-index: 30; }
-    .modal-card { width: min(720px, 100%); padding: 30px; border-radius: 30px; text-align: center; border: 1px solid rgba(255,255,255,.16); background: radial-gradient(circle at 20% 0%, rgba(255,209,102,.20), transparent 35%), linear-gradient(180deg, rgba(24,26,40,.97), rgba(9,10,18,.97)); box-shadow: 0 40px 120px rgba(0,0,0,.6); }
-    .trophy { width: 90px; height: 90px; border-radius: 30px; margin: 0 auto 18px; display: grid; place-items: center; font-size: 38px; background: linear-gradient(135deg, #ffd166, #ff9f43); }
-    .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 99; color: rgba(245,245,247,.88); background: rgba(8,9,20,.95); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 12px 16px; box-shadow: 0 20px 60px rgba(0,0,0,.40); }
-
-    @media (max-width: 1050px) {
-      .two-col, .dashboard-grid, .player-grid { grid-template-columns: 1fr; }
-      .side { position: static; }
-      .score-strip, .flow-grid { grid-template-columns: repeat(2, 1fr); }
-      .room-banner, .split { flex-direction: column; align-items: stretch; }
-      .banner-actions, .control-stack { flex-direction: row; flex-wrap: wrap; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 100;
+      transform: translateX(-50%);
+      max-width: min(520px, calc(100% - 28px));
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: rgba(245,245,247,.9);
+      background: rgba(28,28,30,.92);
+      border: 1px solid var(--line-strong);
+      box-shadow: 0 18px 58px rgba(0,0,0,.45);
+      backdrop-filter: blur(18px);
+      font-size: 14px;
     }
-    @media (max-width: 680px) {
-      .app { width: min(100% - 20px, 1280px); padding-top: 14px; }
-      .topbar, .team-top { flex-direction: column; align-items: stretch; }
-      .nav, .team-stats { justify-content: flex-start; }
-      .hero, .panel { padding: 18px; }
-      .flow-grid, .score-strip, .grid-2, .rating-row { grid-template-columns: 1fr; }
+
+    @media (max-width: 980px) {
+      .two-col,
+      .dashboard-grid,
+      .player-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        position: static;
+      }
+
+      .score-strip,
+      .flow-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .room-banner,
+      .split {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .banner-actions,
+      .control-stack {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 16px;
+      }
+
+      .topbar,
+      .team-top {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .nav,
+      .team-stats {
+        justify-content: flex-start;
+      }
+
+      .hero,
+      .panel,
+      .room-banner {
+        padding: 20px;
+      }
+
+      .score-strip,
+      .flow-grid,
+      .grid-2,
+      .rating-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: 520px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div id="toast" class="toast hidden"></div>
 
@@ -215,138 +922,291 @@
     <header class="topbar">
       <div class="brand">
         <div class="logo">TB</div>
-        <div>
-          <h1>Outbreak 2035 Live</h1>
-          <p>Host screen + student submissions.</p>
+        <div class="brand-title">
+          <h1>Outbreak 2035</h1>
+          <p>Live classroom mode</p>
         </div>
       </div>
+
       <nav class="nav">
         <button class="btn" id="goHostBtn">Host</button>
         <button class="btn" id="goPlayerBtn">Player</button>
-        <button class="btn danger hidden" id="leaveRoomBtn">Leave Room</button>
+        <button class="btn red hidden" id="leaveRoomBtn">Leave</button>
       </nav>
     </header>
 
-    <section id="landingScreen">
+    <section id="landingScreen" class="screen">
       <div class="hero card">
-        <span class="eyebrow">Classroom strategy game</span>
-        <h2>Crisis → policy → argument → results.</h2>
-        <p>The teacher creates a live room. Students join from laptops, choose a policy, write their rhetorical argument, and submit. The host rates each argument and the leaderboard updates live.</p>
+        <span class="eyebrow">Live game</span>
+        <h2>Stop TB by 2035.</h2>
+        <p>Teams respond to crises with policy and rhetoric. Lowest TB cases wins.</p>
+
         <div class="hero-actions">
-          <button class="btn primary big" id="landingHostBtn">Create Host Room</button>
-          <button class="btn big" id="landingPlayerBtn">Join as Student</button>
+          <button class="btn primary big" id="landingHostBtn">Create Room</button>
+          <button class="btn big" id="landingPlayerBtn">Join Room</button>
         </div>
+
         <div class="flow-grid">
-          <div><strong>1</strong><span>Host creates room</span></div>
-          <div><strong>2</strong><span>Students join code</span></div>
-          <div><strong>3</strong><span>Teams submit choices</span></div>
-          <div><strong>4</strong><span>Host rates + resolves</span></div>
+          <div><strong>01</strong><span>Crisis</span></div>
+          <div><strong>02</strong><span>Policy</span></div>
+          <div><strong>03</strong><span>Argument</span></div>
+          <div><strong>04</strong><span>Results</span></div>
         </div>
       </div>
     </section>
 
-    <section id="hostSetupScreen" class="hidden">
+    <section id="hostSetupScreen" class="screen hidden">
       <div class="two-col">
         <div class="card panel">
-          <span class="eyebrow">Host setup</span>
-          <h2>Create a live room</h2>
-          <p class="muted">Project the host dashboard. Students use the join link or room code.</p>
+          <span class="eyebrow">Host</span>
+          <h2>Create room.</h2>
+
           <div class="field">
-            <label for="teamNamesInput">Team names</label>
+            <label for="teamNamesInput">Teams</label>
             <textarea id="teamNamesInput">Team 1
 Team 2
 Team 3
 Team 4</textarea>
-            <small>One team per line.</small>
           </div>
+
           <div class="grid-2">
             <div class="field">
               <label for="roundCountInput">Rounds</label>
-              <select id="roundCountInput"><option value="3">3 rounds</option><option value="4" selected>4 rounds</option><option value="5">5 rounds</option></select>
+              <select id="roundCountInput">
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
+              </select>
             </div>
+
             <div class="field">
               <label for="difficultyInput">Difficulty</label>
-              <select id="difficultyInput"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select>
+              <select id="difficultyInput">
+                <option value="easy">Easy</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Hard</option>
+              </select>
             </div>
           </div>
+
           <button class="btn primary full" id="createRoomBtn">Create Room</button>
         </div>
+
         <div class="card panel">
-          <h3>How you run it</h3>
+          <span class="eyebrow">Flow</span>
+          <h2>Run it.</h2>
           <ol class="steps">
-            <li>Create room.</li><li>Students join with the code.</li><li>Start round to reveal crisis.</li><li>Students submit policy + argument.</li><li>Rate each argument.</li><li>Calculate results.</li>
+            <li>Students join the room.</li>
+            <li>Start a round.</li>
+            <li>Teams submit policy + argument.</li>
+            <li>Rate each argument.</li>
+            <li>Calculate results.</li>
           </ol>
-          <div class="note">Students practice ethos, logos, and pathos while defending policies tied to poverty, social protection, housing, nutrition, and TB.</div>
         </div>
       </div>
     </section>
 
-    <section id="playerJoinScreen" class="hidden">
-      <div class="join-wrap"><div class="card panel join-card">
-        <span class="eyebrow">Student screen</span>
-        <h2>Join your class room</h2>
-        <p class="muted">Enter the room code from the board.</p>
-        <div class="field"><label for="roomCodeInput">Room code</label><input id="roomCodeInput" inputmode="numeric" maxlength="6" placeholder="Example: 4821" /></div>
-        <button class="btn primary full" id="joinRoomBtn">Join Room</button>
-      </div></div>
+    <section id="playerJoinScreen" class="screen hidden">
+      <div class="join-wrap">
+        <div class="card panel join-card">
+          <span class="eyebrow">Player</span>
+          <h2>Join room.</h2>
+
+          <div class="field">
+            <label for="roomCodeInput">Room code</label>
+            <input id="roomCodeInput" inputmode="numeric" maxlength="6" placeholder="7048" />
+          </div>
+
+          <button class="btn primary full" id="joinRoomBtn">Join</button>
+        </div>
+      </div>
     </section>
 
-    <section id="hostDashboard" class="hidden">
+    <section id="hostDashboard" class="screen hidden">
       <div class="dashboard-grid">
         <div>
           <div class="room-banner card">
-            <div><span class="eyebrow">Host dashboard</span><h2>Room <span id="hostRoomCode">----</span></h2><p id="hostJoinLink" class="muted link-text"></p></div>
-            <div class="banner-actions"><button class="btn" id="copyJoinLinkBtn">Copy Join Link</button><button class="btn danger" id="deleteRoomBtn">Delete Room</button></div>
+            <div>
+              <span class="eyebrow">Host</span>
+              <h2>Room <span id="hostRoomCode">----</span></h2>
+              <p id="hostJoinLink" class="muted link-text"></p>
+            </div>
+
+            <div class="banner-actions">
+              <button class="btn" id="copyJoinLinkBtn">Copy Link</button>
+              <button class="btn red" id="deleteRoomBtn">Delete</button>
+            </div>
           </div>
+
           <div class="score-strip">
             <div class="mini card"><span>Round</span><strong id="hostRoundLabel">1 / 4</strong></div>
             <div class="mini card"><span>Status</span><strong id="hostStatusLabel">Lobby</strong></div>
             <div class="mini card"><span>Submitted</span><strong id="hostSubmitLabel">0 / 4</strong></div>
             <div class="mini card"><span>Leader</span><strong id="hostLeaderLabel">—</strong></div>
           </div>
+
           <div class="card panel crisis-panel">
-            <div class="split"><div><h2 id="hostCrisisTitle">Waiting in lobby</h2><p id="hostCrisisText" class="muted">Start the first round when everyone has joined.</p><div id="hostCrisisTags" class="tag-row"></div></div>
-            <div class="control-stack"><button class="btn primary" id="startRoundBtn">Start Round</button><button class="btn good" id="calculateResultsBtn" disabled>Calculate Results</button><button class="btn" id="nextRoundBtn" disabled>Next Round</button></div></div>
+            <div class="split">
+              <div>
+                <span class="eyebrow">Round</span>
+                <h2 id="hostCrisisTitle">Waiting.</h2>
+                <p id="hostCrisisText" class="muted">Start when ready.</p>
+                <div id="hostCrisisTags" class="tag-row"></div>
+              </div>
+
+              <div class="control-stack">
+                <button class="btn primary" id="startRoundBtn">Start Round</button>
+                <button class="btn green" id="calculateResultsBtn" disabled>Calculate</button>
+                <button class="btn" id="nextRoundBtn" disabled>Next</button>
+              </div>
+            </div>
           </div>
+
           <div class="card panel">
-            <div class="split"><div><h2>Team submissions</h2><p class="muted">Have teams read their argument out loud. Then rate it.</p></div><button class="btn" id="refreshHostBtn">Refresh</button></div>
+            <div class="split">
+              <div>
+                <span class="eyebrow">Submissions</span>
+                <h2>Teams.</h2>
+              </div>
+              <button class="btn" id="refreshHostBtn">Refresh</button>
+            </div>
+
             <div id="hostTeamsGrid" class="team-grid"></div>
           </div>
         </div>
-        <aside class="card panel side"><h2>Leaderboard</h2><p class="muted">Lowest TB cases wins. Trust breaks ties.</p><div id="hostLeaderboard" class="leaderboard"></div><div class="note"><strong>Rating guide:</strong><br>Weak = vague.<br>Solid = clear connection.<br>Fire = specific, persuasive, confident.</div></aside>
+
+        <aside class="card panel side">
+          <span class="eyebrow">Scores</span>
+          <h2>Board.</h2>
+          <div id="hostLeaderboard" class="leaderboard"></div>
+
+          <div class="note">
+            Weak = vague<br>
+            Solid = clear<br>
+            Fire = specific + persuasive
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section id="playerDashboard" class="hidden">
+    <section id="playerDashboard" class="screen hidden">
       <div class="player-grid">
         <div>
-          <div class="room-banner card"><div><span class="eyebrow">Student dashboard</span><h2>Room <span id="playerRoomCode">----</span></h2><p id="playerStatusText" class="muted">Choose your team to begin.</p></div></div>
-          <div id="teamPickerCard" class="card panel"><h2>Choose your team</h2><p class="muted">One device per team is best.</p><div id="teamPicker" class="picker-grid"></div></div>
+          <div class="room-banner card">
+            <div>
+              <span class="eyebrow">Player</span>
+              <h2>Room <span id="playerRoomCode">----</span></h2>
+              <p id="playerStatusText" class="muted">Choose a team.</p>
+            </div>
+          </div>
+
+          <div id="teamPickerCard" class="card panel">
+            <span class="eyebrow">Team</span>
+            <h2>Choose.</h2>
+            <div id="teamPicker" class="picker-grid"></div>
+          </div>
+
           <div id="submissionCard" class="card panel hidden">
             <span class="eyebrow" id="playerRoundBadge">Round 1</span>
-            <h2 id="playerCrisisTitle">Waiting for host</h2>
-            <p id="playerCrisisText" class="muted">The round has not started yet.</p>
-            <div id="playerPromptBox" class="prompt-box hidden"><h3 id="appealLabel">Use LOGOS</h3><p id="appealPrompt">Use evidence, statistics, or cause-and-effect reasoning.</p></div>
-            <div id="submissionForm" class="hidden">
-              <div class="field"><label for="policySelect">Choose your policy</label><select id="policySelect"></select><small id="policyHint"></small></div>
-              <div class="field"><label for="argumentInput">Write your argument</label><textarea id="argumentInput" placeholder="Our team chooses social protection because..."></textarea><small>Write 1–3 sentences. You will probably read this out loud.</small></div>
-              <button class="btn primary full" id="submitChoiceBtn">Submit Choice</button>
+            <h2 id="playerCrisisTitle">Waiting.</h2>
+            <p id="playerCrisisText" class="muted">Host starts the round.</p>
+
+            <div id="playerPromptBox" class="prompt-box hidden">
+              <h3 id="appealLabel">Use LOGOS</h3>
+              <p id="appealPrompt">Use evidence.</p>
             </div>
-            <div id="submittedBox" class="submitted-box hidden"><h3>Submitted ✅</h3><p class="muted">Wait for the host to rate arguments and calculate results.</p></div>
-            <div id="resultBox" class="submitted-box hidden"><h3>Round result</h3><p id="playerResultText" class="muted"></p></div>
+
+            <div id="submissionForm" class="hidden">
+              <div class="field">
+                <label for="policySelect">Policy</label>
+                <select id="policySelect"></select>
+                <small id="policyHint"></small>
+              </div>
+
+              <div class="field">
+                <label for="appealSelect">Route</label>
+                <select id="appealSelect"></select>
+                <small id="appealHint">Choose how you want to persuade.</small>
+              </div>
+
+              <div class="field">
+                <label for="argumentInput">Argument</label>
+                <textarea id="argumentInput" placeholder="We choose this because..."></textarea>
+              </div>
+
+              <button class="btn primary full" id="submitChoiceBtn">Submit</button>
+            </div>
+
+            <div id="submittedBox" class="submitted-box hidden">
+              <h3>Submitted.</h3>
+              <p class="muted">Wait for results.</p>
+            </div>
+
+            <div id="resultBox" class="submitted-box hidden">
+              <h3>Result.</h3>
+              <p id="playerResultText" class="muted"></p>
+            </div>
           </div>
         </div>
-        <aside class="card panel side"><h2 id="selectedTeamName">No team selected</h2><div id="playerStats" class="stat-list"></div><div class="note"><strong>Cheat sheet:</strong><br>Logos = evidence/statistics.<br>Ethos = credibility/source trust.<br>Pathos = emotion/human impact.</div><h3>Leaderboard</h3><div id="playerLeaderboard" class="leaderboard"></div></aside>
+
+        <aside class="card panel side">
+          <span class="eyebrow">Your team</span>
+          <h2 id="selectedTeamName">None</h2>
+
+          <button class="btn full hidden" id="changeTeamBtn" style="margin-bottom: 14px;">
+            Change Team
+          </button>
+
+          <div id="playerStats" class="stat-list"></div>
+
+          <div class="note">
+            Logos = evidence<br>
+            Ethos = credibility<br>
+            Pathos = emotion
+          </div>
+
+          <div style="height: 18px;"></div>
+
+          <span class="eyebrow">Scores</span>
+          <div id="playerLeaderboard" class="leaderboard"></div>
+        </aside>
       </div>
     </section>
   </main>
 
-  <div id="finalModal" class="modal hidden"><div class="modal-card"><div class="trophy">🏆</div><h2 id="finalTitle">Winner</h2><p id="finalText" class="muted"></p><div id="finalLeaderboard" class="leaderboard"></div><button class="btn primary" id="closeFinalBtn">View Board</button></div></div>
+  <div id="finalModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="trophy">🏆</div>
+      <h2 id="finalTitle">Winner</h2>
+      <p id="finalText" class="muted"></p>
+      <div id="finalLeaderboard" class="leaderboard"></div>
+      <div style="height: 18px;"></div>
+      <button class="btn primary" id="closeFinalBtn">Done</button>
+    </div>
+  </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      onSnapshot,
+      runTransaction,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    import {
+      getAuth,
+      signInAnonymously,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAOftoMjETRbr3v7zncb-kVvLewkpmE2n0",
@@ -359,115 +1219,1119 @@ Team 4</textarea>
     };
 
     const ROOM_COLLECTION = "classroomOutbreakRooms";
+
     const POLICIES = [
-      { id: "social", name: "Expand Social Protection", cost: 5, reduction: 26, trust: 1, blocks: ["recession", "poverty"], hint: "Best long-term move. Protects people from economic shocks.", articleTie: "The article projects social protection as one of the strongest ways to reduce TB incidence." },
-      { id: "poverty", name: "Reduce Extreme Poverty", cost: 4, reduction: 18, trust: 1, blocks: ["poverty", "food"], hint: "Attacks one of the root causes of TB vulnerability.", articleTie: "The article links poverty elimination to lower TB incidence through social risk factors." },
-      { id: "medical", name: "Medical Treatment", cost: 3, reduction: 13, trust: 0, blocks: ["hospital"], hint: "Good immediate response, but weaker against social causes.", articleTie: "Treatment matters, but biomedical action alone is not enough." },
-      { id: "housing", name: "Housing + Nutrition Support", cost: 3, reduction: 12, trust: 1, blocks: ["housing", "food"], hint: "Protects against crowded housing and malnutrition.", articleTie: "Housing quality and malnutrition are pathways connecting poverty and TB risk." },
-      { id: "trust", name: "Public Trust Campaign", cost: 2, reduction: 5, trust: 3, blocks: ["misinfo"], hint: "Small TB impact, big trust boost. Great for ethos/pathos.", articleTie: "Public health policy depends on audience trust and credible communication." }
+      {
+        id: "social",
+        name: "Social Protection",
+        cost: 5,
+        reduction: 26,
+        trust: 1,
+        blocks: ["recession", "poverty"],
+        hint: "Strong long-term protection.",
+        articleTie: "Social protection is one of the article’s strongest projected interventions."
+      },
+      {
+        id: "poverty",
+        name: "Reduce Poverty",
+        cost: 4,
+        reduction: 18,
+        trust: 1,
+        blocks: ["poverty", "food"],
+        hint: "Targets a root cause.",
+        articleTie: "Poverty elimination lowers TB risk through social conditions."
+      },
+      {
+        id: "medical",
+        name: "Medical Treatment",
+        cost: 3,
+        reduction: 13,
+        trust: 0,
+        blocks: ["hospital"],
+        hint: "Fast clinical response.",
+        articleTie: "Treatment helps, but is not the whole solution."
+      },
+      {
+        id: "housing",
+        name: "Housing + Nutrition",
+        cost: 3,
+        reduction: 12,
+        trust: 1,
+        blocks: ["housing", "food"],
+        hint: "Protects health conditions.",
+        articleTie: "Housing and malnutrition connect poverty to TB risk."
+      },
+      {
+        id: "trust",
+        name: "Trust Campaign",
+        cost: 2,
+        reduction: 5,
+        trust: 3,
+        blocks: ["misinfo"],
+        hint: "Raises public trust.",
+        articleTie: "Credibility matters when persuading audiences."
+      }
     ];
+
     const CRISES = [
-      { id: "recession", name: "Economic Recession", text: "People lose income. Without social protection, TB risk rises.", damage: 12, trustLoss: 0, blockedBy: ["social"] },
-      { id: "poverty", name: "Poverty Spike", text: "More families fall into extreme poverty. Disease risk increases.", damage: 14, trustLoss: 1, blockedBy: ["social", "poverty"] },
-      { id: "food", name: "Food Prices Spike", text: "Malnutrition gets worse. Teams need poverty or nutrition support.", damage: 12, trustLoss: 1, blockedBy: ["poverty", "housing"] },
-      { id: "housing", name: "Housing Crisis", text: "Crowded housing increases TB spread.", damage: 15, trustLoss: 1, blockedBy: ["housing"] },
-      { id: "hospital", name: "Hospital Overload", text: "Clinics are overwhelmed. Medical treatment becomes essential.", damage: 10, trustLoss: 1, blockedBy: ["medical"] },
-      { id: "misinfo", name: "Misinformation Wave", text: "People distrust health advice. Public trust matters now.", damage: 7, trustLoss: 3, blockedBy: ["trust"] }
+      {
+        id: "recession",
+        name: "Economic Recession",
+        text: "Income falls. TB risk rises.",
+        damage: 12,
+        trustLoss: 0,
+        blockedBy: ["social"]
+      },
+      {
+        id: "poverty",
+        name: "Poverty Spike",
+        text: "More families fall into poverty.",
+        damage: 14,
+        trustLoss: 1,
+        blockedBy: ["social", "poverty"]
+      },
+      {
+        id: "food",
+        name: "Food Prices Spike",
+        text: "Malnutrition increases.",
+        damage: 12,
+        trustLoss: 1,
+        blockedBy: ["poverty", "housing"]
+      },
+      {
+        id: "housing",
+        name: "Housing Crisis",
+        text: "Crowding increases spread.",
+        damage: 15,
+        trustLoss: 1,
+        blockedBy: ["housing"]
+      },
+      {
+        id: "hospital",
+        name: "Hospital Overload",
+        text: "Clinics are overwhelmed.",
+        damage: 10,
+        trustLoss: 1,
+        blockedBy: ["medical"]
+      },
+      {
+        id: "misinfo",
+        name: "Misinformation Wave",
+        text: "Trust drops.",
+        damage: 7,
+        trustLoss: 3,
+        blockedBy: ["trust"]
+      }
     ];
+
     const APPEALS = [
-      { id: "logos", name: "LOGOS", prompt: "Use a statistic, evidence, or cause-and-effect reasoning from the article." },
-      { id: "ethos", name: "ETHOS", prompt: "Explain why the source, authors, or institutions are credible." },
-      { id: "pathos", name: "PATHOS", prompt: "Make people care emotionally about poverty, disease, and preventable suffering." }
+      {
+        id: "logos",
+        name: "LOGOS",
+        prompt: "Use evidence or cause-and-effect."
+      },
+      {
+        id: "ethos",
+        name: "ETHOS",
+        prompt: "Use credibility or source trust."
+      },
+      {
+        id: "pathos",
+        name: "PATHOS",
+        prompt: "Use emotion or human impact."
+      }
     ];
-    const DIFFICULTY = { easy: { damageMult: .8, income: 4 }, normal: { damageMult: 1, income: 3 }, hard: { damageMult: 1.25, income: 2 } };
+
+    const DIFFICULTY = {
+      easy: { damageMult: 0.8, income: 4 },
+      normal: { damageMult: 1, income: 3 },
+      hard: { damageMult: 1.25, income: 2 }
+    };
 
     const $ = (id) => document.getElementById(id);
-    const screens = ["landingScreen", "hostSetupScreen", "playerJoinScreen", "hostDashboard", "playerDashboard"];
-    let app, db, auth, roomCode = null, roomData = null, unsubscribeRoom = null, authPromise = null;
-    let role = "landing";
-    let selectedTeamId = localStorage.getItem("outbreak2035TeamId") || null;
 
-    function initFirebase() { if (!app) { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); } }
+    const screens = [
+      "landingScreen",
+      "hostSetupScreen",
+      "playerJoinScreen",
+      "hostDashboard",
+      "playerDashboard"
+    ];
+
+    let app;
+    let db;
+    let auth;
+    let authPromise = null;
+
+    let roomCode = null;
+    let roomData = null;
+    let unsubRoom = null;
+    let selectedTeamId = localStorage.getItem("outbreak2035TeamId") || null;
+    let role = "landing";
+
+    function initFirebase() {
+      if (!app) {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+      }
+    }
+
     function ensureSignedIn() {
       initFirebase();
-      if (auth.currentUser) return Promise.resolve(auth.currentUser);
-      if (!authPromise) authPromise = new Promise((resolve, reject) => {
-        const stop = onAuthStateChanged(auth, async (user) => {
-          if (user) { stop(); resolve(user); return; }
-          try { const result = await signInAnonymously(auth); stop(); resolve(result.user); }
-          catch (error) { stop(); reject(error); }
+
+      if (auth.currentUser) {
+        return Promise.resolve(auth.currentUser);
+      }
+
+      if (!authPromise) {
+        authPromise = new Promise((resolve, reject) => {
+          const stop = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              stop();
+              resolve(user);
+              return;
+            }
+
+            try {
+              const result = await signInAnonymously(auth);
+              stop();
+              resolve(result.user);
+            } catch (error) {
+              stop();
+              reject(error);
+            }
+          });
         });
-      });
+      }
+
       return authPromise;
     }
-    function showToast(message) { const t = $("toast"); t.textContent = message; t.classList.remove("hidden"); clearTimeout(showToast.t); showToast.t = setTimeout(() => t.classList.add("hidden"), 3200); }
-    function escapeHTML(text) { return String(text ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
-    function showScreen(id) { screens.forEach(s => $(s).classList.add("hidden")); $(id).classList.remove("hidden"); }
-    function randomItem(items) { return items[Math.floor(Math.random() * items.length)]; }
-    function makeRoomCode() { return String(Math.floor(1000 + Math.random() * 9000)); }
-    function initials(name, index) { return name.split(/\s+/).filter(Boolean).slice(0,2).map(w => w[0]).join("").toUpperCase() || `T${index + 1}`; }
-    function getPolicy(id) { return POLICIES.find(p => p.id === id); }
-    function getAppeal(id) { return APPEALS.find(a => a.id === id); }
-    function ratingMult(r) { return r === "weak" ? .5 : r === "fire" ? 1.25 : 1; }
-    function ratingLabel(r) { return r === "weak" ? "Weak" : r === "fire" ? "Fire" : "Solid"; }
-    function tbClass(tb) { return tb <= 55 ? "tb-good" : tb <= 90 ? "tb-mid" : "tb-bad"; }
-    function sortedTeams(room = roomData) { return Object.values(room?.teams || {}).sort((a,b) => a.tb !== b.tb ? a.tb - b.tb : b.trust !== a.trust ? b.trust - a.trust : b.rhetoric - a.rhetoric); }
-    function submittedCount(room = roomData) { return Object.values(room?.teams || {}).filter(t => t.submitted).length; }
-    function allSubmitted(room = roomData) { const teams = Object.values(room?.teams || {}); return teams.length > 0 && teams.every(t => t.submitted); }
-    function joinUrl(code) { const u = new URL(location.href); u.hash = "player"; u.searchParams.set("room", code); return u.toString(); }
-    function roomRef(code = roomCode) { return doc(db, ROOM_COLLECTION, code); }
 
-    async function safeRun(fn) { try { await ensureSignedIn(); return await fn(); } catch (e) { console.error(e); showToast(e.code === "permission-denied" ? "Firestore permission denied. Update rules for classroomOutbreakRooms." : "Something went wrong. Check console."); } }
-    function route() { const hash = location.hash.replace("#", ""); const urlRoom = new URL(location.href).searchParams.get("room"); if (urlRoom) $("roomCodeInput").value = urlRoom; if (hash === "host") { role = "host"; showScreen(roomCode ? "hostDashboard" : "hostSetupScreen"); } else if (hash === "player") { role = "player"; showScreen(roomCode ? "playerDashboard" : "playerJoinScreen"); } else { role = "landing"; showScreen("landingScreen"); } }
-    function setRoute(next) { location.hash = next; route(); }
-
-    async function createRoom() { await safeRun(async () => {
-      const names = $("teamNamesInput").value.split("\n").map(n => n.trim()).filter(Boolean);
-      if (names.length < 2) return showToast("Add at least two teams.");
-      let code = makeRoomCode(); let snap = await getDoc(roomRef(code));
-      while (snap.exists()) { code = makeRoomCode(); snap = await getDoc(roomRef(code)); }
-      const teams = {}; names.forEach((name, i) => { const id = `team${i + 1}`; teams[id] = { id, name, initials: initials(name, i), tb: 100, budget: 10, trust: 5, rhetoric: 0, submitted: false, policy: "", argument: "", appeal: randomItem(APPEALS).id, rating: "solid", lastResult: "Waiting for the first round." }; });
-      await setDoc(roomRef(code), { roomCode: code, status: "lobby", round: 1, totalRounds: Number($("roundCountInput").value), difficulty: $("difficultyInput").value, currentCrisis: null, teams, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
-      role = "host"; location.hash = "host"; subscribe(code); showToast(`Room ${code} created.`);
-    }); }
-
-    async function joinRoomAsPlayer() { await safeRun(async () => {
-      const code = $("roomCodeInput").value.trim(); if (!code) return showToast("Enter a room code.");
-      const snap = await getDoc(roomRef(code)); if (!snap.exists()) return showToast("No room found with that code.");
-      role = "player"; location.hash = "player"; subscribe(code);
-    }); }
-
-    async function subscribe(code) { await ensureSignedIn(); if (unsubscribeRoom) unsubscribeRoom(); roomCode = code; unsubscribeRoom = onSnapshot(roomRef(code), (snap) => { if (!snap.exists()) { showToast("Room deleted or not found."); leaveRoom(false); return; } roomData = snap.data(); $("leaveRoomBtn").classList.remove("hidden"); if (role === "host") { showScreen("hostDashboard"); renderHost(); } if (role === "player") { showScreen("playerDashboard"); renderPlayer(); } }, (e) => { console.error(e); showToast("Could not sync room. Check Firestore rules."); }); }
-    function leaveRoom(updateHash = true) { if (unsubscribeRoom) unsubscribeRoom(); unsubscribeRoom = null; roomCode = null; roomData = null; selectedTeamId = null; localStorage.removeItem("outbreak2035TeamId"); $("leaveRoomBtn").classList.add("hidden"); if (updateHash) location.hash = ""; showScreen("landingScreen"); }
-    async function updateRoom(patch) { await safeRun(() => updateDoc(roomRef(), { ...patch, updatedAt: serverTimestamp() })); }
-
-    function resetTeamsForRound(teams) { const next = structuredClone(teams); Object.values(next).forEach(t => { t.submitted = false; t.policy = ""; t.argument = ""; t.appeal = randomItem(APPEALS).id; t.rating = "solid"; t.lastResult = "Choose a policy and prepare your argument."; }); return next; }
-    async function startRound() { if (!roomData) return; await updateRoom({ status: "submitting", currentCrisis: randomItem(CRISES), teams: resetTeamsForRound(roomData.teams) }); }
-    async function nextRound() { if (!roomData) return; const next = roomData.round + 1; await updateRoom(next > roomData.totalRounds ? { status: "final" } : { round: next, status: "lobby", currentCrisis: null }); }
-    async function setRating(teamId, rating) { await updateRoom({ [`teams.${teamId}.rating`]: rating }); }
-    async function calculateResults() { if (!roomData || !allSubmitted(roomData)) return showToast("Wait until every team submits.");
-      const teams = structuredClone(roomData.teams); const crisis = roomData.currentCrisis; const diff = DIFFICULTY[roomData.difficulty] || DIFFICULTY.normal;
-      Object.values(teams).forEach(t => { const p = getPolicy(t.policy); if (!p) return; const blocked = crisis.blockedBy.includes(p.id); const damage = blocked ? 0 : Math.round(crisis.damage * diff.damageMult); const reduction = Math.round(p.reduction * ratingMult(t.rating)); t.tb = Math.max(0, t.tb + damage - reduction); t.budget = Math.max(0, t.budget - p.cost + diff.income); t.trust = Math.max(0, Math.min(10, t.trust + p.trust - (blocked ? 0 : crisis.trustLoss))); if (t.rating === "solid") t.rhetoric += 2; if (t.rating === "fire") t.rhetoric += 3; t.lastResult = `${p.name}: -${reduction} TB. ${blocked ? "Blocked the crisis." : `Took +${damage} TB from ${crisis.name}.`} Argument rating: ${ratingLabel(t.rating)}.`; });
-      await updateRoom({ status: roomData.round >= roomData.totalRounds ? "final" : "results", teams });
+    function showScreen(id) {
+      screens.forEach((screen) => $(screen).classList.add("hidden"));
+      $(id).classList.remove("hidden");
     }
-    async function submitChoice() { if (!roomData || !selectedTeamId) return; const team = roomData.teams[selectedTeamId]; const policy = getPolicy($("policySelect").value); const argument = $("argumentInput").value.trim(); if (!policy) return showToast("Choose a policy."); if (argument.length < 12) return showToast("Write at least one real sentence."); if (team.budget < policy.cost) return showToast("Not enough budget for that policy."); await updateRoom({ [`teams.${selectedTeamId}.policy`]: policy.id, [`teams.${selectedTeamId}.argument`]: argument, [`teams.${selectedTeamId}.submitted`]: true, [`teams.${selectedTeamId}.lastResult`]: "Submitted. Waiting for host rating." }); showToast("Submitted."); }
-    async function deleteRoom() { if (!roomCode || !confirm("Delete this room for everyone?")) return; await safeRun(async () => { await deleteDoc(roomRef()); leaveRoom(); }); }
 
-    function renderLeaderboard(target) { $(target).innerHTML = sortedTeams().map((t,i) => `<div class="rank"><div class="rank-num">${i+1}</div><div><strong>${escapeHTML(t.name)}</strong><span>Trust ${t.trust}/10 • Rhetoric ${t.rhetoric}</span></div><div class="rank-score ${tbClass(t.tb)}">${t.tb} TB</div></div>`).join(""); }
-    function renderHost() { const teams = Object.values(roomData.teams || {}); const leader = sortedTeams()[0]; $("hostRoomCode").textContent = roomCode; $("hostJoinLink").textContent = joinUrl(roomCode); $("hostRoundLabel").textContent = `${roomData.round} / ${roomData.totalRounds}`; $("hostStatusLabel").textContent = roomData.status; $("hostSubmitLabel").textContent = `${submittedCount()} / ${teams.length}`; $("hostLeaderLabel").textContent = leader ? leader.name : "—"; renderHostCrisis(); renderHostTeams(); renderLeaderboard("hostLeaderboard"); $("startRoundBtn").disabled = !["lobby","results"].includes(roomData.status); $("calculateResultsBtn").disabled = roomData.status !== "submitting" || !allSubmitted(); $("nextRoundBtn").disabled = roomData.status !== "results"; $("nextRoundBtn").textContent = roomData.round >= roomData.totalRounds ? "Finish" : "Next Round"; if (roomData.status === "final") showFinal(); }
-    function renderHostCrisis() { const c = roomData.currentCrisis; if (!c) { $("hostCrisisTitle").textContent = roomData.status === "final" ? "Game complete" : "Waiting in lobby"; $("hostCrisisText").textContent = roomData.status === "final" ? "The final leaderboard is ready." : "Start the next round to reveal a crisis."; $("hostCrisisTags").innerHTML = `<span class="tag">Round ${roomData.round}</span><span class="tag">Difficulty: ${roomData.difficulty}</span>`; return; } const blockers = c.blockedBy.map(id => getPolicy(id)?.name || id).join(" or "); $("hostCrisisTitle").textContent = c.name; $("hostCrisisText").textContent = c.text; $("hostCrisisTags").innerHTML = `<span class="tag bad">+${Math.round(c.damage * (DIFFICULTY[roomData.difficulty]?.damageMult || 1))} TB if unblocked</span><span class="tag warn">Blocked by: ${escapeHTML(blockers)}</span>${c.trustLoss ? `<span class="tag warn">-${c.trustLoss} trust</span>` : ""}`; }
-    function renderHostTeams() { $("hostTeamsGrid").innerHTML = Object.values(roomData.teams || {}).map(t => { const p = getPolicy(t.policy); const a = getAppeal(t.appeal); return `<article class="host-team-card ${t.submitted ? "submitted" : ""}"><div class="team-top"><div class="team-identity"><div class="avatar">${escapeHTML(t.initials)}</div><div><h3>${escapeHTML(t.name)}</h3><span>${t.submitted ? "Submitted" : "Waiting"}</span></div></div><div class="team-stats"><span class="stat-pill ${tbClass(t.tb)}">${t.tb} TB</span><span class="stat-pill">$${t.budget}</span><span class="stat-pill">${t.trust}/10 Trust</span></div></div><div class="tag-row"><span class="tag">${p ? escapeHTML(p.name) : "No policy yet"}</span><span class="tag good">Required: ${a?.name || "—"}</span></div><div class="argument-box">${escapeHTML(t.argument || "No submission yet.")}</div><div class="rating-row"><div class="muted"><strong>Result:</strong> ${escapeHTML(t.lastResult || "No result yet.")}</div><div><label>Host rating</label><select data-rating-team="${t.id}" ${!t.submitted ? "disabled" : ""}><option value="weak" ${t.rating === "weak" ? "selected" : ""}>Weak</option><option value="solid" ${t.rating === "solid" ? "selected" : ""}>Solid</option><option value="fire" ${t.rating === "fire" ? "selected" : ""}>Fire</option></select></div></div></article>`; }).join(""); document.querySelectorAll("[data-rating-team]").forEach(s => s.addEventListener("change", e => setRating(e.target.dataset.ratingTeam, e.target.value))); }
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.remove("hidden");
 
-    function renderPlayer() { $("playerRoomCode").textContent = roomCode; renderTeamPicker(); renderPlayerTeam(); renderPlayerRound(); renderLeaderboard("playerLeaderboard"); if (roomData.status === "final") showFinal(); }
-    function renderTeamPicker() { $("teamPicker").innerHTML = Object.values(roomData.teams || {}).map(t => `<button class="team-pick ${selectedTeamId === t.id ? "selected" : ""}" data-pick="${t.id}"><strong>${escapeHTML(t.name)}</strong><span>${t.tb} TB • $${t.budget} • ${t.trust}/10 trust</span></button>`).join(""); document.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { selectedTeamId = b.dataset.pick; localStorage.setItem("outbreak2035TeamId", selectedTeamId); renderPlayer(); })); }
-    function renderPlayerTeam() { const t = roomData.teams?.[selectedTeamId]; if (!t) { selectedTeamId = null; localStorage.removeItem("outbreak2035TeamId"); $("selectedTeamName").textContent = "No team selected"; $("playerStats").innerHTML = ""; $("teamPickerCard").classList.remove("hidden"); $("submissionCard").classList.add("hidden"); return; } $("teamPickerCard").classList.add("hidden"); $("submissionCard").classList.remove("hidden"); $("selectedTeamName").textContent = t.name; $("playerStatusText").textContent = `You are playing as ${t.name}.`; $("playerStats").innerHTML = `<div><span>TB Cases</span><strong class="${tbClass(t.tb)}">${t.tb}</strong></div><div><span>Budget</span><strong>$${t.budget}</strong></div><div><span>Public Trust</span><strong>${t.trust}/10</strong></div><div><span>Rhetoric</span><strong>${t.rhetoric}</strong></div>`; }
-    function renderPlayerRound() { const t = roomData.teams?.[selectedTeamId]; const c = roomData.currentCrisis; $("playerRoundBadge").textContent = `Round ${roomData.round} of ${roomData.totalRounds}`; ["submissionForm","submittedBox","resultBox","playerPromptBox"].forEach(id => $(id).classList.add("hidden")); if (!t) return; if (roomData.status === "lobby") { $("playerCrisisTitle").textContent = "Waiting for host"; $("playerCrisisText").textContent = "The next round has not started yet."; return; } if (["results","final"].includes(roomData.status)) { $("playerCrisisTitle").textContent = roomData.status === "final" ? "Final results" : "Round results"; $("playerCrisisText").textContent = c ? c.name : "Game complete."; $("resultBox").classList.remove("hidden"); $("playerResultText").textContent = t.lastResult || "No result yet."; return; } if (!c) return; const a = getAppeal(t.appeal); $("playerCrisisTitle").textContent = c.name; $("playerCrisisText").textContent = c.text; $("appealLabel").textContent = `Use ${a.name}`; $("appealPrompt").textContent = a.prompt; $("playerPromptBox").classList.remove("hidden"); if (t.submitted) { $("submittedBox").classList.remove("hidden"); return; } $("policySelect").innerHTML = `<option value="">Choose policy...</option>` + POLICIES.map(p => `<option value="${p.id}" ${t.budget < p.cost ? "disabled" : ""}>${p.name} — $${p.cost}</option>`).join(""); $("policyHint").textContent = "Pick a policy, then defend it using your assigned appeal."; $("argumentInput").value = ""; $("submissionForm").classList.remove("hidden"); }
-    function showFinal() { const teams = sortedTeams(); const winner = teams[0]; if (!winner) return; $("finalTitle").textContent = `${winner.name} wins`; $("finalText").textContent = `${winner.name} ended with ${winner.tb} TB cases, ${winner.trust}/10 trust, and ${winner.rhetoric} rhetoric points.`; $("finalLeaderboard").innerHTML = teams.map((t,i) => `<div class="rank"><div class="rank-num">${i+1}</div><div><strong>${escapeHTML(t.name)}</strong><span>Trust ${t.trust}/10 • Rhetoric ${t.rhetoric}</span></div><div class="rank-score ${tbClass(t.tb)}">${t.tb} TB</div></div>`).join(""); $("finalModal").classList.remove("hidden"); }
+      window.clearTimeout(showToast.timeout);
+      showToast.timeout = window.setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2600);
+    }
 
-    $("goHostBtn").onclick = () => setRoute("host"); $("goPlayerBtn").onclick = () => setRoute("player"); $("landingHostBtn").onclick = () => setRoute("host"); $("landingPlayerBtn").onclick = () => setRoute("player"); $("leaveRoomBtn").onclick = () => leaveRoom(); $("createRoomBtn").onclick = createRoom; $("joinRoomBtn").onclick = joinRoomAsPlayer; $("startRoundBtn").onclick = startRound; $("nextRoundBtn").onclick = nextRound; $("calculateResultsBtn").onclick = calculateResults; $("submitChoiceBtn").onclick = submitChoice; $("deleteRoomBtn").onclick = deleteRoom; $("refreshHostBtn").onclick = renderHost; $("closeFinalBtn").onclick = () => $("finalModal").classList.add("hidden"); $("copyJoinLinkBtn").onclick = async () => { await navigator.clipboard.writeText(joinUrl(roomCode)); showToast("Join link copied."); };
-    $("policySelect").onchange = () => { const p = getPolicy($("policySelect").value); $("policyHint").textContent = p ? `${p.hint} Article tie: ${p.articleTie}` : "Pick a policy, then defend it using your assigned appeal."; };
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function randomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function makeRoomCode() {
+      return String(Math.floor(1000 + Math.random() * 9000));
+    }
+
+    function initials(name, index) {
+      const init = String(name)
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase();
+
+      return init || `T${index + 1}`;
+    }
+
+    function getPolicy(id) {
+      return POLICIES.find((policy) => policy.id === id);
+    }
+
+    function getAppeal(id) {
+      return APPEALS.find((appeal) => appeal.id === id);
+    }
+
+    function ratingMultiplier(rating) {
+      if (rating === "weak") return 0.5;
+      if (rating === "fire") return 1.25;
+      return 1;
+    }
+
+    function ratingLabel(rating) {
+      if (rating === "weak") return "Weak";
+      if (rating === "fire") return "Fire";
+      return "Solid";
+    }
+
+    function tbClass(tb) {
+      if (tb <= 55) return "tb-good";
+      if (tb <= 90) return "tb-mid";
+      return "tb-bad";
+    }
+
+    function sortedTeams(room = roomData) {
+      if (!room?.teams) return [];
+
+      return Object.values(room.teams).sort((a, b) => {
+        if (a.tb !== b.tb) return a.tb - b.tb;
+        if (a.trust !== b.trust) return b.trust - a.trust;
+        return b.rhetoric - a.rhetoric;
+      });
+    }
+
+    function submittedCount(room = roomData) {
+      return Object.values(room?.teams || {}).filter((team) => team.submitted).length;
+    }
+
+    function allSubmitted(room = roomData) {
+      const teams = Object.values(room?.teams || {});
+      return teams.length > 0 && teams.every((team) => team.submitted);
+    }
+
+    function roomRef(code = roomCode) {
+      return doc(db, ROOM_COLLECTION, code);
+    }
+
+    function getJoinUrl(code) {
+      const url = new URL(window.location.href);
+      url.hash = "player";
+      url.searchParams.set("room", code);
+      return url.toString();
+    }
+
+    function setRoute(nextRole) {
+      window.location.hash = nextRole;
+      route();
+    }
+
+    function route() {
+      const hash = window.location.hash.replace("#", "");
+      const urlRoom = new URL(window.location.href).searchParams.get("room");
+
+      if (urlRoom) {
+        $("roomCodeInput").value = urlRoom;
+      }
+
+      if (hash === "host") {
+        role = "host";
+        showScreen(roomCode ? "hostDashboard" : "hostSetupScreen");
+      } else if (hash === "player") {
+        role = "player";
+        showScreen(roomCode ? "playerDashboard" : "playerJoinScreen");
+      } else {
+        role = "landing";
+        showScreen("landingScreen");
+      }
+    }
+
+    async function safeRun(fn) {
+      try {
+        await ensureSignedIn();
+        return await fn();
+      } catch (error) {
+        console.error(error);
+
+        if (error.code === "permission-denied") {
+          showToast("Firestore denied this.");
+        } else {
+          showToast("Something went wrong.");
+        }
+      }
+    }
+
+    async function createRoom() {
+      await safeRun(async () => {
+        const names = $("teamNamesInput").value
+          .split("\n")
+          .map((name) => name.trim())
+          .filter(Boolean);
+
+        if (names.length < 2) {
+          showToast("Add at least two teams.");
+          return;
+        }
+
+        let code = makeRoomCode();
+        let snap = await getDoc(roomRef(code));
+
+        while (snap.exists()) {
+          code = makeRoomCode();
+          snap = await getDoc(roomRef(code));
+        }
+
+        const teams = {};
+        names.forEach((name, index) => {
+          const id = `team${index + 1}`;
+
+          teams[id] = {
+            id,
+            name,
+            initials: initials(name, index),
+            tb: 100,
+            budget: 10,
+            trust: 5,
+            rhetoric: 0,
+            selectedBy: "",
+            submitted: false,
+            policy: "",
+            argument: "",
+            appeal: "",
+            rating: "solid",
+            lastResult: "Waiting."
+          };
+        });
+
+        await setDoc(roomRef(code), {
+          roomCode: code,
+          status: "lobby",
+          round: 1,
+          totalRounds: Number($("roundCountInput").value),
+          difficulty: $("difficultyInput").value,
+          currentCrisis: null,
+          teams,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        role = "host";
+        window.location.hash = "host";
+        subscribeToRoom(code);
+        showToast(`Room ${code} created.`);
+      });
+    }
+
+    async function joinRoomAsPlayer() {
+      await safeRun(async () => {
+        const code = $("roomCodeInput").value.trim();
+
+        if (!code) {
+          showToast("Enter room code.");
+          return;
+        }
+
+        const snap = await getDoc(roomRef(code));
+
+        if (!snap.exists()) {
+          showToast("Room not found.");
+          return;
+        }
+
+        role = "player";
+        window.location.hash = "player";
+        subscribeToRoom(code);
+      });
+    }
+
+    async function subscribeToRoom(code) {
+      await ensureSignedIn();
+
+      if (unsubRoom) {
+        unsubRoom();
+        unsubRoom = null;
+      }
+
+      roomCode = code;
+
+      unsubRoom = onSnapshot(
+        roomRef(code),
+        (snap) => {
+          if (!snap.exists()) {
+            showToast("Room deleted.");
+            leaveRoom(false);
+            return;
+          }
+
+          roomData = snap.data();
+
+          $("leaveRoomBtn").classList.remove("hidden");
+
+          if (role === "host") {
+            showScreen("hostDashboard");
+            renderHost();
+          }
+
+          if (role === "player") {
+            showScreen("playerDashboard");
+            renderPlayer();
+          }
+        },
+        (error) => {
+          console.error(error);
+          showToast("Sync blocked.");
+        }
+      );
+    }
+
+    async function leaveRoom(updateHash = true) {
+      await releaseSelectedTeam();
+
+      if (unsubRoom) {
+        unsubRoom();
+        unsubRoom = null;
+      }
+
+      roomCode = null;
+      roomData = null;
+      selectedTeamId = null;
+      localStorage.removeItem("outbreak2035TeamId");
+
+      $("leaveRoomBtn").classList.add("hidden");
+      $("finalModal").classList.add("hidden");
+
+      if (updateHash) {
+        window.location.hash = "";
+      }
+
+      showScreen("landingScreen");
+    }
+
+    async function updateRoom(patch) {
+      await safeRun(async () => {
+        await updateDoc(roomRef(), {
+          ...patch,
+          updatedAt: serverTimestamp()
+        });
+      });
+    }
+
+    function resetTeamsForRound(teams) {
+      const updated = structuredClone(teams);
+
+      Object.values(updated).forEach((team) => {
+        team.submitted = false;
+        team.policy = "";
+        team.argument = "";
+        team.appeal = "";
+        team.rating = "solid";
+        team.lastResult = "Choose policy.";
+      });
+
+      return updated;
+    }
+
+    async function startRound() {
+      if (!roomData) return;
+
+      await updateRoom({
+        status: "submitting",
+        currentCrisis: randomItem(CRISES),
+        teams: resetTeamsForRound(roomData.teams)
+      });
+    }
+
+    async function nextRound() {
+      if (!roomData) return;
+
+      const next = roomData.round + 1;
+
+      if (next > roomData.totalRounds) {
+        await updateRoom({ status: "final" });
+        return;
+      }
+
+      await updateRoom({
+        round: next,
+        status: "lobby",
+        currentCrisis: null
+      });
+    }
+
+    async function setRating(teamId, rating) {
+      await updateRoom({
+        [`teams.${teamId}.rating`]: rating
+      });
+    }
+
+    async function calculateResults() {
+      if (!roomData || !allSubmitted(roomData)) {
+        showToast("Waiting on teams.");
+        return;
+      }
+
+      const teams = structuredClone(roomData.teams);
+      const crisis = roomData.currentCrisis;
+      const diff = DIFFICULTY[roomData.difficulty] || DIFFICULTY.normal;
+
+      Object.values(teams).forEach((team) => {
+        const policy = getPolicy(team.policy);
+
+        if (!policy) return;
+
+        const blocked = crisis.blockedBy.includes(policy.id);
+        const crisisDamage = blocked ? 0 : Math.round(crisis.damage * diff.damageMult);
+        const trustLoss = blocked ? 0 : crisis.trustLoss;
+        const reduction = Math.round(policy.reduction * ratingMultiplier(team.rating));
+
+        team.tb = Math.max(0, team.tb + crisisDamage - reduction);
+        team.budget = Math.max(0, team.budget - policy.cost + diff.income);
+        team.trust = Math.max(0, Math.min(10, team.trust + policy.trust - trustLoss));
+
+        if (team.rating === "solid") team.rhetoric += 2;
+        if (team.rating === "fire") team.rhetoric += 3;
+
+        team.lastResult = `${policy.name}: -${reduction} TB. ${
+          blocked
+            ? "Blocked crisis."
+            : `+${crisisDamage} TB from crisis.`
+        } ${ratingLabel(team.rating)} argument.`;
+      });
+
+      const isFinal = roomData.round >= roomData.totalRounds;
+
+      await updateRoom({
+        status: isFinal ? "final" : "results",
+        teams
+      });
+    }
+
+    async function submitChoice() {
+      if (!roomData || !selectedTeamId) return;
+
+      const team = roomData.teams[selectedTeamId];
+      const policyId = $("policySelect").value;
+      const appealId = $("appealSelect").value;
+      const argument = $("argumentInput").value.trim();
+
+      if (!policyId) {
+        showToast("Choose policy.");
+        return;
+      }
+
+      if (!appealId) {
+        showToast("Choose route.");
+        return;
+      }
+
+      if (argument.length < 12) {
+        showToast("Write one sentence.");
+        return;
+      }
+
+      const policy = getPolicy(policyId);
+
+      if (team.budget < policy.cost) {
+        showToast("Not enough budget.");
+        return;
+      }
+
+      await updateRoom({
+        [`teams.${selectedTeamId}.policy`]: policyId,
+        [`teams.${selectedTeamId}.appeal`]: appealId,
+        [`teams.${selectedTeamId}.argument`]: argument,
+        [`teams.${selectedTeamId}.submitted`]: true,
+        [`teams.${selectedTeamId}.lastResult`]: "Submitted."
+      });
+
+      showToast("Submitted.");
+    }
+
+    async function deleteRoom() {
+      if (!roomCode) return;
+
+      const ok = window.confirm("Delete this room?");
+
+      if (!ok) return;
+
+      await safeRun(async () => {
+        await deleteDoc(roomRef());
+        leaveRoom();
+      });
+    }
+
+    function isTeamTaken(team) {
+      const uid = auth?.currentUser?.uid || "";
+      return Boolean(team?.selectedBy && team.selectedBy !== uid);
+    }
+
+    async function pickTeam(teamId) {
+      await safeRun(async () => {
+        const user = await ensureSignedIn();
+
+        await runTransaction(db, async (transaction) => {
+          const ref = roomRef();
+          const snap = await transaction.get(ref);
+
+          if (!snap.exists()) {
+            throw new Error("Room not found.");
+          }
+
+          const data = snap.data();
+          const teams = structuredClone(data.teams || {});
+          const chosen = teams[teamId];
+
+          if (!chosen) {
+            throw new Error("Team not found.");
+          }
+
+          if (chosen.selectedBy && chosen.selectedBy !== user.uid) {
+            throw new Error("Team already taken.");
+          }
+
+          Object.values(teams).forEach((team) => {
+            if (team.selectedBy === user.uid) {
+              team.selectedBy = "";
+            }
+          });
+
+          chosen.selectedBy = user.uid;
+
+          transaction.update(ref, {
+            teams,
+            updatedAt: serverTimestamp()
+          });
+        });
+
+        selectedTeamId = teamId;
+        localStorage.setItem("outbreak2035TeamId", selectedTeamId);
+        showToast("Team selected.");
+      });
+    }
+
+    async function releaseSelectedTeam() {
+      if (!roomCode || !roomData || !selectedTeamId) return;
+
+      await safeRun(async () => {
+        const user = await ensureSignedIn();
+        const team = roomData.teams?.[selectedTeamId];
+
+        if (!team || team.selectedBy !== user.uid) return;
+
+        await updateDoc(roomRef(), {
+          [`teams.${selectedTeamId}.selectedBy`]: "",
+          updatedAt: serverTimestamp()
+        });
+      });
+    }
+
+    function changeTeam() {
+      $("teamPickerCard").classList.remove("hidden");
+      $("submissionCard").classList.add("hidden");
+      $("playerStatusText").textContent = "Choose a team.";
+
+      if (roomData) {
+        renderTeamPicker();
+        renderLeaderboard("playerLeaderboard");
+      }
+    }
+
+    function renderLeaderboard(targetId, room = roomData) {
+      const target = $(targetId);
+      const teams = sortedTeams(room);
+
+      target.innerHTML = teams.map((team, index) => `
+        <div class="rank">
+          <div class="rank-num">${index + 1}</div>
+          <div>
+            <strong>${escapeHtml(team.name)}</strong>
+            <span>${team.trust}/10 trust • ${team.rhetoric} rhetoric</span>
+          </div>
+          <div class="rank-score ${tbClass(team.tb)}">${team.tb} TB</div>
+        </div>
+      `).join("");
+    }
+
+    function renderHost() {
+      if (!roomData) return;
+
+      const teams = Object.values(roomData.teams || {});
+      const leader = sortedTeams()[0];
+
+      $("hostRoomCode").textContent = roomCode;
+      $("hostJoinLink").textContent = getJoinUrl(roomCode);
+      $("hostRoundLabel").textContent = `${roomData.round} / ${roomData.totalRounds}`;
+      $("hostStatusLabel").textContent = statusLabel(roomData.status);
+      $("hostSubmitLabel").textContent = `${submittedCount()} / ${teams.length}`;
+      $("hostLeaderLabel").textContent = leader ? leader.name : "—";
+
+      renderHostCrisis();
+      renderHostTeams();
+      renderLeaderboard("hostLeaderboard");
+
+      $("startRoundBtn").disabled = !["lobby", "results"].includes(roomData.status);
+      $("calculateResultsBtn").disabled = roomData.status !== "submitting" || !allSubmitted();
+      $("nextRoundBtn").disabled = roomData.status !== "results";
+      $("nextRoundBtn").textContent = roomData.round >= roomData.totalRounds ? "Finish" : "Next";
+
+      if (roomData.status === "final") {
+        showFinalModal();
+      }
+    }
+
+    function statusLabel(status) {
+      const labels = {
+        lobby: "Lobby",
+        submitting: "Open",
+        results: "Results",
+        final: "Final"
+      };
+
+      return labels[status] || status;
+    }
+
+    function renderHostCrisis() {
+      const crisis = roomData.currentCrisis;
+
+      if (!crisis) {
+        $("hostCrisisTitle").textContent = roomData.status === "final" ? "Complete." : "Waiting.";
+        $("hostCrisisText").textContent = roomData.status === "final" ? "Final board ready." : "Start when ready.";
+        $("hostCrisisTags").innerHTML = `
+          <span class="tag">Round ${roomData.round}</span>
+          <span class="tag">${roomData.difficulty}</span>
+        `;
+        return;
+      }
+
+      const blockers = crisis.blockedBy
+        .map((id) => getPolicy(id)?.name || id)
+        .join(" / ");
+
+      $("hostCrisisTitle").textContent = crisis.name;
+      $("hostCrisisText").textContent = crisis.text;
+      $("hostCrisisTags").innerHTML = `
+        <span class="tag bad">+${Math.round(crisis.damage * (DIFFICULTY[roomData.difficulty]?.damageMult || 1))} TB</span>
+        <span class="tag warn">Block: ${escapeHtml(blockers)}</span>
+        ${crisis.trustLoss ? `<span class="tag warn">-${crisis.trustLoss} trust</span>` : ""}
+      `;
+    }
+
+    function renderHostTeams() {
+      const teams = Object.values(roomData.teams || {});
+
+      $("hostTeamsGrid").innerHTML = teams.map((team) => {
+        const policy = getPolicy(team.policy);
+        const appeal = getAppeal(team.appeal);
+        const submittedClass = team.submitted ? "submitted" : "";
+        const argument = team.argument || "No submission.";
+        const policyText = policy ? `${policy.name} — $${policy.cost}` : "No policy";
+
+        return `
+          <article class="host-team-card ${submittedClass}">
+            <div class="team-top">
+              <div class="team-identity">
+                <div class="avatar">${escapeHtml(team.initials)}</div>
+                <div>
+                  <h3>${escapeHtml(team.name)}</h3>
+                  <span>${team.submitted ? "Submitted" : team.selectedBy ? "Claimed" : "Open"}</span>
+                </div>
+              </div>
+
+              <div class="team-stats">
+                <span class="stat-pill ${tbClass(team.tb)}">${team.tb} TB</span>
+                <span class="stat-pill">$${team.budget}</span>
+                <span class="stat-pill">${team.trust}/10</span>
+              </div>
+            </div>
+
+            <div class="tag-row">
+              <span class="tag">${escapeHtml(policyText)}</span>
+              <span class="tag good">${appeal?.name || "—"}</span>
+            </div>
+
+            <div class="argument-box">${escapeHtml(argument)}</div>
+
+            <div class="rating-row">
+              <div class="muted">
+                ${escapeHtml(team.lastResult || "No result.")}
+              </div>
+
+              <div>
+                <label>Rating</label>
+                <select data-rating-team="${team.id}" ${!team.submitted ? "disabled" : ""}>
+                  <option value="weak" ${team.rating === "weak" ? "selected" : ""}>Weak</option>
+                  <option value="solid" ${team.rating === "solid" ? "selected" : ""}>Solid</option>
+                  <option value="fire" ${team.rating === "fire" ? "selected" : ""}>Fire</option>
+                </select>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-rating-team]").forEach((select) => {
+        select.addEventListener("change", (event) => {
+          setRating(event.currentTarget.dataset.ratingTeam, event.currentTarget.value);
+        });
+      });
+    }
+
+    function renderPlayer() {
+      if (!roomData) return;
+
+      $("playerRoomCode").textContent = roomCode;
+
+      renderTeamPicker();
+      renderPlayerSelectedTeam();
+      renderPlayerRound();
+      renderLeaderboard("playerLeaderboard");
+
+      if (roomData.status === "final") {
+        showFinalModal();
+      }
+    }
+
+    function renderTeamPicker() {
+      const uid = auth?.currentUser?.uid || "";
+      const teams = Object.values(roomData.teams || {});
+
+      $("teamPicker").innerHTML = teams.map((team) => {
+        const taken = Boolean(team.selectedBy && team.selectedBy !== uid);
+        const mine = Boolean(team.selectedBy && team.selectedBy === uid);
+        const selected = selectedTeamId === team.id || mine;
+
+        return `
+          <button
+            class="team-pick ${selected ? "selected" : ""}"
+            data-pick-team="${team.id}"
+            ${taken ? "disabled" : ""}
+          >
+            <strong>${escapeHtml(team.name)}</strong>
+            <span>
+              ${taken ? "Taken" : mine ? "Your team" : `${team.tb} TB • $${team.budget} • ${team.trust}/10 trust`}
+            </span>
+          </button>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-pick-team]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (button.disabled) return;
+          pickTeam(button.dataset.pickTeam);
+        });
+      });
+    }
+
+    function renderPlayerSelectedTeam() {
+      const uid = auth?.currentUser?.uid || "";
+      const team = selectedTeamId ? roomData.teams?.[selectedTeamId] : null;
+
+      if (team && team.selectedBy && team.selectedBy !== uid) {
+        selectedTeamId = null;
+        localStorage.removeItem("outbreak2035TeamId");
+      }
+
+      const activeTeam = selectedTeamId ? roomData.teams?.[selectedTeamId] : null;
+
+      if (!activeTeam) {
+        selectedTeamId = null;
+        localStorage.removeItem("outbreak2035TeamId");
+
+        $("selectedTeamName").textContent = "None";
+        $("playerStats").innerHTML = "";
+        $("teamPickerCard").classList.remove("hidden");
+        $("submissionCard").classList.add("hidden");
+        $("changeTeamBtn").classList.add("hidden");
+        $("playerStatusText").textContent = "Choose a team.";
+        return;
+      }
+
+      $("teamPickerCard").classList.add("hidden");
+      $("submissionCard").classList.remove("hidden");
+      $("changeTeamBtn").classList.remove("hidden");
+      $("selectedTeamName").textContent = activeTeam.name;
+      $("playerStatusText").textContent = `Playing as ${activeTeam.name}.`;
+
+      $("playerStats").innerHTML = `
+        <div><span>TB Cases</span><strong class="${tbClass(activeTeam.tb)}">${activeTeam.tb}</strong></div>
+        <div><span>Budget</span><strong>$${activeTeam.budget}</strong></div>
+        <div><span>Trust</span><strong>${activeTeam.trust}/10</strong></div>
+        <div><span>Rhetoric</span><strong>${activeTeam.rhetoric}</strong></div>
+      `;
+    }
+
+    function renderPlayerRound() {
+      const team = roomData.teams?.[selectedTeamId];
+      const crisis = roomData.currentCrisis;
+
+      $("playerRoundBadge").textContent = `Round ${roomData.round}`;
+
+      $("submissionForm").classList.add("hidden");
+      $("submittedBox").classList.add("hidden");
+      $("resultBox").classList.add("hidden");
+      $("playerPromptBox").classList.add("hidden");
+
+      if (!team) return;
+
+      if (roomData.status === "lobby") {
+        $("playerCrisisTitle").textContent = "Waiting.";
+        $("playerCrisisText").textContent = "Host starts the round.";
+        return;
+      }
+
+      if (roomData.status === "results" || roomData.status === "final") {
+        $("playerCrisisTitle").textContent = roomData.status === "final" ? "Final." : "Result.";
+        $("playerCrisisText").textContent = crisis ? crisis.name : "Complete.";
+
+        if (team.appeal) {
+          updateAppealPrompt(team.appeal);
+        }
+
+        $("resultBox").classList.remove("hidden");
+        $("playerResultText").textContent = team.lastResult || "No result.";
+        return;
+      }
+
+      if (!crisis) {
+        $("playerCrisisTitle").textContent = "Waiting.";
+        $("playerCrisisText").textContent = "Host is setting up.";
+        return;
+      }
+
+      $("playerCrisisTitle").textContent = crisis.name;
+      $("playerCrisisText").textContent = crisis.text;
+
+      if (team.submitted) {
+        updateAppealPrompt(team.appeal);
+        $("submittedBox").classList.remove("hidden");
+        return;
+      }
+
+      renderSubmissionOptions(team);
+      $("submissionForm").classList.remove("hidden");
+    }
+
+    function renderSubmissionOptions(team) {
+      const currentPolicy = $("policySelect").value;
+      const currentAppeal = $("appealSelect").value;
+      const currentArgument = $("argumentInput").value;
+
+      $("policySelect").innerHTML = `<option value="">Choose policy</option>` + POLICIES.map((policy) => {
+        const disabled = team.budget < policy.cost ? "disabled" : "";
+        return `<option value="${policy.id}" ${disabled}>${policy.name} — $${policy.cost}</option>`;
+      }).join("");
+
+      $("appealSelect").innerHTML = `<option value="">Choose route</option>` + APPEALS.map((appeal) => {
+        return `<option value="${appeal.id}">${appeal.name}</option>`;
+      }).join("");
+
+      if (currentPolicy) {
+        $("policySelect").value = currentPolicy;
+      }
+
+      if (currentAppeal) {
+        $("appealSelect").value = currentAppeal;
+      }
+
+      if (currentArgument) {
+        $("argumentInput").value = currentArgument;
+      }
+
+      updatePolicyHint();
+      updateAppealPrompt($("appealSelect").value);
+    }
+
+    function updatePolicyHint() {
+      const policy = getPolicy($("policySelect").value);
+
+      $("policyHint").textContent = policy
+        ? `${policy.hint} ${policy.articleTie}`
+        : "Pick one response.";
+    }
+
+    function updateAppealPrompt(appealId) {
+      const appeal = getAppeal(appealId);
+
+      if (!appeal) {
+        $("playerPromptBox").classList.add("hidden");
+        $("appealLabel").textContent = "Route";
+        $("appealPrompt").textContent = "Choose how you want to persuade.";
+        $("appealHint").textContent = "Choose how you want to persuade.";
+        return;
+      }
+
+      $("appealLabel").textContent = appeal.name;
+      $("appealPrompt").textContent = appeal.prompt;
+      $("appealHint").textContent = appeal.prompt;
+      $("playerPromptBox").classList.remove("hidden");
+    }
+
+    function formatTeamList(names) {
+      if (names.length === 1) return names[0];
+      if (names.length === 2) return `${names[0]} and ${names[1]}`;
+      return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+    }
+
+    function showFinalModal() {
+      const teams = sortedTeams();
+
+      if (!teams.length) return;
+
+      const lowestTb = teams[0].tb;
+      const tiedWinners = teams.filter((team) => team.tb === lowestTb);
+      const winnerNames = tiedWinners.map((team) => team.name);
+      const winnerList = formatTeamList(winnerNames);
+
+      if (tiedWinners.length === 1) {
+        const winner = tiedWinners[0];
+
+        $("finalTitle").textContent = `${winner.name} wins.`;
+        $("finalText").textContent = `${winner.tb} TB cases • ${winner.trust}/10 trust • ${winner.rhetoric} rhetoric`;
+      } else {
+        $("finalTitle").textContent = `${winnerList} are tied.`;
+        $("finalText").textContent = `Tie at ${lowestTb} TB cases.`;
+      }
+
+      $("finalLeaderboard").innerHTML = teams.map((team, index) => {
+        const isTiedWinner = team.tb === lowestTb;
+
+        return `
+          <div class="rank">
+            <div class="rank-num">${isTiedWinner ? "T" : index + 1}</div>
+            <div>
+              <strong>${escapeHtml(team.name)}</strong>
+              <span>${team.trust}/10 trust • ${team.rhetoric} rhetoric</span>
+            </div>
+            <div class="rank-score ${tbClass(team.tb)}">${team.tb} TB</div>
+          </div>
+        `;
+      }).join("");
+
+      $("finalModal").classList.remove("hidden");
+    }
+
+    $("goHostBtn").addEventListener("click", () => setRoute("host"));
+    $("goPlayerBtn").addEventListener("click", () => setRoute("player"));
+    $("landingHostBtn").addEventListener("click", () => setRoute("host"));
+    $("landingPlayerBtn").addEventListener("click", () => setRoute("player"));
+    $("leaveRoomBtn").addEventListener("click", () => leaveRoom());
+    $("changeTeamBtn").addEventListener("click", changeTeam);
+    $("createRoomBtn").addEventListener("click", createRoom);
+    $("joinRoomBtn").addEventListener("click", joinRoomAsPlayer);
+    $("startRoundBtn").addEventListener("click", startRound);
+    $("nextRoundBtn").addEventListener("click", nextRound);
+    $("calculateResultsBtn").addEventListener("click", calculateResults);
+    $("submitChoiceBtn").addEventListener("click", submitChoice);
+    $("deleteRoomBtn").addEventListener("click", deleteRoom);
+    $("refreshHostBtn").addEventListener("click", renderHost);
+    $("closeFinalBtn").addEventListener("click", () => $("finalModal").classList.add("hidden"));
+
+    $("copyJoinLinkBtn").addEventListener("click", async () => {
+      const link = getJoinUrl(roomCode);
+      await navigator.clipboard.writeText(link);
+      showToast("Copied.");
+    });
+
+    $("policySelect").addEventListener("change", updatePolicyHint);
+    $("appealSelect").addEventListener("change", () => updateAppealPrompt($("appealSelect").value));
+
     window.addEventListener("hashchange", route);
-    const urlRoom = new URL(location.href).searchParams.get("room"); if (urlRoom) $("roomCodeInput").value = urlRoom; route();
+
+    const urlRoom = new URL(window.location.href).searchParams.get("room");
+
+    if (urlRoom) {
+      $("roomCodeInput").value = urlRoom;
+    }
+
+    route();
   </script>
 </body>
 </html>
