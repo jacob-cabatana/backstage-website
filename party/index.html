@@ -203,10 +203,6 @@
   const isPreviewBot =
     /bot|crawl|spider|facebook|twitter|slack|discord|telegram|whatsapp|linkedin|preview/i.test(navigator.userAgent);
 
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
   if (!partyId) {
     fallbackText.textContent = "This event link is missing an event ID.";
 
@@ -215,7 +211,6 @@
     }
   } else {
     const encodedPartyId = encodeURIComponent(partyId);
-    const appUrl = `backstage://party/${encodedPartyId}`;
     const eventDetailsUrl = `/eventsDetail.html?id=${encodedPartyId}`;
 
     if (pill) {
@@ -232,41 +227,14 @@
       window.location.replace(eventDetailsUrl);
     }
 
-    function tryOpenAppThenFallback() {
-      let didLeavePage = false;
-
-      const markLeft = () => {
-        didLeavePage = true;
-      };
-
-      window.addEventListener("pagehide", markLeft);
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          didLeavePage = true;
-        }
-      });
-
-      window.location.href = appUrl;
-
-      setTimeout(() => {
-        if (!didLeavePage) {
-          goToWebsiteEvent();
-        }
-      }, 1200);
-    }
-
+    // No "Open in BCKSTGE?" prompt and no backstage:// custom-scheme redirect.
+    // If the user has the app, the iOS Universal Link opens it straight to the
+    // event before this page ever loads. Reaching this page therefore means the
+    // app isn't installed (or the link was opened somewhere Universal Links
+    // don't fire), so we just continue to the website event. Preview/unfurl
+    // bots keep the static card so shared links still show an image + title.
     if (!isPreviewBot) {
-      if (isIOS) {
-        const openApp = window.confirm("Open this event in BCKSTGE?");
-
-        if (openApp) {
-          tryOpenAppThenFallback();
-        } else {
-          goToWebsiteEvent();
-        }
-      } else {
-        goToWebsiteEvent();
-      }
+      goToWebsiteEvent();
     }
   }
 </script>
