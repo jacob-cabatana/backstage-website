@@ -272,6 +272,24 @@
             </div>
             <span class="pill draft" id="editorStatus">Draft</span>
           </div>
+          <div class="row" style="margin-top:14px;gap:8px;">
+            <button class="ghost small" id="editDetailsBtn">Edit details</button>
+            <button class="danger small" id="deleteAlbumBtn">Delete album</button>
+          </div>
+          <div id="editForm" style="display:none;margin-top:16px;">
+            <div class="field">
+              <label>Event title</label>
+              <input id="editTitle" type="text" />
+            </div>
+            <div class="field">
+              <label>Event date</label>
+              <input id="editDate" type="date" />
+            </div>
+            <div class="row" style="gap:8px;">
+              <button class="small" id="saveDetailsBtn">Save changes</button>
+              <button class="ghost small" id="cancelEditBtn">Cancel</button>
+            </div>
+          </div>
         </div>
 
         <div class="dropzone" id="dropzone">
@@ -373,8 +391,14 @@
               <div style="font-weight:600;">${escapeHtml(a.title || "Event")}</div>
               <div class="muted">${fmtDate(a.eventDate)} · ${a.photoCount || 0} photo${(a.photoCount||0)===1?"":"s"}</div>
             </div>
-            <span class="pill ${a.published ? "live" : "draft"}">${a.published ? "Live" : "Draft"}</span>`;
+            <span class="pill ${a.published ? "live" : "draft"}">${a.published ? "Live" : "Draft"}</span>
+            <button class="danger small" data-del-album title="Delete album" style="padding:7px 11px;">Delete</button>`;
           el.addEventListener("click", () => openEditor(d.id));
+          el.querySelector("[data-del-album]").addEventListener("click", async (e) => {
+            e.stopPropagation();
+            if (!confirm(`Delete "${a.title || "this album"}" and all its photos? This can’t be undone.`)) return;
+            try { await deleteAlbum(d.id); } catch (err) { alert("Delete failed: " + err.message); }
+          });
           list.appendChild(el);
         });
       }, (err) => showErr($("createError"), err.message));
@@ -496,6 +520,47 @@
       await updateDoc(doc(db, "eventAlbums", currentAlbumId), { published: !currentAlbum.published });
     });
 
+    // ── Edit details / delete album ───────────────────────
+    $("editDetailsBtn").addEventListener("click", () => {
+      if (!currentAlbum) return;
+      $("editTitle").value = currentAlbum.title || "";
+      $("editDate").value = tsToInputDate(currentAlbum.eventDate);
+      $("editForm").style.display = "block";
+    });
+    $("cancelEditBtn").addEventListener("click", () => { $("editForm").style.display = "none"; });
+    $("saveDetailsBtn").addEventListener("click", async () => {
+      clearErr($("editorError"));
+      const title = $("editTitle").value.trim();
+      const date = $("editDate").value;
+      if (!title) { showErr($("editorError"), "Title can’t be empty."); return; }
+      try {
+        await updateDoc(doc(db, "eventAlbums", currentAlbumId), {
+          title,
+          eventDate: Timestamp.fromDate(new Date(date + "T12:00:00"))
+        });
+        $("editForm").style.display = "none";
+      } catch (err) { showErr($("editorError"), err.message); }
+    });
+    $("deleteAlbumBtn").addEventListener("click", async () => {
+      if (!currentAlbum) return;
+      if (!confirm(`Delete "${currentAlbum.title || "this album"}" and all its photos? This can’t be undone.`)) return;
+      try {
+        await deleteAlbum(currentAlbumId);
+        $("backToList").click();
+      } catch (err) { showErr($("editorError"), err.message); }
+    });
+
+    // Deletes an album: its photos (Storage + docs) and the album doc.
+    async function deleteAlbum(albumId) {
+      const snap = await getDocs(collection(db, "eventAlbums", albumId, "photos"));
+      for (const d of snap.docs) {
+        const p = d.data();
+        if (p.storagePath) { try { await deleteObject(storageRef(storage, p.storagePath)); } catch (_) {} }
+        await deleteDoc(doc(db, "eventAlbums", albumId, "photos", d.id));
+      }
+      await deleteDoc(doc(db, "eventAlbums", albumId));
+    }
+
     // ── Upload ────────────────────────────────────────────
     const dz = $("dropzone");
     dz.addEventListener("click", () => $("fileInput").click());
@@ -575,6 +640,12 @@
         const d = ts?.toDate ? ts.toDate() : new Date(ts);
         return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
       } catch { return ""; }
+    }
+    function tsToInputDate(ts) {
+      try {
+        const d = ts?.toDate ? ts.toDate() : new Date(ts);
+        return d.toISOString().slice(0, 10);
+      } catch { return new Date().toISOString().slice(0, 10); }
     }
   </script>
 </body>
