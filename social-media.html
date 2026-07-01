@@ -513,7 +513,20 @@
 
     const LOWRES_BYTES = 300 * 1024; // warn under ~300 KB
 
-    function uploadOne(file, order) {
+    // Reads a photo's pixel dimensions so the app can lay out a geometrically
+    // correct masonry grid without images jumping around as they load.
+    function readDimensions(file) {
+      return new Promise((resolve) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => { resolve({ width: img.naturalWidth, height: img.naturalHeight }); URL.revokeObjectURL(url); };
+        img.onerror = () => { resolve({ width: 0, height: 0 }); URL.revokeObjectURL(url); };
+        img.src = url;
+      });
+    }
+
+    async function uploadOne(file, order) {
+      const dims = await readDimensions(file);
       return new Promise((resolve) => {
         const localId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         const path = `eventAlbums/${currentAlbumId}/${localId}-${sanitize(file.name)}`;
@@ -539,6 +552,7 @@
               const url = await getDownloadURL(task.snapshot.ref);
               await addDoc(collection(db, "eventAlbums", currentAlbumId, "photos"), {
                 imageURL: url, storagePath: path, order,
+                width: dims.width, height: dims.height,
                 lowRes: file.size < LOWRES_BYTES,
                 uploadedAt: serverTimestamp()
               });
